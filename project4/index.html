@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust H∞ Control | Control Engineering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --primary-dark: #115e59;
+            --surface: #f0fdfa;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--surface);
+            padding-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.15s;
+            box-sizing: border-box;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+        }
+
+        .uncertainty-badge {
+            font-size: 0.75rem;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+            margin-bottom: 10px;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-green {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-green:hover {
+            background: #059669;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        canvas {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            width: 100%;
+            height: 100%;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-box {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .metric-val {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-val.danger {
+            color: var(--error);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Robust Control Analysis</h1>
+            <p class="subtitle">Monte Carlo Verification of Control Stability under Parametric Uncertainty</p>
+            <p style="margin-top: 10px;"><a href="Robust-Control-Guide.md"
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;">📖 Read the Beginner's
+                    Guide</a></p>
+        </header>
+
+        <div class="grid">
+            <!-- Configuration Panel -->
+            <div class="card">
+                <div class="card-header">
+                    Nominal Plant \( G_n(s) \)
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Gain \( K \)</label>
+                        <input type="number" id="nomK" value="2.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Time Const \( \tau \)</label>
+                        <input type="number" id="nomTau" value="4.0" step="0.5">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dead Time \( \theta \)</label>
+                    <input type="number" id="nomTheta" value="1.0" step="0.1">
+                </div>
+
+                <div class="card-header" style="margin-top: 24px;">
+                    Uncertainty (\( \pm \% \))
+                </div>
+                <!-- Sliders for Uncertainty -->
+                <div class="form-group">
+                    <label style="display:flex;">Gain Uncertainty <span class="uncertainty-badge"
+                            id="dispUncK">20%</span></label>
+                    <input type="range" id="uncK" min="0" max="100" value="20"
+                        oninput="document.getElementById('dispUncK').innerText = this.value + '%'">
+                </div>
+                <div class="form-group">
+                    <label style="display:flex;">Tau Uncertainty <span class="uncertainty-badge"
+                            id="dispUncTau">15%</span></label>
+                    <input type="range" id="uncTau" min="0" max="100" value="15"
+                        oninput="document.getElementById('dispUncTau').innerText = this.value + '%'">
+                </div>
+                <div class="form-group">
+                    <label style="display:flex;">Delay Uncertainty <span class="uncertainty-badge"
+                            id="dispUncTheta">10%</span></label>
+                    <input type="range" id="uncTheta" min="0" max="100" value="10"
+                        oninput="document.getElementById('dispUncTheta').innerText = this.value + '%'">
+                </div>
+
+                <div class="card-header" style="margin-top: 24px;">
+                    Controller \( C(s) \)
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label> \( K_p \)</label>
+                        <input type="number" id="ctrlKp" value="1.2" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label> \( K_i \)</label>
+                        <input type="number" id="ctrlKi" value="0.3" step="0.05">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label> \( K_d \)</label>
+                    <input type="number" id="ctrlKd" value="0.1" step="0.05">
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <button class="btn btn-primary" onclick="app.runMonteCarlo()">Run Monte Carlo Analysis</button>
+                    <div class="row">
+                        <button class="btn btn-secondary" style="border:1px solid #ddd;"
+                            onclick="app.setController('nominal')">Preset: Aggressive</button>
+                        <button class="btn btn-green" onclick="app.setController('robust')">Preset: Robust</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualizations -->
+            <div>
+                <div class="tab-group">
+                    <button class="tab active" onclick="app.switchTab('time')">Step Response</button>
+                    <button class="tab" onclick="app.switchTab('freq')">Bode Plot (Magnitude)</button>
+                </div>
+
+                <!-- Time Domain Card -->
+                <div id="view-time" class="card">
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-val" id="metStability">100%</div>
+                            <div class="metric-label">Stable Runs</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="metOvershoot">0%</div>
+                            <div class="metric-label">Avg Overshoot</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="metWorstOvershoot">0%</div>
+                            <div class="metric-label">Worst Overshoot</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="timeChart"></canvas>
+                    </div>
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                        <span style="color: #0f766e; font-weight: bold;">— Nominal</span> &nbsp;&nbsp;
+                        <span style="color: #cbd5e1; font-weight: bold;">— Uncertain Instances (N=50)</span>
+                    </p>
+                </div>
+
+                <!-- Freq Domain Card -->
+                <div id="view-freq" class="card" style="display:none;">
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-val" id="metGm">-</div>
+                            <div class="metric-label">Min Gain Margin</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="metPm">-</div>
+                            <div class="metric-label">Min Phase Margin</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="metBw">-</div>
+                            <div class="metric-label">Nominal Bandwidth</div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="freqChart"></canvas>
+                    </div>
+                    <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                        <span style="color: #0f766e; font-weight: bold;">— Nominal Loop L(jw)</span> &nbsp;&nbsp;
+                        <span style="color: #ef4444; font-weight: bold;">— Stability Limit (0dB)</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Physics Engine ---
+
+        class PID {
+            constructor(kp, ki, kd, dt, limit = 100) {
+                this.kp = kp; this.ki = ki; this.kd = kd;
+                this.dt = dt;
+                this.integral = 0;
+                this.prevError = 0;
+                this.limit = limit;
+            }
+            update(error) {
+                this.integral += error * this.dt;
+                // Anti-windup
+                if (this.integral > this.limit) this.integral = this.limit;
+                if (this.integral < -this.limit) this.integral = -this.limit;
+
+                const derivative = (error - this.prevError) / this.dt;
+                this.prevError = error;
+
+                let out = (this.kp * error) + (this.ki * this.integral) + (this.kd * derivative);
+                // Saturation
+                if (out > this.limit) out = this.limit;
+                if (out < -this.limit) out = -this.limit;
+                return out;
+            }
+        }
+
+        class Process {
+            constructor(k, tau, theta, dt) {
+                this.k = k;
+                this.tau = tau;
+                this.theta = theta;
+                this.dt = dt;
+                this.y = 0;
+                // Buffer for dead time
+                this.bufferSize = Math.ceil(this.theta / this.dt) + 1;
+                this.buffer = new Array(this.bufferSize).fill(0);
+                this.head = 0;
+            }
+
+            update(u) {
+                // Store current input in circular buffer
+                this.buffer[this.head] = u;
+
+                // Retrieve delayed input
+                let tail = this.head - Math.floor(this.theta / this.dt);
+                if (tail < 0) tail += this.bufferSize;
+                const uDelayed = this.buffer[tail];
+
+                // FOPDT Exact Discretization
+                // y[k+1] = E * y[k] + (1-E)*K * u[k-d]
+                const E = Math.exp(-this.dt / this.tau);
+                this.y = E * this.y + (1 - E) * this.k * uDelayed;
+
+                // Move head
+                this.head = (this.head + 1) % this.bufferSize;
+
+                // Add noise? Maybe later. For now Deterministic Robustness.
+                return this.y;
+            }
+        }
+
+        // --- Simulation Logic ---
+
+        const SIM_TIME = 30;
+        const DT = 0.05;
+        const STEPS = Math.ceil(SIM_TIME / DT);
+        const MONTE_CARLO_N = 50;
+
+        const app = {
+            currentTab: 'time',
+
+            init: () => {
+                app.runMonteCarlo();
+                window.addEventListener('resize', app.runMonteCarlo); // Re-render on resize
+            },
+
+            readParams: () => {
+                return {
+                    k: parseFloat(document.getElementById('nomK').value),
+                    tau: parseFloat(document.getElementById('nomTau').value),
+                    theta: parseFloat(document.getElementById('nomTheta').value),
+                    // Uncertainties converted to fractions (20% -> 0.2)
+                    uK: parseFloat(document.getElementById('uncK').value) / 100,
+                    uTau: parseFloat(document.getElementById('uncTau').value) / 100,
+                    uTheta: parseFloat(document.getElementById('uncTheta').value) / 100,
+                    // Controller
+                    kp: parseFloat(document.getElementById('ctrlKp').value),
+                    ki: parseFloat(document.getElementById('ctrlKi').value),
+                    kd: parseFloat(document.getElementById('ctrlKd').value)
+                };
+            },
+
+            setController: (type) => {
+                if (type === 'nominal') {
+                    // Aggressive tuning for nominal plant
+                    document.getElementById('ctrlKp').value = "1.5";
+                    document.getElementById('ctrlKi').value = "0.5";
+                    document.getElementById('ctrlKd').value = "0.05";
+                } else {
+                    // Robust tuning (Lower gain, less integral)
+                    document.getElementById('ctrlKp').value = "0.8";
+                    document.getElementById('ctrlKi').value = "0.15"; // Reduced I significantly
+                    document.getElementById('ctrlKd').value = "0.2"; // Added D damping
+                }
+                app.runMonteCarlo();
+            },
+
+            switchTab: (tab) => {
+                app.currentTab = tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                event.target.classList.add('active'); // This line assumes event is global, better to pass it or just logic
+                // Hacky manual toggle for simplicity
+                if (tab === 'time') {
+                    document.querySelector('#view-time').style.display = 'block';
+                    document.querySelector('#view-freq').style.display = 'none';
+                    document.querySelectorAll('.tab')[0].classList.add('active');
+                    document.querySelectorAll('.tab')[1].classList.remove('active');
+                    app.renderTimeChart(); // Re-render
+                } else {
+                    document.querySelector('#view-time').style.display = 'none';
+                    document.querySelector('#view-freq').style.display = 'block';
+                    document.querySelectorAll('.tab')[0].classList.remove('active');
+                    document.querySelectorAll('.tab')[1].classList.add('active');
+                    app.renderFreqChart();
+                }
+            },
+
+            // Generator for random number in range [-1, 1]
+            rand: () => Math.random() * 2 - 1,
+
+            runMonteCarlo: () => {
+                const p = app.readParams();
+
+                // 1. Nominal Run
+                const nominalData = app.simulateSingle(p.k, p.tau, p.theta, p.kp, p.ki, p.kd);
+
+                // 2. Monte Carlo Runs
+                const mcResults = [];
+                let stableCount = 0;
+                let sumOvershoot = 0;
+                let maxOvershoot = 0;
+
+                for (let i = 0; i < MONTE_CARLO_N; i++) {
+                    // Sample Parameters Uniformly within bounds
+                    // param = nominal * (1 + rand(-1,1) * uncertainty)
+                    const k_i = p.k * (1 + app.rand() * p.uK);
+                    const tau_i = p.tau * (1 + app.rand() * p.uTau);
+                    const theta_i = Math.max(0.1, p.theta * (1 + app.rand() * p.uTheta));
+
+                    const res = app.simulateSingle(k_i, tau_i, theta_i, p.kp, p.ki, p.kd);
+                    mcResults.push(res);
+
+                    // Metrics
+                    if (res.isStable) {
+                        stableCount++;
+                        sumOvershoot += res.overshoot;
+                        if (res.overshoot > maxOvershoot) maxOvershoot = res.overshoot;
+                    }
+                }
+
+                // Update Metrics
+                document.getElementById('metStability').innerText = Math.round((stableCount / MONTE_CARLO_N) * 100) + "%";
+                document.getElementById('metStability').className = (stableCount / MONTE_CARLO_N < 0.9) ? "metric-val danger" : "metric-val";
+
+                const avgOs = stableCount > 0 ? sumOvershoot / stableCount : 0;
+                document.getElementById('metOvershoot').innerText = avgOs.toFixed(1) + "%";
+                document.getElementById('metWorstOvershoot').innerText = maxOvershoot.toFixed(1) + "%";
+                document.getElementById('metWorstOvershoot').className = (maxOvershoot > 25) ? "metric-val danger" : "metric-val";
+
+                // Save data for rendering
+                app.lastSimulation = { nominal: nominalData, mc: mcResults, params: p };
+
+                // Render active tab
+                if (app.currentTab === 'time') app.renderTimeChart();
+                else app.renderFreqChart();
+            },
+
+            simulateSingle: (k, tau, theta, kp, ki, kd) => {
+                const proc = new Process(k, tau, theta, DT);
+                const pid = new PID(kp, ki, kd, DT);
+
+                const trace = new Float32Array(STEPS);
+                let isStable = true;
+                let maxVal = 0;
+
+                for (let i = 0; i < STEPS; i++) {
+                    // Step setpoint at t=1s
+                    const sp = (i * DT) > 1.0 ? 1.0 : 0.0;
+
+                    const pv = proc.y;
+                    const err = sp - pv;
+                    const u = pid.update(err);
+                    proc.update(u);
+
+                    trace[i] = pv;
+
+                    if (Math.abs(pv) > 10) isStable = false; // Instability check
+                    if (pv > maxVal) maxVal = pv;
+                }
+
+                // Overshoot calc
+                let overshoot = 0;
+                if (isStable && maxVal > 1.0) {
+                    overshoot = (maxVal - 1.0) * 100;
+                }
+
+                return { trace, isStable, overshoot };
+            },
+
+            renderTimeChart: () => {
+                if (!app.lastSimulation) return;
+                const cvs = document.getElementById('timeChart');
+                const ctx = cvs.getContext('2d');
+
+                // Resize
+                const w = cvs.width = cvs.parentElement.clientWidth;
+                const h = cvs.height = cvs.parentElement.clientHeight;
+
+                // Scales
+                const maxY = 2.0;
+                const minY = -0.5;
+                const rangeY = maxY - minY;
+
+                const sx = (i) => (i / STEPS) * w;
+                const sy = (val) => h - ((val - minY) / rangeY) * h;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // Draw Grid
+                ctx.strokeStyle = '#f1f5f9';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                // Horizontal lines
+                for (let v = 0; v <= 2.0; v += 0.5) {
+                    const y = sy(v);
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                }
+                ctx.stroke();
+
+                // Draw Setpoint (Step at 1s)
+                const stepIdx = Math.floor(1.0 / DT);
+                ctx.strokeStyle = '#94a3b8'; // gray-400
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(0, sy(0));
+                ctx.lineTo(sx(stepIdx), sy(0));
+                ctx.lineTo(sx(stepIdx), sy(1));
+                ctx.lineTo(w, sy(1));
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw Monte Carlo Traces
+                ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)'; // Slate-300 with opacity
+                ctx.lineWidth = 1;
+
+                const { mc, nominal } = app.lastSimulation;
+
+                mc.forEach(run => {
+                    ctx.beginPath();
+                    ctx.moveTo(sx(0), sy(run.trace[0]));
+                    for (let i = 1; i < STEPS; i += 2) { // Decimate x2 for perf
+                        ctx.lineTo(sx(i), sy(run.trace[i]));
+                    }
+                    ctx.stroke();
+                });
+
+                // Draw Nominal Trace
+                ctx.strokeStyle = '#0f766e'; // Primary
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(sx(0), sy(nominal.trace[0]));
+                for (let i = 1; i < STEPS; i++) {
+                    ctx.lineTo(sx(i), sy(nominal.trace[i]));
+                }
+                ctx.stroke();
+            },
+
+            renderFreqChart: () => {
+                if (!app.lastSimulation) return;
+                const { params } = app.lastSimulation;
+
+                const cvs = document.getElementById('freqChart');
+                const ctx = cvs.getContext('2d');
+                const w = cvs.width = cvs.parentElement.clientWidth;
+                const h = cvs.height = cvs.parentElement.clientHeight;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // Bode Calculation Helper
+                // L(s) = C(s) * G(s)
+                // C(s) = Kp + Ki/s + Kd*s
+                // G(s) = K * exp(-theta*s) / (tau*s + 1)
+                const getMagDb = (omega, k, tau, theta, kp, ki, kd) => {
+                    // s = j*omega
+                    // G(jw)
+                    const gMag = k / Math.sqrt(1 + (tau * omega) ** 2);
+                    // C(jw) = Kp - j(Ki/w) + j(Kd*w) = Kp + j(Kd*w - Ki/w)
+                    // |C| = sqrt(Kp^2 + (Kd*w - Ki/w)^2)
+                    const cMag = Math.sqrt(kp ** 2 + (kd * omega - ki / omega) ** 2);
+
+                    const lMag = gMag * cMag;
+                    return 20 * Math.log10(lMag);
+                };
+
+                // Frequency Range: 0.1 to 100 rad/s (Log scale)
+                const wMin = 0.1;
+                const wMax = 100;
+
+                const logMin = Math.log10(wMin);
+                const logMax = Math.log10(wMax);
+                const scaleW = (omega) => ((Math.log10(omega) - logMin) / (logMax - logMin)) * w;
+
+                // dB Range: -60 to 60
+                const dbMin = -60;
+                const dbMax = 60;
+                const scaleDb = (db) => h - ((db - dbMin) / (dbMax - dbMin)) * h;
+
+                // Draw 0dB Line
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(0, scaleDb(0));
+                ctx.lineTo(w, scaleDb(0));
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw Nominal
+                ctx.strokeStyle = '#0f766e';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                // Calculate Bandwidth (crossover freq) approx
+                let bandwidth = 0;
+
+                const steps = 200;
+                for (let i = 0; i <= steps; i++) {
+                    const frac = i / steps;
+                    const omega = Math.pow(10, logMin + frac * (logMax - logMin));
+                    const db = getMagDb(omega, params.k, params.tau, params.theta, params.kp, params.ki, params.kd);
+
+                    if (i === 0) ctx.moveTo(scaleW(omega), scaleDb(db));
+                    else ctx.lineTo(scaleW(omega), scaleDb(db));
+
+                    if (Math.abs(db) < 0.5) bandwidth = omega; // Rough Crossing find
+                }
+                ctx.stroke();
+
+                // Metrics Update
+                document.getElementById('metBw').innerText = bandwidth.toFixed(2) + " rad/s";
+                document.getElementById('metGm').innerText = "N/A"; // Requires Phase calc, keeping simple for now
+                document.getElementById('metPm').innerText = "N/A";
+            }
+        };
+
+        // Boot
+        app.init();
+
+    </script>
+</body>
+
+</html>

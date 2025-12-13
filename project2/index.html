@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIMO Decoupling | Control Engineering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --surface: #f0fdfa;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --error: #ef4444;
+            --success: #10b981;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1200px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--surface);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #115e59;
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .matrix-box {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .matrix-row {
+            display: flex;
+            justify-content: space-around;
+            margin: 4px 0;
+        }
+
+        .rga-cell {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1000px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .canvas-container {
+            height: 350px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .metric-item {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .metric-val {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>MIMO Decoupling Simulator</h1>
+            <p class="subtitle">Interaction Analysis & Dynamic Decoupling for 2×2 Systems</p>
+        </header>
+
+        <div class="grid">
+            <!-- Configuration Side -->
+            <div>
+                <div class="card">
+                    <div class="card-header">Process Gain Matrix \( G(0) \)</div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>\( G_{11} \)</label>
+                            <input type="number" id="g00" value="2.0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>\( G_{12} \) (Interaction)</label>
+                            <input type="number" id="g01" value="1.5" step="0.1">
+                        </div>
+                    </div>
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>\( G_{21} \) (Interaction)</label>
+                            <input type="number" id="g10" value="1.5" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>\( G_{22} \)</label>
+                            <input type="number" id="g11" value="2.0" step="0.1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Common Time Constant \( \tau \)</label>
+                        <input type="number" id="tau" value="5.0" step="0.5">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="app.analyze()">Analyze Interactions (RGA)</button>
+                    <div id="statusRGA" class="status"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Relative Gain Array \( \Lambda \)</div>
+                    <div class="matrix-box">
+                        <div class="matrix-row">
+                            <span id="rga00" class="rga-cell">-</span>
+                            <span id="rga01" class="rga-cell">-</span>
+                        </div>
+                        <div class="matrix-row">
+                            <span id="rga10" class="rga-cell">-</span>
+                            <span id="rga11" class="rga-cell">-</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 12px; font-size: 0.9rem; line-height: 1.4;">
+                        <strong id="pairingRec">Recommendation: -</strong>
+                        <div style="color: var(--text-light); margin-top:4px;">
+                            Interactive Index: <span id="interIndex">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Simulation Setup</div>
+                    <div class="form-group">
+                        <label>Control Strategy</label>
+                        <select id="strategy">
+                            <option value="decoupled">Decoupled (Static Decoupler)</option>
+                            <option value="simple">Independent Loops (PID)</option>
+                        </select>
+                    </div>
+
+                    <div class="row-2">
+                        <div class="form-group">
+                            <label>SP 1</label>
+                            <input type="number" id="sp1" value="1.0">
+                        </div>
+                        <div class="form-group">
+                            <label>SP 2</label>
+                            <input type="number" id="sp2" value="0.0">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="app.simulate()">Run Simulation</button>
+                </div>
+            </div>
+
+            <!-- Charts Side -->
+            <div class="card">
+                <div class="card-header">System Response</div>
+                <div class="chart-row">
+                    <div>
+                        <div style="text-align:center; font-weight:600; margin-bottom:8px; color:var(--text-light)">
+                            Output \( y_1 \) vs \( SP_1 \)</div>
+                        <div class="canvas-container">
+                            <canvas id="chartY1"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="text-align:center; font-weight:600; margin-bottom:8px; color:var(--text-light)">
+                            Output \( y_2 \) vs \( SP_2 \)</div>
+                        <div class="canvas-container">
+                            <canvas id="chartY2"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-header"
+                    style="margin-top:30px; border-top: 1px solid var(--border); padding-top:20px;">Performance Metrics
+                    (Integral Absolute Error)</div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-val" id="iae1">-</div>
+                        <div>IAE (Loop 1)</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-val" id="iae2">-</div>
+                        <div>IAE (Loop 2)</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-val" id="os1">-</div>
+                        <div>Overshoot (Loop 1)</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-val" id="os2">-</div>
+                        <div>Overshoot (Loop 2)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Linear Algebra Utility
+         */
+        class Matrix {
+            constructor(data) {
+                this.data = data;
+                this.rows = data.length;
+                this.cols = data[0].length;
+            }
+
+            static fromInputs() {
+                // Read 2x2 from inputs
+                const g00 = parseFloat(document.getElementById('g00').value);
+                const g01 = parseFloat(document.getElementById('g01').value);
+                const g10 = parseFloat(document.getElementById('g10').value);
+                const g11 = parseFloat(document.getElementById('g11').value);
+                return new Matrix([[g00, g01], [g10, g11]]);
+            }
+
+            multiply(B) {
+                if (this.cols !== B.rows) throw "Dimension error";
+                const result = Array(this.rows).fill(0).map(() => Array(B.cols).fill(0));
+                for (let i = 0; i < this.rows; i++) {
+                    for (let j = 0; j < B.cols; j++) {
+                        for (let k = 0; k < this.cols; k++) {
+                            result[i][j] += this.data[i][k] * B.data[k][j];
+                        }
+                    }
+                }
+                return new Matrix(result);
+            }
+
+            multiplyVec(v) {
+                // v is array [x, y]
+                return [
+                    this.data[0][0] * v[0] + this.data[0][1] * v[1],
+                    this.data[1][0] * v[0] + this.data[1][1] * v[1]
+                ];
+            }
+
+            inverse() {
+                if (this.rows !== 2 || this.cols !== 2) return null;
+                const [[a, b], [c, d]] = this.data;
+                const det = a * d - b * c;
+                if (Math.abs(det) < 1e-10) return null;
+                return new Matrix([
+                    [d / det, -b / det],
+                    [-c / det, a / det]
+                ]);
+            }
+
+            transpose() {
+                return new Matrix([
+                    [this.data[0][0], this.data[1][0]],
+                    [this.data[0][1], this.data[1][1]]
+                ]);
+            }
+
+            elementMult(B) {
+                return new Matrix([
+                    [this.data[0][0] * B.data[0][0], this.data[0][1] * B.data[0][1]],
+                    [this.data[1][0] * B.data[1][0], this.data[1][1] * B.data[1][1]]
+                ]);
+            }
+        }
+
+        /**
+         * Diagnostics
+         */
+        class Diagnostics {
+            static run() {
+                console.group("Diagnostics");
+                let allPass = true;
+
+                // Matrix Inv Test
+                const A = new Matrix([[4, 7], [2, 6]]);
+                const Ainv = A.inverse();
+                const I = A.multiply(Ainv);
+                // Check if I is close to identity
+                if (Math.abs(I.data[0][0] - 1) > 1e-9 || Math.abs(I.data[0][1]) > 1e-9) {
+                    console.error("FAIL: Matrix Inverse check");
+                    allPass = false;
+                } else {
+                    console.log("PASS: Matrix Inverse");
+                }
+
+                console.groupEnd();
+                return allPass;
+            }
+        }
+
+        /**
+         * Main App
+         */
+        const app = {
+            init: () => {
+                Diagnostics.run();
+                app.analyze(); // Initial analysis
+            },
+
+            analyze: () => {
+                const G = Matrix.fromInputs();
+                const Ginv = G.inverse();
+                const status = document.getElementById('statusRGA');
+
+                if (!Ginv) {
+                    status.className = 'status show error';
+                    status.textContent = 'Singular Matrix (Det ≈ 0). Cannot control.';
+                    return;
+                }
+
+                // RGA = G .* (G^-1)^T
+                const RGA = G.elementMult(Ginv.transpose());
+
+                // Display
+                document.getElementById('rga00').textContent = RGA.data[0][0].toFixed(2);
+                document.getElementById('rga01').textContent = RGA.data[0][1].toFixed(2);
+                document.getElementById('rga10').textContent = RGA.data[1][0].toFixed(2);
+                document.getElementById('rga11').textContent = RGA.data[1][1].toFixed(2);
+
+                // Pairing logic
+                const lambda = RGA.data[0][0];
+                const statusEl = document.getElementById('pairingRec');
+                const indexEl = document.getElementById('interIndex');
+
+                let recText = "";
+                if (lambda > 0.8 || lambda < -0.8) {
+                    recText = "Diagonal Pairing (1-1, 2-2) Recommended";
+                    statusEl.style.color = "var(--success)";
+                } else if (Math.abs(lambda) < 0.2) {
+                    recText = "Off-Diagonal Pairing (1-2, 2-1) Recommended";
+                    statusEl.style.color = "var(--warning)";
+                } else {
+                    recText = "Strong Interaction - Decoupling Required";
+                    statusEl.style.color = "var(--error)";
+                }
+                statusEl.textContent = recText;
+                indexEl.textContent = Math.abs(1 - lambda).toFixed(2);
+
+                status.className = 'status show success';
+                status.textContent = 'RGA Analysis updated.';
+            },
+
+            simulate: () => {
+                // Parameters
+                const G = Matrix.fromInputs();
+                if (!G.inverse()) return alert("Singular system!");
+
+                const tau = parseFloat(document.getElementById('tau').value);
+                const sp1_val = parseFloat(document.getElementById('sp1').value);
+                const sp2_val = parseFloat(document.getElementById('sp2').value);
+                const strategy = document.getElementById('strategy').value;
+                const useDecoupler = strategy === 'decoupled';
+
+                // Controller Gains (Heuristic: IMC-based tuning approx)
+                // Ideally we calculate based on new diagonals, but keeping simple for demo
+                const kp = 1.0;
+                const ki = 0.5;
+
+                // Decoupler D(s) = G^-1(0) if static
+                // u = D * v. If we want decoupled: y = G * D * v = I * v.
+                // So D = G^-1.
+                const D = G.inverse();
+
+                // Sim State
+                // Model: dx/dt = A x + B u
+                // y = C x
+                // For simple lag: y_dot = (Gu - y)/tau is not quite correct for MIMO if full state space.
+                // We use State Space form for 2x2 FOPDT: x_dot = A x + B u
+                // A = -I/tau, B = G/tau, C = I
+                // x_dot = -x/tau + (G/tau)u
+
+                let x = [0, 0];
+                let integral = [0, 0];
+
+                const dt = 0.05;
+                const T = 80;
+                const steps = Math.ceil(T / dt);
+
+                const history = { t: [], y1: [], y2: [], sp1: [], sp2: [] };
+
+                for (let i = 0; i < steps; i++) {
+                    const t = i * dt;
+                    const sp1 = t > 1 ? sp1_val : 0;
+                    const sp2 = t > 10 ? sp2_val : 0; // step 2 later
+
+                    // Measure
+                    const y1 = x[0];
+                    const y2 = x[1];
+
+                    // PID (PI)
+                    const e1 = sp1 - y1;
+                    const e2 = sp2 - y2;
+
+                    integral[0] += e1 * dt;
+                    integral[1] += e2 * dt;
+
+                    let v1 = kp * e1 + ki * integral[0];
+                    let v2 = kp * e2 + ki * integral[1];
+
+                    // Decoupling
+                    let u1, u2;
+                    if (useDecoupler) {
+                        // u = D * v
+                        // D is simply G_inv for static decoupling to unity
+                        // Wait, if G^-1 is used, then G*u = G*G^-1*v = v.
+                        // So the plant seen by controller is I.
+                        const u = D.multiplyVec([v1, v2]);
+                        u1 = u[0]; u2 = u[1];
+                    } else {
+                        u1 = v1; u2 = v2;
+                    }
+
+                    // Plant Dynamics
+                    // x_dot = (G*u - x) / tau
+                    const Gu = G.multiplyVec([u1, u2]);
+                    const dx1 = (Gu[0] - x[0]) / tau;
+                    const dx2 = (Gu[1] - x[1]) / tau;
+
+                    x[0] += dx1 * dt;
+                    x[1] += dx2 * dt;
+
+                    history.t.push(t);
+                    history.y1.push(x[0]);
+                    history.y2.push(x[1]);
+                    history.sp1.push(sp1);
+                    history.sp2.push(sp2);
+                }
+
+                app.drawChart('chartY1', history.t, history.y1, history.sp1);
+                app.drawChart('chartY2', history.t, history.y2, history.sp2);
+                app.calcMetrics(history);
+            },
+
+            drawChart: (id, t, y, sp) => {
+                const cvs = document.getElementById(id);
+                const w = cvs.width = cvs.parentElement.clientWidth;
+                const h = cvs.height = cvs.parentElement.clientHeight;
+                const ctx = cvs.getContext('2d');
+
+                ctx.clearRect(0, 0, w, h);
+
+                const pad = 30;
+                const GW = w - pad * 2;
+                const GH = h - pad * 2;
+
+                const maxVal = Math.max(Math.max(...y), Math.max(...sp)) * 1.2;
+                const minVal = Math.min(Math.min(...y), 0) - 0.2;
+                const range = maxVal - minVal || 1;
+                const maxT = t[t.length - 1];
+
+                const SX = v => pad + (v / maxT) * GW;
+                const SY = v => h - pad - ((v - minVal) / range) * GH;
+
+                // Grid
+                ctx.strokeStyle = '#f8fafc';
+                ctx.beginPath();
+                for (let i = 0; i <= 5; i++) {
+                    const yy = h - pad - (i / 5) * GH;
+                    ctx.moveTo(pad, yy); ctx.lineTo(w - pad, yy);
+                }
+                ctx.stroke();
+
+                // SP
+                ctx.strokeStyle = '#94a3b8';
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                t.forEach((tv, i) => {
+                    const xx = SX(tv); const yy = SY(sp[i]);
+                    if (i == 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Y
+                ctx.strokeStyle = '#0f766e';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                t.forEach((tv, i) => {
+                    const xx = SX(tv); const yy = SY(y[i]);
+                    if (i == 0) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy);
+                });
+                ctx.stroke();
+            },
+
+            calcMetrics: (data) => {
+                // IAE
+                const iae1 = data.y1.reduce((sum, v, i) => sum + Math.abs(data.sp1[i] - v), 0) * 0.05;
+                const iae2 = data.y2.reduce((sum, v, i) => sum + Math.abs(data.sp2[i] - v), 0) * 0.05;
+
+                document.getElementById('iae1').textContent = iae1.toFixed(2);
+                document.getElementById('iae2').textContent = iae2.toFixed(2);
+
+                // Overshoot approx (simple max deviation above SP for positive steps)
+                const calcOS = (y, sp) => {
+                    const max = Math.max(...y);
+                    const target = Math.max(...sp);
+                    if (target <= 1e-3) return 0;
+                    return Math.max(0, ((max - target) / target) * 100);
+                };
+
+                document.getElementById('os1').textContent = calcOS(data.y1, data.sp1).toFixed(1) + '%';
+                document.getElementById('os2').textContent = calcOS(data.y2, data.sp2).toFixed(1) + '%';
+            }
+        };
+
+        window.onload = app.init;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inverted Pendulum | Control Engineering</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --surface: #f0fdfa;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        @media(max-width: 1100px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--surface);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #115e59;
+        }
+
+        .btn-sec {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            margin-top: 10px;
+        }
+
+        .btn-sec:hover {
+            background: var(--surface);
+        }
+
+        .anim-container {
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .gains-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .gain-val {
+            color: var(--primary);
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .metric-box {
+            text-align: center;
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .m-val {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .m-lbl {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Inverted Pendulum Control</h1>
+            <p class="subtitle">Linear Quadratic Regulator (LQR) on Cart-Pole System</p>
+            <p style="margin-top: 10px;"><a href="LQR-Guide.md"
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;">📖 Read the Beginner's
+                    Guide</a></p>
+        </header>
+
+        <div class="layout-grid">
+            <!-- Controls -->
+            <div>
+                <div class="card">
+                    <div class="card-header">Physical Parameters</div>
+                    <div class="form-group">
+                        <label>Cart Mass \( M \) (kg)</label>
+                        <input type="number" id="M" value="1.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Pendulum Mass \( m \) (kg)</label>
+                        <input type="number" id="m" value="0.1" step="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label>Pendulum Length \( l \) (m)</label>
+                        <input type="number" id="l" value="1.0" step="0.1">
+                    </div>
+
+                    <div class="card-header" style="margin-top: 24px;">LQR Tuning</div>
+                    <div class="form-group">
+                        <label>State Cost \( Q_{pos} \) (x)</label>
+                        <input type="number" id="Qx" value="1.0">
+                    </div>
+                    <div class="form-group">
+                        <label>State Cost \( Q_{angle} \) (θ)</label>
+                        <input type="number" id="Qtheta" value="10.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Control Cost \( R \)</label>
+                        <input type="number" id="R" value="0.1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Initial Angle (deg)</label>
+                        <input type="number" id="initTheta" value="15">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="app.updateAndRun()">Re-Calculate LQR & Reset</button>
+                    <div id="statusBox" class="status"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Computed Feedback Gains</div>
+                    <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">
+                        \( u = -K \mathbf{x} \) where \( \mathbf{x} = [x, \dot{x}, \theta, \dot{\theta}]^T \)
+                    </div>
+                    <div class="gains-display">
+                        <div>\( K_x \): <span id="kx" class="gain-val">-</span></div>
+                        <div>\( K_{\dot{x}} \): <span id="kdx" class="gain-val">-</span></div>
+                        <div>\( K_\theta \): <span id="kth" class="gain-val">-</span></div>
+                        <div>\( K_{\dot{\theta}} \): <span id="kdth" class="gain-val">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation -->
+            <div class="card">
+                <div class="card-header">Real-Time Simulation</div>
+                <div class="anim-container">
+                    <canvas id="simCanvas"></canvas>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric-box">
+                        <div class="m-val" id="dispTheta">0°</div>
+                        <div class="m-lbl">Angle</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="m-val" id="dispX">0m</div>
+                        <div class="m-lbl">Position</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="m-val" id="dispU">0N</div>
+                        <div class="m-lbl">Force</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="m-val" id="dispTime">0s</div>
+                        <div class="m-lbl">Time</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-sec" onclick="app.perturb()">Add Disturbance (+5N impulse)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Simple Linear Algebra for LQR Solver
+         */
+        const LA = {
+            zeros: (r, c) => Array(r).fill(0).map(() => Array(c).fill(0)),
+            eye: (n) => Array(n).fill(0).map((_, i) => Array(n).fill(0).map((_, j) => i === j ? 1 : 0)),
+
+            add: (A, B) => A.map((row, i) => row.map((val, j) => val + B[i][j])),
+            sub: (A, B) => A.map((row, i) => row.map((val, j) => val - B[i][j])),
+
+            mul: (A, B) => {
+                const r1 = A.length, c1 = A[0].length, r2 = B.length, c2 = B[0].length;
+                if (c1 !== r2) throw "Dim error";
+                const res = LA.zeros(r1, c2);
+                for (let i = 0; i < r1; i++)
+                    for (let j = 0; j < c2; j++)
+                        for (let k = 0; k < c1; k++)
+                            res[i][j] += A[i][k] * B[k][j];
+                return res;
+            },
+
+            mulS: (A, s) => A.map(row => row.map(v => v * s)), // Scalar mul
+
+            transpose: (A) => A[0].map((_, i) => A.map(row => row[i])),
+
+            inv2x2: (m) => {
+                // Only need 1x1 inverse implies R + B'PB is scalar? 
+                // B is 4x1, P is 4x4. B'PB is 1x1.
+                // Yes, single input system.
+                // But let's support general scalar inverse just in case.
+                return [[1 / m[0][0]]];
+            }
+        };
+
+        /**
+         * LQR Solver
+         */
+        class LQRSolver {
+            static solve(A, B, Q, R) {
+                // Discrete Time LQR Solver via Iteration
+                // First discretize continuous A, B to Ad, Bd
+                // x_dot = Ax + Bu  =>  x[k+1] = (I + A*dt)x[k] + (B*dt)u[k]
+                // Approx Euler Discretization for Solver (needs small dt for accuracy)
+                const dt = 0.01;
+                const n = 4;
+
+                const Ad = LA.add(LA.eye(n), LA.mulS(A, dt));
+                const Bd = LA.mulS(B, dt);
+
+                // Solve Riccati Equation: P = A'PA - A'PB(R + B'PB)^-1 B'PA + Q
+                // Iterate P
+                let P = Q; // Initialize P with Q
+                const maxIter = 1000;
+                const tol = 1e-4;
+
+                for (let i = 0; i < maxIter; i++) {
+                    const Pd = P;
+
+                    // Term1 = Ad' * P * Ad
+                    const T1 = LA.mul(LA.transpose(Ad), LA.mul(P, Ad));
+
+                    // Term2 = (R + Bd' P Bd)^-1
+                    const BdT = LA.transpose(Bd);
+                    const R_plus_BPB = LA.add(R, LA.mul(BdT, LA.mul(P, Bd)));
+                    const InvTerm = LA.inv2x2(R_plus_BPB);
+
+                    // Term3 = Ad' P Bd
+                    const T3 = LA.mul(LA.transpose(Ad), LA.mul(P, Bd));
+
+                    // Full second part: T3 * InvTerm * T3'
+                    const T2_full = LA.mul(T3, LA.mul(InvTerm, LA.transpose(T3)));
+
+                    const P_new = LA.add(LA.sub(T1, T2_full), Q); // Q is added each step? Yes for discrete algebraic RE iteration P_k+1 = ... + Q
+
+                    // Check convergence
+                    let diff = 0;
+                    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) diff += Math.abs(P_new[r][c] - P[r][c]);
+
+                    P = P_new;
+                    if (diff < tol) break;
+                }
+
+                // Compute K = (R + Bd' P Bd)^-1 Bd' P Ad
+                // Note: For Feedback u = -Kx
+                const BdT = LA.transpose(Bd);
+                const R_plus_BPB = LA.add(R, LA.mul(BdT, LA.mul(P, Bd)));
+                const Inv = LA.inv2x2(R_plus_BPB);
+                const BPA = LA.mul(BdT, LA.mul(P, Ad));
+
+                const K = LA.mul(Inv, BPA);
+                return K[0]; // Return the first row (vector) as it is single input
+            }
+        }
+
+        /**
+         * Diagnostics
+         */
+        class Diagnostics {
+            static run() {
+                console.group("Diagnostics");
+                // Test LQR solver on scalar system x_dot = -x + u, optimize x^2 + u^2
+                // A=[-1], B=[1], Q=[1], R=[1]
+                // Discretize: Ad = 0.99, Bd = 0.01
+                // Expected K > 0 (stabilizing)
+                try {
+                    const K = LQRSolver.solve([[-1]], [[1]], [[1]], [[1]]);
+                    console.log("Scalar LQR Test K:", K);
+                    if (K.length !== 1 || isNaN(K[0])) throw "LQR Solver Failed";
+                    console.log("PASS: LQR Solver structural check");
+                } catch (e) {
+                    console.error(e);
+                }
+                console.groupEnd();
+            }
+        }
+
+        /**
+         * Main App
+         */
+        const app = {
+            running: false,
+            state: [0, 0, 0, 0], // x, x_dot, th, th_dot
+            K: [0, 0, 0, 0],
+
+            init: () => {
+                Diagnostics.run();
+                app.updateAndRun();
+                app.loop();
+            },
+
+            updateAndRun: () => {
+                // Read Params
+                const M = parseFloat(document.getElementById('M').value);
+                const m = parseFloat(document.getElementById('m').value);
+                const l = parseFloat(document.getElementById('l').value);
+
+                const g = 9.81;
+
+                // Define A, B matrices for linearized system (upright)
+                // Denominator
+                const den = M + m; // Simplification assuming I=0 for point mass m
+                // Actually, with point mass m at length l:
+                // System matrices (Standard Cart-Pole):
+                // x_ddot = (u + m*g*theta*(m/M)) ... no let's use exact linearized form
+                // A = [ [0, 1, 0, 0], [0, 0, -m*g/M, 0], [0, 0, 0, 1], [0, 0, (M+m)*g/(M*l), 0] ] -- APPROX?
+                // Let's use the rigorous one:
+                // A23 = -mg/M (sign depends on definition of theta... usually small angle approx mg*theta is force... )
+                // Actually, let's use the standard result:
+                // A = [[0,1,0,0], [0,0, -m*g/M, 0], [0,0,0,1], [0,0, (M+m)*g/(M*l), 0]] is common approx for M >> m. 
+                // Better:
+                // p = M+m, J = m*l*l
+                // But for point mass:
+                // x_ddot = ... theta_ddot = ...
+                // A = 
+                // [0, 1, 0, 0]
+                // [0, 0, -m*g/M, 0] // Frictionless
+                // [0, 0, 0, 1] 
+                // [0, 0, (M+m)*g/(M*l), 0]
+
+                // Wait, verifying signs. 
+                // If theta>0 (right), gravity pulls it further right (unstable). So acceleration prop to theta should be positive.
+                // So A(4,3) should be positive? Yes (M+m)g/Ml > 0.
+                // A(2,3) = Force on cart from pendulum? -mg*theta/M (pushes cart left?) Yes.
+
+                const A = [
+                    [0, 1, 0, 0],
+                    [0, 0, -m * g / M, 0],
+                    [0, 0, 0, 1],
+                    [0, 0, (M + m) * g / (M * l), 0]
+                ];
+
+                const B = [
+                    [0],
+                    [1 / M],
+                    [0],
+                    [-1 / (M * l)]
+                ];
+
+                // Costs
+                const qx = parseFloat(document.getElementById('Qx').value);
+                const qt = parseFloat(document.getElementById('Qtheta').value);
+                const r_val = parseFloat(document.getElementById('R').value);
+
+                const Q = LA.zeros(4, 4);
+                Q[0][0] = qx;
+                Q[2][2] = qt;
+                // Small penalties on velocities to dampen
+                Q[1][1] = 0.01;
+                Q[3][3] = 0.01;
+
+                const R = [[r_val]];
+
+                // Solve LQR
+                const K_computed = LQRSolver.solve(A, B, Q, R);
+                app.K = K_computed;
+
+                // Updates UI
+                document.getElementById('kx').textContent = K_computed[0].toFixed(2);
+                document.getElementById('kdx').textContent = K_computed[1].toFixed(2);
+                document.getElementById('kth').textContent = K_computed[2].toFixed(2);
+                document.getElementById('kdth').textContent = K_computed[3].toFixed(2);
+
+                document.getElementById('statusBox').className = "status show success";
+                document.getElementById('statusBox').textContent = "LQR Gains Updated Successfully";
+
+                // Reset State
+                const initDeg = parseFloat(document.getElementById('initTheta').value);
+                app.state = [0, 0, initDeg * Math.PI / 180, 0];
+                app.time = 0;
+            },
+
+            perturb: () => {
+                // Add impulse to x_dot
+                app.state[1] += 2.0;
+            },
+
+            loop: () => {
+                requestAnimationFrame(app.loop);
+
+                const dt = 0.02; // 50Hz sim
+
+                // Physics Step (Nonlinear Dynamics for accuracy)
+                const M = parseFloat(document.getElementById('M').value);
+                const m = parseFloat(document.getElementById('m').value);
+                const l = parseFloat(document.getElementById('l').value);
+                const g = 9.81;
+
+                let [x, dx, th, dth] = app.state;
+
+                // Control u = -K*x
+                // Note: x state for control is relative to setpoint (0,0,0,0)
+                let u = -(app.K[0] * x + app.K[1] * dx + app.K[2] * th + app.K[3] * dth);
+
+                // Clamp force
+                u = Math.max(-50, Math.min(50, u));
+
+                // Dynamics
+                const s = Math.sin(th);
+                const c = Math.cos(th);
+
+                // Equations of motion for Cart-Pole
+                // (M+m)x_dd + m*l*th_dd*c - m*l*th_d^2*s = u
+                // m*l*x_dd*c + m*l^2*th_dd - m*g*l*s = 0 
+
+                // Solve for accelerations
+                // th_dd = (g*s - c*x_dd) / l
+                // sub into 1: (M+m)x_dd + m*l/l(g*s - c*x_dd)*c - ... = u
+                // (M+m)x_dd + m*g*s*c - m*c^2*x_dd - m*l*th_d^2*s = u
+                // x_dd (M + m - m*c^2) = u + m*l*th_d^2*s - m*g*s*c
+
+                const massTerm = M + m - m * c * c;
+                const x_dd = (u + m * l * dth * dth * s - m * g * s * c) / massTerm;
+                const th_dd = (g * s - c * x_dd) / l;
+
+                // Euler Integration
+                dx += x_dd * dt;
+                x += dx * dt;
+
+                dth += th_dd * dt;
+                th += dth * dt;
+
+                app.state = [x, dx, th, dth];
+                app.time += dt;
+
+                // Draw
+                app.draw(x, th, u);
+
+                // Metrics
+                document.getElementById('dispTheta').textContent = (th * 180 / Math.PI).toFixed(1) + "°";
+                document.getElementById('dispX').textContent = x.toFixed(2) + "m";
+                document.getElementById('dispU').textContent = u.toFixed(1) + "N";
+                document.getElementById('dispTime').textContent = app.time.toFixed(1) + "s";
+            },
+
+            draw: (x, th, u) => {
+                const cvs = document.getElementById('simCanvas');
+                const ctx = cvs.getContext('2d');
+                const w = cvs.width = cvs.clientWidth;
+                const h = cvs.height = cvs.clientHeight;
+
+                ctx.clearRect(0, 0, w, h);
+
+                // Scale
+                const scale = 50; // pixels per meter
+                const cx = w / 2;
+                const cy = h / 2 + 100;
+
+                const cartW = 80;
+                const cartH = 40;
+
+                const bx = cx + x * scale;
+                const by = cy;
+
+                // Rail
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(0, cy + cartH / 2);
+                ctx.lineTo(w, cy + cartH / 2);
+                ctx.stroke();
+
+                // Cart
+                ctx.fillStyle = '#0f766e';
+                ctx.fillRect(bx - cartW / 2, by - cartH / 2, cartW, cartH);
+
+                // Pendulum
+                const l_vis = 150; // Visual length
+                const px = bx + l_vis * Math.sin(th);
+                const py = by - l_vis * Math.cos(th);
+
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(bx, by);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+
+                // Bob
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(px, py, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Force Arrow
+                if (Math.abs(u) > 1) {
+                    ctx.strokeStyle = '#f59e0b';
+                    ctx.lineWidth = 3;
+                    const dir = Math.sign(u);
+                    const len = Math.min(Math.abs(u) * 2, 60);
+                    const as = bx - (dir * cartW / 2);
+
+                    ctx.beginPath();
+                    ctx.moveTo(as, by);
+                    ctx.lineTo(as + dir * len, by);
+                    ctx.stroke();
+                }
+            }
+        };
+
+        window.onload = app.init;
+    </script>
+</body>
+
+</html>

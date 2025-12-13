@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Path Tracking | Project 5</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --dark: #0f172a;
+            --surf: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--surf);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+
+        .header {
+            grid-column: 1/-1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .kpi-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .kpi-val {
+            font-weight: 700;
+            color: var(--primary);
+            font-family: monospace;
+        }
+
+        /* Vis */
+        canvas#simCanvas {
+            width: 100%;
+            height: 500px;
+            background: #1e293b;
+            border-radius: 8px;
+            cursor: crosshair;
+        }
+
+        /* Charts */
+        .chart-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            height: 180px;
+        }
+
+        .mini-chart {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            position: relative;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Autonomous Path Tracking</h1>
+                <p style="margin: 5px 0 0; color: #64748b;">Stanley Controller vs Model Predictive Control (MPC)</p>
+            </div>
+            <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;">📖
+                Read Guide</a>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="card">
+            <div class="control-group">
+                <label>Controller Architecture</label>
+                <select id="ctrlType" onchange="sim.reset()">
+                    <option value="stanley">Stanley (Geometric)</option>
+                    <option value="mpc">MPC (Sampling-based)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Simulation Speed</label>
+                <input type="range" id="speed" min="5" max="30" value="15"
+                    oninput="document.getElementById('spdVal').innerText=this.value+' m/s'">
+                <div style="text-align: right; font-size: 0.8em; color:#64748b;" id="spdVal">15 m/s</div>
+            </div>
+
+            <div id="stanleyParams">
+                <label>Gain (k)</label>
+                <input type="number" id="st_k" value="2.5" step="0.1">
+            </div>
+
+            <div id="mpcParams" style="display:none">
+                <label>Prediction Horizon (N)</label>
+                <input type="number" id="mpc_N" value="25">
+                <label>Steering Cost (R)</label>
+                <input type="number" id="mpc_R" value="0.5" step="0.1">
+            </div>
+
+            <div class="kpi-row">
+                <span>CTE:</span> <span id="cte" class="kpi-val">0.00 m</span>
+            </div>
+            <div class="kpi-row">
+                <span>Heading Err:</span> <span id="he" class="kpi-val">0.00 rad</span>
+            </div>
+
+            <button class="btn" onclick="sim.reset()">Simulate New Track</button>
+            <div style="margin-top: 20px; font-size: 0.8em; font-style: italic; color: #94a3b8;">
+                Click on canvas to pause/resume.
+            </div>
+        </div>
+
+        <!-- Main View -->
+        <div>
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <canvas id="simCanvas"></canvas>
+            </div>
+
+            <div class="chart-panel">
+                <div class="mini-chart">
+                    <canvas id="chartCTE"></canvas>
+                </div>
+                <div class="mini-chart">
+                    <canvas id="chartSteer"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Utils ---
+        const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
+
+        // --- Charting ---
+        const MAX_POINTS = 100;
+        const chartConfig = (label, color, min, max) => ({
+            type: 'line',
+            data: { labels: Array(MAX_POINTS).fill(''), datasets: [{ label, data: Array(MAX_POINTS).fill(null), borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.4 }] },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: { min, max, grid: { color: '#f1f5f9' } },
+                    x: { display: false }
+                },
+                plugins: { legend: { display: true, labels: { font: { size: 10 } } } }
+            }
+        });
+
+        let chartCTE, chartSteer;
+
+        // --- Sim Engine ---
+        class Track {
+            constructor() {
+                this.generate();
+            }
+            generate() {
+                this.points = [];
+                // Procedural Track: Perlin-ish noise
+                let y = 0;
+                let dy = 0;
+                for (let x = 0; x < 500; x += 2) {
+                    // Curvature changes slowly
+                    dy += (Math.random() - 0.5) * 0.5;
+                    dy = Math.max(-2, Math.min(2, dy)); // Clamp derivative
+                    y += dy;
+
+                    // Add sine wave component for regularity
+                    const sine = 40 * Math.sin(x * 0.02);
+
+                    this.points.push({ x: x, y: y + sine });
+                }
+            }
+            getNearest(pos) {
+                let minD = Infinity;
+                let idx = 0;
+                // Optimization: Local search
+                for (let i = 0; i < this.points.length; i++) {
+                    const d = dist(pos, this.points[i]);
+                    if (d < minD) { minD = d; idx = i; }
+                }
+                return { idx, point: this.points[idx], dist: minD };
+            }
+        }
+
+        const sim = {
+            car: { x: 0, y: 0, yaw: 0, v: 15, L: 2.5 },
+            track: null,
+            paused: false,
+
+            init: () => {
+                // Init Charts
+                const ctxCTE = document.getElementById('chartCTE').getContext('2d');
+                chartCTE = new Chart(ctxCTE, chartConfig('Cross Track Error (m)', '#ef4444', -5, 5));
+
+                const ctxStr = document.getElementById('chartSteer').getContext('2d');
+                chartSteer = new Chart(ctxStr, chartConfig('Steering Angle (rad)', '#3b82f6', -1, 1));
+
+                // Canvas Click
+                document.getElementById('simCanvas').addEventListener('click', () => sim.paused = !sim.paused);
+
+                sim.reset();
+                sim.loop();
+            },
+
+            reset: () => {
+                sim.track = new Track();
+                sim.car.x = 0;
+                sim.car.y = 0;
+                sim.car.yaw = 0.5;
+
+                // Clear Charts
+                chartCTE.data.datasets[0].data.fill(null);
+                chartSteer.data.datasets[0].data.fill(null);
+
+                // UI
+                const type = document.getElementById('ctrlType').value;
+                document.getElementById('stanleyParams').style.display = type === 'stanley' ? 'block' : 'none';
+                document.getElementById('mpcParams').style.display = type === 'mpc' ? 'block' : 'none';
+            },
+
+            updateCharts: (cte, steer) => {
+                const addData = (chart, val) => {
+                    const data = chart.data.datasets[0].data;
+                    data.shift();
+                    data.push(val);
+                    chart.update(); // Note: Update every frame might be heavy, but fine for 60fps on modern machines
+                };
+                addData(chartCTE, cte);
+                addData(chartSteer, steer);
+            },
+
+            loop: () => {
+                requestAnimationFrame(sim.loop);
+                if (sim.paused) return;
+
+                const dt = 0.05;
+                const type = document.getElementById('ctrlType').value;
+                sim.car.v = parseFloat(document.getElementById('speed').value);
+
+                // Control
+                let steer = 0;
+                let debug = [];
+                const nearest = sim.track.getNearest(sim.car);
+
+                // Calculate CTE (signed)
+                const next = sim.track.points[Math.min(nearest.idx + 1, sim.track.points.length - 1)];
+                const pathYaw = Math.atan2(next.y - nearest.point.y, next.x - nearest.point.x);
+                const ry = sim.car.y - nearest.point.y;
+                const rx = sim.car.x - nearest.point.x;
+                // Sign: Cross product z
+                const cp = (next.x - nearest.point.x) * ry - (next.y - nearest.point.y) * rx;
+                const cte = Math.abs(nearest.dist) * (cp > 0 ? 1 : -1);
+
+                if (type === 'stanley') {
+                    // Stanley
+                    let yawErr = pathYaw - sim.car.yaw;
+                    while (yawErr > Math.PI) yawErr -= 2 * Math.PI;
+                    while (yawErr < -Math.PI) yawErr += 2 * Math.PI;
+
+                    const k = parseFloat(document.getElementById('st_k').value);
+                    const delta = Math.atan2(-k * cte, sim.car.v + 1);
+                    steer = yawErr + delta;
+                } else {
+                    // MPC (Sampling)
+                    const N = parseInt(document.getElementById('mpc_N').value);
+                    const R = parseFloat(document.getElementById('mpc_R').value);
+                    const samples = 40;
+                    let bestCost = Infinity;
+
+                    // Simple 0th order optimization (Constant Turn)
+                    for (let i = 0; i < samples; i++) {
+                        const s = -0.6 + (1.2 * i / samples);
+                        let tx = sim.car.x, ty = sim.car.y, tyaw = sim.car.yaw;
+                        let cost = 0;
+                        const trace = [];
+
+                        for (let t = 0; t < N; t++) {
+                            tx += sim.car.v * Math.cos(tyaw) * dt;
+                            ty += sim.car.v * Math.sin(tyaw) * dt;
+                            tyaw += (sim.car.v / sim.car.L) * Math.tan(s) * dt;
+                            trace.push({ x: tx, y: ty });
+
+                            // Distance cost
+                            const n = sim.track.getNearest({ x: tx, y: ty });
+                            cost += n.dist * n.dist;
+                        }
+                        // Input Cost
+                        cost += s * s * R * 10;
+
+                        if (cost < bestCost) {
+                            bestCost = cost;
+                            steer = s;
+                        }
+                        if (i % 3 === 0) debug.push({ path: trace, cost: cost });
+                    }
+                }
+
+                // Clamp
+                steer = Math.max(-0.6, Math.min(0.6, steer));
+
+                // Helper: Heading Err
+                let he = pathYaw - sim.car.yaw;
+                while (he > Math.PI) he -= 2 * Math.PI;
+                while (he < -Math.PI) he += 2 * Math.PI;
+
+                // Physics
+                sim.car.x += sim.car.v * Math.cos(sim.car.yaw) * dt;
+                sim.car.y += sim.car.v * Math.sin(sim.car.yaw) * dt;
+                sim.car.yaw += (sim.car.v / sim.car.L) * Math.tan(steer) * dt;
+
+                // UI Pushes
+                document.getElementById('cte').innerText = cte.toFixed(2) + " m";
+                document.getElementById('he').innerText = he.toFixed(2) + " rad";
+                sim.updateCharts(cte, steer);
+
+                // Reset Check
+                if (sim.car.x > sim.track.points[sim.track.points.length - 1].x) sim.reset();
+
+                // Draw
+                sim.draw(debug, steer);
+            },
+
+            draw: (debug, steer) => {
+                const cvs = document.getElementById('simCanvas');
+                const ctx = cvs.getContext('2d');
+                cvs.width = cvs.clientWidth;
+                cvs.height = cvs.clientHeight;
+
+                // Camera
+                const camX = sim.car.x * 10 - 200;
+                const camY = sim.car.y * 10 - 250;
+
+                ctx.save();
+                ctx.translate(-camX, -camY);
+                // Scale implies 10px = 1m
+                const SCALE = 10;
+
+                // 1. Draw Asphalt
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 8 * SCALE; // 8m wide road
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                sim.track.points.forEach((p, i) => {
+                    if (i === 0) ctx.moveTo(p.x * SCALE, p.y * SCALE);
+                    else ctx.lineTo(p.x * SCALE, p.y * SCALE);
+                });
+                ctx.stroke();
+
+                // 2. Centerline
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 0.2 * SCALE;
+                ctx.setLineDash([2 * SCALE, 2 * SCALE]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 3. MPC Debug
+                if (debug) {
+                    debug.forEach(d => {
+                        // Opacity based on cost (Lower cost = Brighter)
+                        // This is tricky, just fixed faint green
+                        ctx.strokeStyle = 'rgba(74, 222, 128, 0.1)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        d.path.forEach((p, i) => {
+                            if (i === 0) ctx.moveTo(p.x * SCALE, p.y * SCALE);
+                            else ctx.lineTo(p.x * SCALE, p.y * SCALE);
+                        });
+                        ctx.stroke();
+                    });
+                }
+
+                // 4. Car
+                ctx.translate(sim.car.x * SCALE, sim.car.y * SCALE);
+                ctx.rotate(sim.car.yaw);
+
+                // Body
+                ctx.fillStyle = '#3b82f6';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 10;
+                ctx.fillRect(-1.5 * SCALE, -0.8 * SCALE, 3 * SCALE, 1.6 * SCALE);
+                ctx.shadowBlur = 0;
+
+                // Wheels (Ackermann)
+                ctx.fillStyle = '#1e293b';
+                const wL = 0.6 * SCALE;
+                const wW = 0.3 * SCALE;
+
+                // Rear (Fixed)
+                ctx.fillRect(-1.5 * SCALE, -0.9 * SCALE, wL, wW); // RL
+                ctx.fillRect(-1.5 * SCALE, 0.6 * SCALE, wL, wW); // RR
+
+                // Front (Steered)
+                ctx.save();
+                ctx.translate(1.2 * SCALE, -0.9 * SCALE); // FL
+                ctx.rotate(steer);
+                ctx.fillRect(-wL / 2, -wW / 2, wL, wW);
+                ctx.restore();
+
+                ctx.save();
+                ctx.translate(1.2 * SCALE, 0.7 * SCALE); // FR
+                ctx.rotate(steer);
+                ctx.fillRect(-wL / 2, -wW / 2, wL, wW);
+                ctx.restore();
+
+                ctx.restore();
+            }
+        };
+
+        window.onload = sim.init;
+    </script>
+</body>
+
+</html>

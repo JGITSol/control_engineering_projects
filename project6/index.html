@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy MPC Manager | Project 6</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #059669;
+            --dark: #0f172a;
+            --surf: #f1f5f9;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--surf);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .header-title p {
+            margin: 4px 0 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Sidebar Stats */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-card {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .kpi-val {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        .kpi-val.neg {
+            color: #ef4444;
+        }
+
+        .control-panel button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #047857;
+        }
+
+        .btn-sec {
+            background: white;
+            color: var(--dark);
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        .btn-sec:hover {
+            background: #f1f5f9;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #334155;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-bar">
+        <div class="header-title">
+            <h1>Microgrid AI Manager</h1>
+            <p>Day-Ahead Optimization using Dynamic Programming (15-min Resolution)</p>
+        </div>
+        <div>
+            <a href="Energy-MPC-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;">📖
+                View Documentation</a>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="card">
+            <h3>Live Status</h3>
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-val" id="dispTime">00:00</div>
+                    <div class="kpi-label">Time</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-val" id="dispSoC">50%</div>
+                    <div class="kpi-label">Battery SoC</div>
+                </div>
+                <!-- Full Width KPI -->
+                <div class="kpi-card" style="grid-column: 1/-1;">
+                    <div class="kpi-val" id="dispProfit">+$0.00</div>
+                    <div class="kpi-label">Cumulative Profit</div>
+                </div>
+                <div class="kpi-card" style="grid-column: 1/-1;">
+                    <div class="kpi-val neg" id="dispCost">-</div>
+                    <div class="kpi-label">Current Grid Power</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="btn-primary" onclick="app.solve()">🚀 Run AI Optimizer</button>
+                <button class="btn-sec" onclick="app.reset()">↺ Reset Simulation</button>
+                <div id="status"
+                    style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #059669; min-height: 20px;">
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 0.85rem; color: #64748b; line-height: 1.5;">
+                <strong>System Specs:</strong><br>
+                • 100 kWh Battery Storage<br>
+                • 50 kW Max Charge Rate<br>
+                • 50 kW Wind Turbine<br>
+                • 96 Decision Steps (15m)
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="card">
+            <div class="chart-header">
+                <span>💸 Market & Forecast</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="marketChart"></canvas>
+            </div>
+
+            <div class="chart-header">
+                <span>🔋 Battery & Asset Schedule</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="powerChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- High Resolution Data Generation ---
+        const STEPS = 96; // 15 min intervals
+        const HOURS = 24;
+
+        // Generate continuous-ish data
+        const genProfile = (steps) => {
+            const wind = [];
+            const price = [];
+
+            for (let i = 0; i < steps; i++) {
+                const h = (i / steps) * 24;
+
+                // Wind: Peak at night, dip multiple times
+                let w = 20 + 20 * Math.sin(h * 0.5 + 1) + 10 * Math.cos(h * 1.5);
+                w = Math.max(0, w + (Math.random() - 0.5) * 5); // Noise
+                wind.push(w);
+
+                // Price: Duck curve (Morning peak 8am, Evening peak 7pm)
+                // Base 0.10
+                let p = 0.10;
+                // Morning peak
+                p += 0.10 * Math.exp(-Math.pow((h - 8) / 2, 2));
+                // Evening peak (Huge)
+                p += 0.35 * Math.exp(-Math.pow((h - 19) / 2.5, 2));
+                price.push(p);
+            }
+            return { wind, price };
+        };
+
+        const { wind: WIND_DATA, price: PRICE_DATA } = genProfile(STEPS);
+        const LABELS = Array(STEPS).fill(0).map((_, i) => {
+            const h = Math.floor(i / 4);
+            const m = (i % 4) * 15;
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        });
+
+        // --- Battery Model ---
+        const BAT_CAP = 100; // kWh
+        const P_MAX = 50; // kW
+        const DT = 0.25; // 15 min = 0.25 hours
+
+        // --- App Logic ---
+        const app = {
+            soc: 50,
+            simTime: 0,
+            profit: 0,
+            plan: new Array(STEPS).fill(0), // Power (+Chg, -Dis)
+            simInterval: null,
+            marketChart: null,
+            powerChart: null,
+
+            init: () => {
+                app.initCharts();
+                app.reset();
+            },
+
+            initCharts: () => {
+                // Market Chart
+                const ctx1 = document.getElementById('marketChart').getContext('2d');
+                app.marketChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: LABELS,
+                        datasets: [
+                            {
+                                label: 'Grid Price ($/kWh)',
+                                data: PRICE_DATA,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                yAxisID: 'y1',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Wind Power (kW)',
+                                data: WIND_DATA,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                yAxisID: 'y2',
+                                tension: 0.4,
+                                fill: true,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            y1: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Price ($)' } },
+                            y2: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Power (kW)' } },
+                            x: { ticks: { maxTicksLimit: 12 } }
+                        },
+                        plugins: { legend: { position: 'top' } }
+                    }
+                });
+
+                // Power Chart (Stacked)
+                const ctx2 = document.getElementById('powerChart').getContext('2d');
+                app.powerChart = new Chart(ctx2, {
+                    type: 'bar', // Mixed chart
+                    data: {
+                        labels: LABELS,
+                        datasets: [
+                            {
+                                type: 'line',
+                                label: 'SoC (%)',
+                                data: Array(STEPS).fill(50),
+                                borderColor: '#3b82f6',
+                                borderWidth: 2,
+                                yAxisID: 'y1',
+                                pointRadius: 0
+                            },
+                            {
+                                type: 'bar',
+                                label: 'Battery Action (kW)',
+                                data: Array(STEPS).fill(0),
+                                backgroundColor: (ctx) => {
+                                    const v = ctx.raw;
+                                    return v >= 0 ? '#10b981' : '#ef4444'; // Green Charge, Red Discharge
+                                },
+                                yAxisID: 'y2'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            y1: { min: 0, max: 100, title: { display: true, text: 'SoC (%)' } },
+                            y2: { position: 'right', title: { display: true, text: 'Power (kW)' } },
+                            x: { ticks: { maxTicksLimit: 12 } }
+                        }
+                    }
+                });
+            },
+
+            reset: () => {
+                if (app.simInterval) clearInterval(app.simInterval);
+                app.soc = 50;
+                app.profit = 0;
+                app.simTime = 0;
+                app.plan = new Array(STEPS).fill(0);
+
+                // Reset Charts
+                app.powerChart.data.datasets[1].data = app.plan;
+                app.powerChart.data.datasets[0].data = Array(STEPS).fill(50);
+                app.powerChart.update();
+
+                app.updateUI();
+                document.getElementById('status').innerText = "Ready to optimize.";
+            },
+
+            solve: () => {
+                document.getElementById('status').innerText = "Running DP Optimizer...";
+                // Allow UI to update before blocking
+                setTimeout(app.runDP, 50);
+            },
+
+            runDP: () => {
+                // High-Res DP
+                // State quantization: 0..100% in 2% steps (51 states)
+                const N_STATES = 51;
+                const scale = 100 / (N_STATES - 1);
+
+                // DP Arrays
+                // Best Profit to reach State S at Time T
+                // Note: Using flat arrays might be faster but 2D is easier to read
+                let dp = new Float32Array(N_STATES).fill(-Infinity);
+                const startIdx = Math.round(app.soc / scale);
+                dp[startIdx] = 0;
+
+                // Parent pointers to reconstruct: [Time][State] -> PrevState
+                const parents = new Int16Array(STEPS * N_STATES);
+
+                // Optimization Loop
+                for (let t = 0; t < STEPS - 1; t++) {
+                    const price = PRICE_DATA[t];
+                    // const wind = WIND_DATA[t];
+
+                    const next_dp = new Float32Array(N_STATES).fill(-Infinity);
+
+                    for (let s = 0; s < N_STATES; s++) {
+                        if (dp[s] === -Infinity) continue;
+
+                        // Possible Actions
+                        // Max Energy change in 15 mins: 50kW * 0.25h = 12.5 kWh
+                        // In %: 12.5 / 100 * 100 = 12.5%
+                        // In steps (approx 2%): +/- 6 steps
+
+                        const minDS = -6;
+                        const maxDS = 6;
+
+                        for (let ds = minDS; ds <= maxDS; ds++) {
+                            const ns = s + ds;
+                            if (ns < 0 || ns >= N_STATES) continue;
+
+                            // Check SoC Constraints (20%-90%)
+                            const soc = ns * scale;
+                            if (soc < 20 || soc > 90) continue;
+
+                            // Calculate Cost
+                            // Energy delta: dSoC * Cap
+                            // dSoC > 0 = Charge = Buy (if wind < charge needed)
+                            // Actually, Cost = NetGrid * Price
+                            // NetGrid = P_bat - P_wind
+                            // If P_bat is +30kW (Charge), and Wind is 10kW, NetGrid = +20 (Buy 20)
+
+                            // dSoC is in %, convert to kW
+                            // dE (kWh) = dSoC% * Cap / 100
+                            // Power (kW) = dE / 0.25h
+                            const dE = (ds * scale / 100) * BAT_CAP;
+                            const pBat = dE / DT;
+
+                            const netGrid = pBat - WIND_DATA[t];
+
+                            // Cost function (Minimize Cost = Maximize -Cost)
+                            const cost = netGrid * price * DT; // $ = kW * $ * h
+
+                            const val = dp[s] - cost;
+
+                            if (val > next_dp[ns]) {
+                                next_dp[ns] = val;
+                                parents[t * N_STATES + ns] = s;
+                            }
+                        }
+                    }
+                    dp = next_dp;
+                }
+
+                // Backtrack
+                // Find best end state
+                let bestS = -1;
+                let maxVal = -Infinity;
+                for (let s = 0; s < N_STATES; s++) {
+                    if (dp[s] > maxVal) {
+                        maxVal = dp[s];
+                        bestS = s;
+                    }
+                }
+
+                // Reconstruct Path
+                const socPath = new Array(STEPS);
+                let curr = bestS;
+                for (let t = STEPS - 1; t >= 0; t--) {
+                    socPath[t] = curr * scale;
+                    // prev
+                    if (t > 0) curr = parents[(t - 1) * N_STATES + curr];
+                }
+
+                // Calculate Plan
+                for (let t = 0; t < STEPS - 1; t++) {
+                    const dSoC = socPath[t + 1] - socPath[t];
+                    const kw = (dSoC * BAT_CAP / 100) / DT;
+                    app.plan[t] = kw;
+                }
+                app.plan[STEPS - 1] = 0; // Last step
+
+                // Update Charts
+                app.powerChart.data.datasets[1].data = app.plan;
+                app.powerChart.data.datasets[0].data = socPath;
+                app.powerChart.update();
+
+                document.getElementById('status').innerText = "Optimization Complete. Playback Started.";
+
+                // Start Sim
+                app.startSimPlayback();
+            },
+
+            startSimPlayback: () => {
+                if (app.simInterval) clearInterval(app.simInterval);
+                app.simTime = 0;
+
+                app.simInterval = setInterval(() => {
+                    const t = app.simTime;
+                    if (t >= STEPS) {
+                        clearInterval(app.simInterval);
+                        return;
+                    }
+
+                    // Calculate KPI
+                    const pBat = app.plan[t];
+                    const net = pBat - WIND_DATA[t];
+                    const cost = net * PRICE_DATA[t] * DT;
+
+                    app.profit -= cost;
+                    app.soc += (pBat * DT / BAT_CAP) * 100;
+
+                    // Highlighting
+                    // Chart.js can't easily scroll highlights without plugin, 
+                    // but we can update the title or KPIs
+
+                    app.updateUI(t);
+
+                    // Visualize Current Step on Chart?
+                    // Optional: Add a vertical annotation line if plugin existed.
+                    // For now, just KPIs.
+
+                    app.simTime++;
+                }, 50); // 50ms per 15min step = 4.8s for full day
+            },
+
+            updateUI: (stepIdx = 0) => {
+                document.getElementById('dispTime').innerText = LABELS[stepIdx];
+                document.getElementById('dispSoC').innerText = app.soc.toFixed(1) + "%";
+                const p = app.profit;
+                document.getElementById('dispProfit').innerText = (p >= 0 ? "+$" : "-$") + Math.abs(p).toFixed(2);
+
+                const net = app.plan[stepIdx] - WIND_DATA[stepIdx];
+                document.getElementById('dispCost').innerText = net.toFixed(1) + " kW";
+                document.getElementById('dispCost').className = net > 0 ? "kpi-val neg" : "kpi-val"; // Buy = Neg, Sell = Pos (Green?) No, usually Buy is Red flow.
+            }
+        };
+
+        app.init();
+    </script>
+</body>
+
+</html>
