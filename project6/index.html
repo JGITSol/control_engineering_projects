@@ -8,12 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
     <style>
         :root {
             --primary: #059669;
+            --primary-hover: #047857;
             --dark: #0f172a;
             --surf: #f1f5f9;
             --white: #ffffff;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --dark: #f1f5f9;
+            --surf: #0f172a;
+            --white: #1e293b;
+            --muted: #94a3b8;
+            --border: #334155;
+            --primary-hover: #34d399;
         }
 
         body {
@@ -30,7 +43,7 @@
             align-items: center;
             margin-bottom: 24px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid var(--border);
         }
 
         .header-title h1 {
@@ -41,7 +54,7 @@
 
         .header-title p {
             margin: 4px 0 0 0;
-            color: #64748b;
+            color: var(--muted);
             font-size: 0.9rem;
         }
 
@@ -57,7 +70,7 @@
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
         }
 
         /* Sidebar Stats */
@@ -69,11 +82,11 @@
         }
 
         .kpi-card {
-            background: #f8fafc;
+            background: var(--surf);
             padding: 12px;
             border-radius: 8px;
             text-align: center;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
         }
 
         .kpi-val {
@@ -85,7 +98,7 @@
         .kpi-label {
             font-size: 0.75rem;
             text-transform: uppercase;
-            color: #64748b;
+            color: var(--muted);
             letter-spacing: 0.05em;
             margin-top: 4px;
         }
@@ -112,17 +125,17 @@
         }
 
         .btn-primary:hover {
-            background: #047857;
+            background: var(--primary-hover);
         }
 
         .btn-sec {
-            background: white;
+            background: var(--white);
             color: var(--dark);
-            border: 1px solid #cbd5e1 !important;
+            border: 1px solid var(--border) !important;
         }
 
         .btn-sec:hover {
-            background: #f1f5f9;
+            background: var(--surf);
         }
 
         /* Charts */
@@ -138,12 +151,13 @@
             justify-content: space-between;
             margin-bottom: 12px;
             font-weight: 600;
-            color: #334155;
+            color: var(--dark);
         }
     </style>
 </head>
 
-<body>
+<body data-page-name="Microgrid AI Manager" data-guide="Energy-MPC-Guide.md" data-home="../index.html"
+    data-tags="Energy, MPC, Microgrid, Dynamic Programming, Battery">
 
     <div class="header-bar">
         <div class="header-title">
@@ -188,7 +202,7 @@
                 </div>
             </div>
 
-            <div style="margin-top: 20px; font-size: 0.85rem; color: #64748b; line-height: 1.5;">
+            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.5;">
                 <strong>System Specs:</strong><br>
                 • 100 kWh Battery Storage<br>
                 • 50 kW Max Charge Rate<br>
@@ -534,6 +548,7 @@
 
         app.init();
     </script>
+    <script src="../assets/site.js"></script>
 </body>
 
 </html>

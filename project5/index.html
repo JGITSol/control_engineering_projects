@@ -8,11 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
     <style>
         :root {
             --primary: #3b82f6;
             --dark: #0f172a;
             --surf: #f1f5f9;
+            --card: #ffffff;
+            --muted: #64748b;
+            --border: #cbd5e1;
+            --btn-hover: #2563eb;
+        }
+
+        [data-theme="dark"] {
+            --dark: #f1f5f9;
+            --surf: #0f172a;
+            --card: #1e293b;
+            --muted: #94a3b8;
+            --border: #334155;
+            --btn-hover: #60a5fa;
         }
 
         body {
@@ -45,7 +59,7 @@
         }
 
         .card {
-            background: white;
+            background: var(--card);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -67,9 +81,11 @@
         input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border);
             border-radius: 6px;
             margin-bottom: 10px;
+            background: var(--card);
+            color: var(--dark);
         }
 
         .btn {
@@ -85,7 +101,7 @@
         }
 
         .btn:hover {
-            background: #2563eb;
+            background: var(--btn-hover);
         }
 
         .kpi-row {
@@ -93,7 +109,7 @@
             justify-content: space-between;
             margin-bottom: 10px;
             padding: 10px;
-            background: #f8fafc;
+            background: var(--surf);
             border-radius: 8px;
         }
 
@@ -122,7 +138,7 @@
         }
 
         .mini-chart {
-            background: white;
+            background: var(--card);
             padding: 10px;
             border-radius: 8px;
             position: relative;
@@ -130,12 +146,13 @@
     </style>
 </head>
 
-<body>
+<body data-page-name="Autonomous Path Tracking" data-guide="Path-Tracking-Guide.md" data-home="../index.html"
+    data-tags="MPC, Stanley, Path Tracking, Autonomous Vehicles, Simulation">
     <div class="container">
         <div class="header">
             <div>
                 <h1>Autonomous Path Tracking</h1>
-                <p style="margin: 5px 0 0; color: #64748b;">Stanley Controller vs Model Predictive Control (MPC)</p>
+                <p style="margin: 5px 0 0; color: var(--muted);">Stanley Controller vs Model Predictive Control (MPC)</p>
             </div>
             <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;">📖
                 Read Guide</a>
@@ -155,7 +172,7 @@
                 <label>Simulation Speed</label>
                 <input type="range" id="speed" min="5" max="30" value="15"
                     oninput="document.getElementById('spdVal').innerText=this.value+' m/s'">
-                <div style="text-align: right; font-size: 0.8em; color:#64748b;" id="spdVal">15 m/s</div>
+                <div style="text-align: right; font-size: 0.8em; color: var(--muted);" id="spdVal">15 m/s</div>
             </div>
 
             <div id="stanleyParams">
@@ -484,6 +501,7 @@
 
         window.onload = sim.init;
     </script>
+    <script src="../assets/site.js"></script>
 </body>
 
 </html>

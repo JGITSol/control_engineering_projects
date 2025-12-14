@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Engineering Lab | Cloudflare Pages</title>
+    <meta name="description" content="Hands-on control engineering laboratory with interactive PID, MIMO, LQR, MPC, and robust control sandboxes. Ready for Cloudflare Pages hosting.">
+    <link rel="stylesheet" href="./assets/site.css">
+</head>
+
+<body data-page-name="Control Lab" data-home="./index.html" data-tags="Control, Simulation, MPC, LQR, PID, Robustness">
+    <div class="lab-shell">
+        <section class="hero lab-card soft">
+            <div>
+                <h1>Control Engineering Laboratory</h1>
+                <p>Six interactive sandboxes for modern control: tune PID loops, decouple MIMO plants, stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize microgrid energy flows. Optimized for mobile and desktop, deployable instantly on Cloudflare Pages.</p>
+                <div class="cta-row">
+                    <a class="pill primary" href="#labs">Launch a Lab</a>
+                    <a class="pill" href="https://developers.cloudflare.com/pages/" target="_blank" rel="noreferrer">Cloudflare Pages Guide</a>
+                </div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="chip">Responsive UX</span>
+                    <span class="chip">MathJax Ready</span>
+                    <span class="chip">Chart.js Visuals</span>
+                    <span class="chip">One-click Docs</span>
+                </div>
+            </div>
+            <div class="lab-card">
+                <h4 class="section-title" style="margin:0 0 10px;">Deployment checklist <span>Cloudflare Pages</span></h4>
+                <ul style="margin:0; padding-left: 18px; color: var(--text-light);">
+                    <li>Root index.html links every lab</li>
+                    <li>Shared assets in /assets for consistent styling</li>
+                    <li>Relative paths for offline + CDN hosting</li>
+                    <li>Mobile-first nav with Home/Back/Docs</li>
+                </ul>
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <a class="pill" href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer">Open Cloudflare Dashboard</a>
+                    <a class="pill ghost" href="https://developers.cloudflare.com/pages/get-started/" target="_blank" rel="noreferrer">Getting Started</a>
+                </div>
+            </div>
+        </section>
+
+        <div id="labs" class="section-title" style="margin-top: 12px;">
+            <h2 style="margin:0; font-size:1.1rem; color: var(--text-main);">Laboratory Collection</h2>
+            <span>Pick a sandbox to start experimenting</span>
+        </div>
+
+        <div class="lab-grid">
+            <div class="lab-card lab-tile">
+                <div class="chip">PID · Auto-tuning</div>
+                <h3>PID Auto-Tuner</h3>
+                <p>Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and plotting.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project1/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project1/PID-Tuning-Guide.md">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip">MIMO · Decoupling</div>
+                <h3>MIMO Decoupling</h3>
+                <p>Relative gain analysis, pairing recommendations, and decoupler simulation for 2×2 systems.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project2/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project2/MIMO-Guide.md">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip">LQR · Cart-Pole</div>
+                <h3>Inverted Pendulum</h3>
+                <p>Design LQR gains, visualize real-time cart-pole stabilization, and test disturbances.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project3/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project3/LQR-Guide.md">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip">H∞ · Robustness</div>
+                <h3>Robust Control</h3>
+                <p>Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID controllers.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project4/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project4/Robust-Control-Guide.md">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip">Autonomy · MPC</div>
+                <h3>Path Tracking</h3>
+                <p>Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini charts.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project5/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project5/Path-Tracking-Guide.md">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip">Energy · MPC</div>
+                <h3>Microgrid AI Manager</h3>
+                <p>Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project6/index.html">Open Lab</a>
+                    <a class="pill ghost" href="./project6/Energy-MPC-Guide.md">Docs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./assets/site.js"></script>
+</body>
+
+</html>

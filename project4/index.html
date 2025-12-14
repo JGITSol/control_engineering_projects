@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
     <style>
         :root {
             --primary: #0f766e;
@@ -24,6 +25,23 @@
             --warning: #f59e0b;
             --error: #ef4444;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --badge-bg: #e0e7ff;
+            --badge-text: #3730a3;
+        }
+
+        [data-theme="dark"] {
+            --primary: #2dd4bf;
+            --primary-light: #5eead4;
+            --primary-dark: #14b8a6;
+            --surface: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --badge-bg: var(--surface);
+            --badge-text: var(--text-main);
+
         }
 
         body {
@@ -119,6 +137,8 @@
             font-family: inherit;
             transition: border-color 0.15s;
             box-sizing: border-box;
+            background: var(--card-bg);
+            color: var(--text-main);
         }
 
         input[type="number"]:focus,
@@ -135,12 +155,14 @@
 
         input[type="range"] {
             flex-grow: 1;
+            background: transparent;
+            accent-color: var(--primary);
         }
 
         .uncertainty-badge {
             font-size: 0.75rem;
-            background: #e0e7ff;
-            color: #3730a3;
+            background: var(--badge-bg, #e0e7ff);
+            color: var(--badge-text, #3730a3);
             padding: 2px 6px;
             border-radius: 4px;
             margin-left: auto;
@@ -189,7 +211,7 @@
         }
 
         canvas {
-            background: #fff;
+            background: var(--card-bg);
             border-radius: 8px;
             border: 1px solid var(--border);
             width: 100%;
@@ -252,7 +274,8 @@
     </style>
 </head>
 
-<body>
+<body data-page-name="Robust H∞ Control" data-guide="Robust-Control-Guide.md" data-home="../index.html"
+    data-tags="H-infinity, Robustness, Monte Carlo, Bode, PID">
 
     <div class="container">
         <header>
@@ -363,7 +386,7 @@
                     </div>
                     <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
                         <span style="color: #0f766e; font-weight: bold;">— Nominal</span> &nbsp;&nbsp;
-                        <span style="color: #cbd5e1; font-weight: bold;">— Uncertain Instances (N=50)</span>
+                        <span style="color: var(--text-light); font-weight: bold;">— Uncertain Instances (N=50)</span>
                     </p>
                 </div>
 
@@ -396,8 +419,6 @@
     </div>
 
     <script>
-        // --- Physics Engine ---
-
         class PID {
             constructor(kp, ki, kd, dt, limit = 100) {
                 this.kp = kp; this.ki = ki; this.kd = kd;
@@ -757,6 +778,7 @@
         app.init();
 
     </script>
+    <script src="../assets/site.js"></script>
 </body>
 
 </html>

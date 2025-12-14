@@ -1,0 +1,14 @@
+# Local tooling
+/node_modules/
+
+# UI audit artifacts
+/audit/
+
+# Playwright
+/playwright-report/
+/test-results/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

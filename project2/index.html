@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
     <style>
         :root {
             --primary: #0f766e;
@@ -22,6 +23,17 @@
             --error: #ef4444;
             --success: #10b981;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] {
+            --primary: #2dd4bf;
+            --primary-light: #5eead4;
+            --surface: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
 
         body {
@@ -103,6 +115,8 @@
             border: 1px solid var(--border);
             border-radius: 6px;
             font-family: inherit;
+            background: var(--card-bg);
+            color: var(--text-main);
         }
 
         input:focus,
@@ -227,7 +241,8 @@
     </style>
 </head>
 
-<body>
+<body data-page-name="MIMO Decoupling" data-guide="MIMO-Guide.md" data-home="../index.html"
+    data-tags="MIMO, Decoupling, RGA, Pairing, Simulation">
 
     <div class="container">
         <header>
@@ -362,9 +377,10 @@
     </div>
 
     <script>
-        /**
-         * Linear Algebra Utility
-         */
+        const cssVar = (name, fallback = '') => {
+            const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+            return value || fallback;
+        };
         class Matrix {
             constructor(data) {
                 this.data = data;
@@ -617,7 +633,7 @@
                 const SY = v => h - pad - ((v - minVal) / range) * GH;
 
                 // Grid
-                ctx.strokeStyle = '#f8fafc';
+                ctx.strokeStyle = cssVar('--border', '#e2e8f0');
                 ctx.beginPath();
                 for (let i = 0; i <= 5; i++) {
                     const yy = h - pad - (i / 5) * GH;
@@ -670,6 +686,7 @@
 
         window.onload = app.init;
     </script>
+    <script src="../assets/site.js"></script>
 </body>
 
 </html>

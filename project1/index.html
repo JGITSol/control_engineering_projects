@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
     <style>
         :root {
             --primary: #0f766e;
@@ -24,6 +25,18 @@
             --warning: #f59e0b;
             --error: #ef4444;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        [data-theme="dark"] {
+            --primary: #2dd4bf;
+            --primary-light: #5eead4;
+            --primary-dark: #14b8a6;
+            --surface: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
 
         body {
@@ -111,6 +124,8 @@
             border-radius: 6px;
             font-size: 0.95rem;
             font-family: inherit;
+            background: var(--card-bg);
+            color: var(--text-main);
             transition: border-color 0.15s, box-shadow 0.15s;
         }
 
@@ -148,7 +163,7 @@
         }
 
         .btn-secondary {
-            background: white;
+            background: var(--card-bg);
             border: 1px solid var(--border);
             color: var(--text-main);
             margin-top: 12px;
@@ -198,7 +213,7 @@
         }
 
         canvas {
-            background: #fff;
+            background: var(--card-bg);
             border-radius: 8px;
             border: 1px solid var(--border);
         }
@@ -258,7 +273,8 @@
     </style>
 </head>
 
-<body>
+<body data-page-name="PID Auto-Tuner" data-guide="PID-Tuning-Guide.md" data-home="../index.html"
+    data-tags="PID, Auto-tuning, Ziegler-Nichols, Cohen-Coon, Simulation">
 
     <div class="container">
         <header>
@@ -408,9 +424,13 @@
 
     <script>
         /**
-/**
- * Core Physics and Control Classes
- */
+         * Core Physics and Control Classes
+         */
+
+        const cssVar = (name, fallback = '') => {
+            const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+            return value || fallback;
+        };
 
         class PIDController {
             /**
@@ -834,7 +854,7 @@
                 ctx.shadowBlur = 0;
 
                 // Labels
-                ctx.fillStyle = '#64748b';
+                ctx.fillStyle = cssVar('--text-light', '#64748b');
                 ctx.font = '12px Inter';
                 ctx.fillText('Amplitude', 10, 20);
                 ctx.fillText('Time (s)', w / 2, h - 10);
@@ -881,6 +901,7 @@
 
         window.onload = app.init;
     </script>
+    <script src="../assets/site.js"></script>
 </body>
 
 </html>
