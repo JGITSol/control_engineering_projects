@@ -279,10 +279,10 @@
 
     <div class="container">
         <header>
-            <h1>Robust Control Analysis</h1>
-            <p class="subtitle">Monte Carlo Verification of Control Stability under Parametric Uncertainty</p>
+            <h1 data-i18n="title">Robust Control Analysis</h1>
+            <p class="subtitle" data-i18n="subtitle">Monte Carlo Verification of Control Stability under Parametric Uncertainty</p>
             <p style="margin-top: 10px;"><a href="Robust-Control-Guide.md"
-                    style="color: var(--primary); text-decoration: none; font-weight: 500;">📖 Read the Beginner's
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖 Read the Beginner's
                     Guide</a></p>
         </header>
 
@@ -290,48 +290,48 @@
             <!-- Configuration Panel -->
             <div class="card">
                 <div class="card-header">
-                    Nominal Plant \( G_n(s) \)
+                    <span data-i18n-html="nominalPlant">Nominal Plant \( G_n(s) \)</span>
                 </div>
                 <div class="row">
                     <div class="form-group">
-                        <label>Gain \( K \)</label>
+                        <label data-i18n-html="gainK">Gain \( K \)</label>
                         <input type="number" id="nomK" value="2.0" step="0.1">
                     </div>
                     <div class="form-group">
-                        <label>Time Const \( \tau \)</label>
+                        <label data-i18n-html="timeConstTau">Time Const \( \tau \)</label>
                         <input type="number" id="nomTau" value="4.0" step="0.5">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Dead Time \( \theta \)</label>
+                    <label data-i18n-html="deadTimeTheta">Dead Time \( \theta \)</label>
                     <input type="number" id="nomTheta" value="1.0" step="0.1">
                 </div>
 
                 <div class="card-header" style="margin-top: 24px;">
-                    Uncertainty (\( \pm \% \))
+                    <span data-i18n-html="uncertaintyPct">Uncertainty (\( \pm \% \))</span>
                 </div>
                 <!-- Sliders for Uncertainty -->
                 <div class="form-group">
-                    <label style="display:flex;">Gain Uncertainty <span class="uncertainty-badge"
+                    <label style="display:flex;"><span data-i18n="gainUncertainty">Gain Uncertainty</span> <span class="uncertainty-badge"
                             id="dispUncK">20%</span></label>
                     <input type="range" id="uncK" min="0" max="100" value="20"
                         oninput="document.getElementById('dispUncK').innerText = this.value + '%'">
                 </div>
                 <div class="form-group">
-                    <label style="display:flex;">Tau Uncertainty <span class="uncertainty-badge"
+                    <label style="display:flex;"><span data-i18n="tauUncertainty">Tau Uncertainty</span> <span class="uncertainty-badge"
                             id="dispUncTau">15%</span></label>
                     <input type="range" id="uncTau" min="0" max="100" value="15"
                         oninput="document.getElementById('dispUncTau').innerText = this.value + '%'">
                 </div>
                 <div class="form-group">
-                    <label style="display:flex;">Delay Uncertainty <span class="uncertainty-badge"
+                    <label style="display:flex;"><span data-i18n="delayUncertainty">Delay Uncertainty</span> <span class="uncertainty-badge"
                             id="dispUncTheta">10%</span></label>
                     <input type="range" id="uncTheta" min="0" max="100" value="10"
                         oninput="document.getElementById('dispUncTheta').innerText = this.value + '%'">
                 </div>
 
                 <div class="card-header" style="margin-top: 24px;">
-                    Controller \( C(s) \)
+                    <span data-i18n-html="controllerCs">Controller \( C(s) \)</span>
                 </div>
                 <div class="row">
                     <div class="form-group">
@@ -349,11 +349,11 @@
                 </div>
 
                 <div style="margin-top: 24px;">
-                    <button class="btn btn-primary" onclick="app.runMonteCarlo()">Run Monte Carlo Analysis</button>
+                    <button class="btn btn-primary" onclick="app.runMonteCarlo()" data-i18n="runMonteCarlo">Run Monte Carlo Analysis</button>
                     <div class="row">
                         <button class="btn btn-secondary" style="border:1px solid #ddd;"
-                            onclick="app.setController('nominal')">Preset: Aggressive</button>
-                        <button class="btn btn-green" onclick="app.setController('robust')">Preset: Robust</button>
+                            onclick="app.setController('nominal')" data-i18n="presetAggressive">Preset: Aggressive</button>
+                        <button class="btn btn-green" onclick="app.setController('robust')" data-i18n="presetRobust">Preset: Robust</button>
                     </div>
                 </div>
             </div>
@@ -361,8 +361,8 @@
             <!-- Visualizations -->
             <div>
                 <div class="tab-group">
-                    <button class="tab active" onclick="app.switchTab('time')">Step Response</button>
-                    <button class="tab" onclick="app.switchTab('freq')">Bode Plot (Magnitude)</button>
+                    <button class="tab active" onclick="app.switchTab('time')" data-i18n="tabStepResponse">Step Response</button>
+                    <button class="tab" onclick="app.switchTab('freq')" data-i18n="tabBode">Bode Plot (Magnitude)</button>
                 </div>
 
                 <!-- Time Domain Card -->
@@ -370,23 +370,23 @@
                     <div class="metrics-grid">
                         <div class="metric-box">
                             <div class="metric-val" id="metStability">100%</div>
-                            <div class="metric-label">Stable Runs</div>
+                            <div class="metric-label" data-i18n="metricStableRuns">Stable Runs</div>
                         </div>
                         <div class="metric-box">
                             <div class="metric-val" id="metOvershoot">0%</div>
-                            <div class="metric-label">Avg Overshoot</div>
+                            <div class="metric-label" data-i18n="metricAvgOvershoot">Avg Overshoot</div>
                         </div>
                         <div class="metric-box">
                             <div class="metric-val" id="metWorstOvershoot">0%</div>
-                            <div class="metric-label">Worst Overshoot</div>
+                            <div class="metric-label" data-i18n="metricWorstOvershoot">Worst Overshoot</div>
                         </div>
                     </div>
                     <div class="chart-container">
                         <canvas id="timeChart"></canvas>
                     </div>
                     <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                        <span style="color: #0f766e; font-weight: bold;">— Nominal</span> &nbsp;&nbsp;
-                        <span style="color: var(--text-light); font-weight: bold;">— Uncertain Instances (N=50)</span>
+                        <span style="color: #0f766e; font-weight: bold;">— <span data-i18n="legendNominal">Nominal</span></span> &nbsp;&nbsp;
+                        <span style="color: var(--text-light); font-weight: bold;">— <span data-i18n="legendUncertainInstances">Uncertain Instances (N=50)</span></span>
                     </p>
                 </div>
 
@@ -395,28 +395,256 @@
                     <div class="metrics-grid">
                         <div class="metric-box">
                             <div class="metric-val" id="metGm">-</div>
-                            <div class="metric-label">Min Gain Margin</div>
+                            <div class="metric-label" data-i18n="metricMinGainMargin">Min Gain Margin</div>
                         </div>
                         <div class="metric-box">
                             <div class="metric-val" id="metPm">-</div>
-                            <div class="metric-label">Min Phase Margin</div>
+                            <div class="metric-label" data-i18n="metricMinPhaseMargin">Min Phase Margin</div>
                         </div>
                         <div class="metric-box">
                             <div class="metric-val" id="metBw">-</div>
-                            <div class="metric-label">Nominal Bandwidth</div>
+                            <div class="metric-label" data-i18n="metricNominalBandwidth">Nominal Bandwidth</div>
                         </div>
                     </div>
                     <div class="chart-container">
                         <canvas id="freqChart"></canvas>
                     </div>
                     <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                        <span style="color: #0f766e; font-weight: bold;">— Nominal Loop L(jw)</span> &nbsp;&nbsp;
-                        <span style="color: #ef4444; font-weight: bold;">— Stability Limit (0dB)</span>
+                        <span style="color: #0f766e; font-weight: bold;">— <span data-i18n="legendNominalLoop">Nominal Loop L(jw)</span></span> &nbsp;&nbsp;
+                        <span style="color: #ef4444; font-weight: bold;">— <span data-i18n="legendStabilityLimit">Stability Limit (0dB)</span></span>
                     </p>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Page-specific translations (7 languages)
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: "Robust Control Analysis",
+                subtitle: "Monte Carlo Verification of Control Stability under Parametric Uncertainty",
+                readGuide: "📖 Read the Beginner's Guide",
+                nominalPlant: "Nominal Plant \\( G_n(s) \\)",
+                gainK: "Gain \\( K \\)",
+                timeConstTau: "Time Const \\( \\tau \\)",
+                deadTimeTheta: "Dead Time \\( \\theta \\)",
+                uncertaintyPct: "Uncertainty (\\( \\pm \\% \\))",
+                gainUncertainty: "Gain Uncertainty",
+                tauUncertainty: "Tau Uncertainty",
+                delayUncertainty: "Delay Uncertainty",
+                controllerCs: "Controller \\( C(s) \\)",
+                runMonteCarlo: "Run Monte Carlo Analysis",
+                presetAggressive: "Preset: Aggressive",
+                presetRobust: "Preset: Robust",
+                tabStepResponse: "Step Response",
+                tabBode: "Bode Plot (Magnitude)",
+                metricStableRuns: "Stable Runs",
+                metricAvgOvershoot: "Avg Overshoot",
+                metricWorstOvershoot: "Worst Overshoot",
+                metricMinGainMargin: "Min Gain Margin",
+                metricMinPhaseMargin: "Min Phase Margin",
+                metricNominalBandwidth: "Nominal Bandwidth",
+                legendNominal: "Nominal",
+                legendUncertainInstances: "Uncertain Instances (N=50)",
+                legendNominalLoop: "Nominal Loop L(jw)",
+                legendStabilityLimit: "Stability Limit (0dB)",
+                na: "N/A"
+            },
+            pl: {
+                title: "Analiza sterowania odpornego",
+                subtitle: "Weryfikacja Monte Carlo stabilności układu sterowania przy niepewności parametrycznej",
+                readGuide: "📖 Przeczytaj poradnik dla początkujących",
+                nominalPlant: "Obiekt nominalny \\( G_n(s) \\)",
+                gainK: "Wzmocnienie \\( K \\)",
+                timeConstTau: "Stała czasowa \\( \\tau \\)",
+                deadTimeTheta: "Opóźnienie \\( \\theta \\)",
+                uncertaintyPct: "Niepewność (\\( \\pm \\% \\))",
+                gainUncertainty: "Niepewność wzmocnienia",
+                tauUncertainty: "Niepewność stałej czasowej",
+                delayUncertainty: "Niepewność opóźnienia",
+                controllerCs: "Regulator \\( C(s) \\)",
+                runMonteCarlo: "Uruchom analizę Monte Carlo",
+                presetAggressive: "Preset: agresywny",
+                presetRobust: "Preset: odporny",
+                tabStepResponse: "Odpowiedź skokowa",
+                tabBode: "Wykres Bodego (moduł)",
+                metricStableRuns: "Stabilne przebiegi",
+                metricAvgOvershoot: "Śr. przeregulowanie",
+                metricWorstOvershoot: "Najgorsze przeregulowanie",
+                metricMinGainMargin: "Min. zapas wzmocnienia",
+                metricMinPhaseMargin: "Min. zapas fazy",
+                metricNominalBandwidth: "Pasmo nominalne",
+                legendNominal: "Nominalny",
+                legendUncertainInstances: "Przypadki niepewne (N=50)",
+                legendNominalLoop: "Pętla nominalna L(jw)",
+                legendStabilityLimit: "Granica stabilności (0dB)",
+                na: "brak"
+            },
+            fr: {
+                title: "Analyse de commande robuste",
+                subtitle: "Vérification Monte Carlo de la stabilité en présence d'incertitude paramétrique",
+                readGuide: "📖 Lire le guide du débutant",
+                nominalPlant: "Procédé nominal \\( G_n(s) \\)",
+                gainK: "Gain \\( K \\)",
+                timeConstTau: "Constante de temps \\( \\tau \\)",
+                deadTimeTheta: "Temps mort \\( \\theta \\)",
+                uncertaintyPct: "Incertitude (\\( \\pm \\% \\))",
+                gainUncertainty: "Incertitude du gain",
+                tauUncertainty: "Incertitude de \\tau",
+                delayUncertainty: "Incertitude du délai",
+                controllerCs: "Correcteur \\( C(s) \\)",
+                runMonteCarlo: "Lancer l'analyse Monte Carlo",
+                presetAggressive: "Préréglage : agressif",
+                presetRobust: "Préréglage : robuste",
+                tabStepResponse: "Réponse indicielle",
+                tabBode: "Diagramme de Bode (module)",
+                metricStableRuns: "Exécutions stables",
+                metricAvgOvershoot: "Dépassement moyen",
+                metricWorstOvershoot: "Dépassement max",
+                metricMinGainMargin: "Marge de gain min",
+                metricMinPhaseMargin: "Marge de phase min",
+                metricNominalBandwidth: "Bande passante nominale",
+                legendNominal: "Nominal",
+                legendUncertainInstances: "Instances incertaines (N=50)",
+                legendNominalLoop: "Boucle nominale L(jw)",
+                legendStabilityLimit: "Limite de stabilité (0dB)",
+                na: "N/A"
+            },
+            es: {
+                title: "Análisis de control robusto",
+                subtitle: "Verificación Monte Carlo de la estabilidad bajo incertidumbre paramétrica",
+                readGuide: "📖 Leer la guía para principiantes",
+                nominalPlant: "Planta nominal \\( G_n(s) \\)",
+                gainK: "Ganancia \\( K \\)",
+                timeConstTau: "Constante de tiempo \\( \\tau \\)",
+                deadTimeTheta: "Tiempo muerto \\( \\theta \\)",
+                uncertaintyPct: "Incertidumbre (\\( \\pm \\% \\))",
+                gainUncertainty: "Incertidumbre de ganancia",
+                tauUncertainty: "Incertidumbre de \\tau",
+                delayUncertainty: "Incertidumbre de retardo",
+                controllerCs: "Controlador \\( C(s) \\)",
+                runMonteCarlo: "Ejecutar análisis Monte Carlo",
+                presetAggressive: "Preajuste: agresivo",
+                presetRobust: "Preajuste: robusto",
+                tabStepResponse: "Respuesta al escalón",
+                tabBode: "Diagrama de Bode (magnitud)",
+                metricStableRuns: "Ejecuciones estables",
+                metricAvgOvershoot: "Sobreimpulso prom.",
+                metricWorstOvershoot: "Peor sobreimpulso",
+                metricMinGainMargin: "Margen de ganancia mín.",
+                metricMinPhaseMargin: "Margen de fase mín.",
+                metricNominalBandwidth: "Ancho de banda nominal",
+                legendNominal: "Nominal",
+                legendUncertainInstances: "Instancias inciertas (N=50)",
+                legendNominalLoop: "Lazo nominal L(jw)",
+                legendStabilityLimit: "Límite de estabilidad (0dB)",
+                na: "N/A"
+            },
+            pt: {
+                title: "Análise de controle robusto",
+                subtitle: "Verificação Monte Carlo da estabilidade sob incerteza paramétrica",
+                readGuide: "📖 Ler o guia para iniciantes",
+                nominalPlant: "Planta nominal \\( G_n(s) \\)",
+                gainK: "Ganho \\( K \\)",
+                timeConstTau: "Constante de tempo \\( \\tau \\)",
+                deadTimeTheta: "Tempo morto \\( \\theta \\)",
+                uncertaintyPct: "Incerteza (\\( \\pm \\% \\))",
+                gainUncertainty: "Incerteza do ganho",
+                tauUncertainty: "Incerteza de \\tau",
+                delayUncertainty: "Incerteza do atraso",
+                controllerCs: "Controlador \\( C(s) \\)",
+                runMonteCarlo: "Executar análise Monte Carlo",
+                presetAggressive: "Predefinição: agressiva",
+                presetRobust: "Predefinição: robusta",
+                tabStepResponse: "Resposta ao degrau",
+                tabBode: "Diagrama de Bode (magnitude)",
+                metricStableRuns: "Execuções estáveis",
+                metricAvgOvershoot: "Overshoot médio",
+                metricWorstOvershoot: "Pior overshoot",
+                metricMinGainMargin: "Margem de ganho mín.",
+                metricMinPhaseMargin: "Margem de fase mín.",
+                metricNominalBandwidth: "Largura de banda nominal",
+                legendNominal: "Nominal",
+                legendUncertainInstances: "Instâncias incertas (N=50)",
+                legendNominalLoop: "Malha nominal L(jw)",
+                legendStabilityLimit: "Limite de estabilidade (0dB)",
+                na: "N/A"
+            },
+            de: {
+                title: "Analyse robuster Regelung",
+                subtitle: "Monte-Carlo-Verifikation der Stabilität bei parametrischer Unsicherheit",
+                readGuide: "📖 Einsteigerleitfaden lesen",
+                nominalPlant: "Nominale Strecke \\( G_n(s) \\)",
+                gainK: "Verstärkung \\( K \\)",
+                timeConstTau: "Zeitkonstante \\( \\tau \\)",
+                deadTimeTheta: "Totzeit \\( \\theta \\)",
+                uncertaintyPct: "Unsicherheit (\\( \\pm \\% \\))",
+                gainUncertainty: "Unsicherheit der Verstärkung",
+                tauUncertainty: "Unsicherheit von \\tau",
+                delayUncertainty: "Unsicherheit der Verzögerung",
+                controllerCs: "Regler \\( C(s) \\)",
+                runMonteCarlo: "Monte-Carlo-Analyse starten",
+                presetAggressive: "Voreinstellung: aggressiv",
+                presetRobust: "Voreinstellung: robust",
+                tabStepResponse: "Sprungantwort",
+                tabBode: "Bode-Diagramm (Betrag)",
+                metricStableRuns: "Stabile Läufe",
+                metricAvgOvershoot: "Ø Überschwingen",
+                metricWorstOvershoot: "Max. Überschwingen",
+                metricMinGainMargin: "Min. Verstärkungsreserve",
+                metricMinPhaseMargin: "Min. Phasenreserve",
+                metricNominalBandwidth: "Nominale Bandbreite",
+                legendNominal: "Nominal",
+                legendUncertainInstances: "Unsichere Instanzen (N=50)",
+                legendNominalLoop: "Nominale Schleife L(jw)",
+                legendStabilityLimit: "Stabilitätsgrenze (0dB)",
+                na: "k. A."
+            },
+            uk: {
+                title: "Аналіз робастного керування",
+                subtitle: "Перевірка Монте-Карло стабільності за параметричної невизначеності",
+                readGuide: "📖 Прочитати посібник для початківців",
+                nominalPlant: "Номінальний об’єкт \\( G_n(s) \\)",
+                gainK: "Підсилення \\( K \\)",
+                timeConstTau: "Постійна часу \\( \\tau \\)",
+                deadTimeTheta: "Запізнення \\( \\theta \\)",
+                uncertaintyPct: "Невизначеність (\\( \\pm \\% \\))",
+                gainUncertainty: "Невизначеність підсилення",
+                tauUncertainty: "Невизначеність \\tau",
+                delayUncertainty: "Невизначеність затримки",
+                controllerCs: "Регулятор \\( C(s) \\)",
+                runMonteCarlo: "Запустити аналіз Монте-Карло",
+                presetAggressive: "Пресет: агресивний",
+                presetRobust: "Пресет: робастний",
+                tabStepResponse: "Перехідна характеристика",
+                tabBode: "Діаграма Боде (модуль)",
+                metricStableRuns: "Стабільні запуски",
+                metricAvgOvershoot: "Середній перерегул.",
+                metricWorstOvershoot: "Найгірший перерегул.",
+                metricMinGainMargin: "Мін. запас підсилення",
+                metricMinPhaseMargin: "Мін. запас фази",
+                metricNominalBandwidth: "Номінальна смуга",
+                legendNominal: "Номінальний",
+                legendUncertainInstances: "Невизначені випадки (N=50)",
+                legendNominalLoop: "Номінальна петля L(jw)",
+                legendStabilityLimit: "Межа стабільності (0dB)",
+                na: "Н/Д"
+            }
+        };
+
+        function pageT(key, fallback) {
+            const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+            const dict = window.PAGE_TRANSLATIONS?.[lang] || window.PAGE_TRANSLATIONS?.en || {};
+            return (dict && Object.prototype.hasOwnProperty.call(dict, key)) ? dict[key] : fallback;
+        }
+
+        window.PAGE_I18N_ONCHANGE = () => {
+            // Refresh any dynamic labels that aren't purely DOM-bound.
+            if (document.getElementById('metGm')?.innerText === 'N/A') document.getElementById('metGm').innerText = pageT('na', 'N/A');
+            if (document.getElementById('metPm')?.innerText === 'N/A') document.getElementById('metPm').innerText = pageT('na', 'N/A');
+        };
+    </script>
 
     <script>
         class PID {
@@ -769,8 +997,8 @@
 
                 // Metrics Update
                 document.getElementById('metBw').innerText = bandwidth.toFixed(2) + " rad/s";
-                document.getElementById('metGm').innerText = "N/A"; // Requires Phase calc, keeping simple for now
-                document.getElementById('metPm').innerText = "N/A";
+                document.getElementById('metGm').innerText = pageT('na', 'N/A'); // Requires Phase calc, keeping simple for now
+                document.getElementById('metPm').innerText = pageT('na', 'N/A');
             }
         };
 

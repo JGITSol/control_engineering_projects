@@ -200,6 +200,18 @@ a:hover {
     transition: transform 0.1s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
+select.pill {
+    cursor: pointer;
+    font: inherit;
+}
+
+.lab-nav select.pill {
+    width: auto;
+    min-width: 72px;
+    max-width: 96px;
+    flex: 0 0 auto;
+}
+
 [data-theme="light"] .pill {
     background: rgba(15, 23, 42, 0.03);
 }
@@ -333,13 +345,20 @@ h4,
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;
     background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(249, 115, 22, 0.12));
     opacity: 0;
     transition: opacity 0.25s ease;
+    pointer-events: none;
 }
 
 .lab-tile:hover::after {
     opacity: 1;
+}
+
+.lab-tile > * {
+    position: relative;
+    z-index: 1;
 }
 
 

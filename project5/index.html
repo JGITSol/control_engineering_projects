@@ -151,51 +151,51 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1>Autonomous Path Tracking</h1>
-                <p style="margin: 5px 0 0; color: var(--muted);">Stanley Controller vs Model Predictive Control (MPC)</p>
+                <h1 data-i18n="title">Autonomous Path Tracking</h1>
+                <p style="margin: 5px 0 0; color: var(--muted);" data-i18n="subtitle">Stanley Controller vs Model Predictive Control (MPC)</p>
             </div>
-            <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;">📖
+            <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;" data-i18n="readGuide">📖
                 Read Guide</a>
         </div>
 
         <!-- Sidebar -->
         <div class="card">
             <div class="control-group">
-                <label>Controller Architecture</label>
+                <label data-i18n="labelArchitecture">Controller Architecture</label>
                 <select id="ctrlType" onchange="sim.reset()">
-                    <option value="stanley">Stanley (Geometric)</option>
-                    <option value="mpc">MPC (Sampling-based)</option>
+                    <option value="stanley" data-i18n-option="optionStanley">Stanley (Geometric)</option>
+                    <option value="mpc" data-i18n-option="optionMpc">MPC (Sampling-based)</option>
                 </select>
             </div>
 
             <div class="control-group">
-                <label>Simulation Speed</label>
+                <label data-i18n="labelSpeed">Simulation Speed</label>
                 <input type="range" id="speed" min="5" max="30" value="15"
                     oninput="document.getElementById('spdVal').innerText=this.value+' m/s'">
                 <div style="text-align: right; font-size: 0.8em; color: var(--muted);" id="spdVal">15 m/s</div>
             </div>
 
             <div id="stanleyParams">
-                <label>Gain (k)</label>
+                <label data-i18n="labelGainK">Gain (k)</label>
                 <input type="number" id="st_k" value="2.5" step="0.1">
             </div>
 
             <div id="mpcParams" style="display:none">
-                <label>Prediction Horizon (N)</label>
+                <label data-i18n="labelHorizonN">Prediction Horizon (N)</label>
                 <input type="number" id="mpc_N" value="25">
-                <label>Steering Cost (R)</label>
+                <label data-i18n="labelCostR">Steering Cost (R)</label>
                 <input type="number" id="mpc_R" value="0.5" step="0.1">
             </div>
 
             <div class="kpi-row">
-                <span>CTE:</span> <span id="cte" class="kpi-val">0.00 m</span>
+                <span data-i18n="kpiCte">CTE:</span> <span id="cte" class="kpi-val">0.00 m</span>
             </div>
             <div class="kpi-row">
-                <span>Heading Err:</span> <span id="he" class="kpi-val">0.00 rad</span>
+                <span data-i18n="kpiHeadingErr">Heading Err:</span> <span id="he" class="kpi-val">0.00 rad</span>
             </div>
 
-            <button class="btn" onclick="sim.reset()">Simulate New Track</button>
-            <div style="margin-top: 20px; font-size: 0.8em; font-style: italic; color: #94a3b8;">
+            <button class="btn" onclick="sim.reset()" data-i18n="btnNewTrack">Simulate New Track</button>
+            <div style="margin-top: 20px; font-size: 0.8em; font-style: italic; color: #94a3b8;" data-i18n="hintPause">
                 Click on canvas to pause/resume.
             </div>
         </div>
@@ -218,6 +218,141 @@
     </div>
 
     <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: "Autonomous Path Tracking",
+                subtitle: "Stanley Controller vs Model Predictive Control (MPC)",
+                readGuide: "📖 Read Guide",
+                labelArchitecture: "Controller Architecture",
+                optionStanley: "Stanley (Geometric)",
+                optionMpc: "MPC (Sampling-based)",
+                labelSpeed: "Simulation Speed",
+                labelGainK: "Gain (k)",
+                labelHorizonN: "Prediction Horizon (N)",
+                labelCostR: "Steering Cost (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Heading Err:",
+                btnNewTrack: "Simulate New Track",
+                hintPause: "Click on canvas to pause/resume.",
+                chartCte: "Cross Track Error (m)",
+                chartSteer: "Steering Angle (rad)"
+            },
+            pl: {
+                title: "Śledzenie trajektorii (autonomiczne)",
+                subtitle: "Regulator Stanley vs sterowanie predykcyjne (MPC)",
+                readGuide: "📖 Czytaj poradnik",
+                labelArchitecture: "Architektura regulatora",
+                optionStanley: "Stanley (geometryczny)",
+                optionMpc: "MPC (próbkowane)",
+                labelSpeed: "Prędkość symulacji",
+                labelGainK: "Wzmocnienie (k)",
+                labelHorizonN: "Horyzont predykcji (N)",
+                labelCostR: "Koszt skrętu (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Błąd kursu:",
+                btnNewTrack: "Wygeneruj nowy tor",
+                hintPause: "Kliknij na płótno, aby wstrzymać/wznowić.",
+                chartCte: "Błąd poprzeczny (m)",
+                chartSteer: "Kąt skrętu (rad)"
+            },
+            fr: {
+                title: "Suivi de trajectoire autonome",
+                subtitle: "Contrôleur Stanley vs commande prédictive (MPC)",
+                readGuide: "📖 Lire le guide",
+                labelArchitecture: "Architecture du contrôleur",
+                optionStanley: "Stanley (géométrique)",
+                optionMpc: "MPC (échantillonnage)",
+                labelSpeed: "Vitesse de simulation",
+                labelGainK: "Gain (k)",
+                labelHorizonN: "Horizon de prédiction (N)",
+                labelCostR: "Coût de braquage (R)",
+                kpiCte: "CTE :",
+                kpiHeadingErr: "Erreur de cap :",
+                btnNewTrack: "Simuler une nouvelle piste",
+                hintPause: "Cliquez sur le canevas pour pause/reprise.",
+                chartCte: "Erreur de trajectoire (m)",
+                chartSteer: "Angle de braquage (rad)"
+            },
+            es: {
+                title: "Seguimiento de trayectoria autónomo",
+                subtitle: "Controlador Stanley vs control predictivo (MPC)",
+                readGuide: "📖 Leer guía",
+                labelArchitecture: "Arquitectura del controlador",
+                optionStanley: "Stanley (geométrico)",
+                optionMpc: "MPC (muestreo)",
+                labelSpeed: "Velocidad de simulación",
+                labelGainK: "Ganancia (k)",
+                labelHorizonN: "Horizonte de predicción (N)",
+                labelCostR: "Costo de giro (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Error de rumbo:",
+                btnNewTrack: "Simular nueva pista",
+                hintPause: "Haz clic en el lienzo para pausar/reanudar.",
+                chartCte: "Error lateral (m)",
+                chartSteer: "Ángulo de dirección (rad)"
+            },
+            pt: {
+                title: "Rastreamento autônomo de trajetória",
+                subtitle: "Controlador Stanley vs controle preditivo (MPC)",
+                readGuide: "📖 Ler guia",
+                labelArchitecture: "Arquitetura do controlador",
+                optionStanley: "Stanley (geométrico)",
+                optionMpc: "MPC (amostragem)",
+                labelSpeed: "Velocidade de simulação",
+                labelGainK: "Ganho (k)",
+                labelHorizonN: "Horizonte de predição (N)",
+                labelCostR: "Custo de esterçamento (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Erro de rumo:",
+                btnNewTrack: "Simular nova pista",
+                hintPause: "Clique no canvas para pausar/continuar.",
+                chartCte: "Erro lateral (m)",
+                chartSteer: "Ângulo de direção (rad)"
+            },
+            de: {
+                title: "Autonomes Pfad-Tracking",
+                subtitle: "Stanley-Regler vs Model Predictive Control (MPC)",
+                readGuide: "📖 Leitfaden lesen",
+                labelArchitecture: "Reglerarchitektur",
+                optionStanley: "Stanley (geometrisch)",
+                optionMpc: "MPC (Sampling-basiert)",
+                labelSpeed: "Simulationsgeschwindigkeit",
+                labelGainK: "Verstärkung (k)",
+                labelHorizonN: "Prädiktionshorizont (N)",
+                labelCostR: "Lenkkosten (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Kursfehler:",
+                btnNewTrack: "Neue Strecke simulieren",
+                hintPause: "Klicken Sie auf die Zeichenfläche zum Pausieren/Fortsetzen.",
+                chartCte: "Querabweichung (m)",
+                chartSteer: "Lenkwinkel (rad)"
+            },
+            uk: {
+                title: "Автономне відстеження траєкторії",
+                subtitle: "Регулятор Stanley vs предиктивне керування (MPC)",
+                readGuide: "📖 Читати посібник",
+                labelArchitecture: "Архітектура регулятора",
+                optionStanley: "Stanley (геометричний)",
+                optionMpc: "MPC (вибірка)",
+                labelSpeed: "Швидкість симуляції",
+                labelGainK: "Підсилення (k)",
+                labelHorizonN: "Горизонт прогнозу (N)",
+                labelCostR: "Вартість керма (R)",
+                kpiCte: "CTE:",
+                kpiHeadingErr: "Помилка курсу:",
+                btnNewTrack: "Згенерувати нову трасу",
+                hintPause: "Клацніть на полотні, щоб пауза/продовження.",
+                chartCte: "Поперечна похибка (m)",
+                chartSteer: "Кут керма (rad)"
+            }
+        };
+
+        function pageT(key, fallback) {
+            const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+            const dict = window.PAGE_TRANSLATIONS?.[lang] || window.PAGE_TRANSLATIONS?.en || {};
+            return (dict && Object.prototype.hasOwnProperty.call(dict, key)) ? dict[key] : fallback;
+        }
+
         // --- Utils ---
         const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
 
@@ -282,10 +417,10 @@
             init: () => {
                 // Init Charts
                 const ctxCTE = document.getElementById('chartCTE').getContext('2d');
-                chartCTE = new Chart(ctxCTE, chartConfig('Cross Track Error (m)', '#ef4444', -5, 5));
+                chartCTE = new Chart(ctxCTE, chartConfig(pageT('chartCte', 'Cross Track Error (m)'), '#ef4444', -5, 5));
 
                 const ctxStr = document.getElementById('chartSteer').getContext('2d');
-                chartSteer = new Chart(ctxStr, chartConfig('Steering Angle (rad)', '#3b82f6', -1, 1));
+                chartSteer = new Chart(ctxStr, chartConfig(pageT('chartSteer', 'Steering Angle (rad)'), '#3b82f6', -1, 1));
 
                 // Canvas Click
                 document.getElementById('simCanvas').addEventListener('click', () => sim.paused = !sim.paused);
@@ -496,6 +631,17 @@
                 ctx.restore();
 
                 ctx.restore();
+            }
+        };
+
+        window.PAGE_I18N_ONCHANGE = () => {
+            if (chartCTE) {
+                chartCTE.data.datasets[0].label = pageT('chartCte', 'Cross Track Error (m)');
+                chartCTE.update();
+            }
+            if (chartSteer) {
+                chartSteer.data.datasets[0].label = pageT('chartSteer', 'Steering Angle (rad)');
+                chartSteer.update();
             }
         };
 

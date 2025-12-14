@@ -278,81 +278,81 @@
 
     <div class="container">
         <header>
-            <h1>PID Auto-Tuner</h1>
-            <p class="subtitle">Automatic controller tuning using Ziegler-Nichols & Cohen-Coon methods</p>
+            <h1 data-i18n="title">PID Auto-Tuner</h1>
+            <p class="subtitle" data-i18n="subtitle">Automatic controller tuning using Ziegler-Nichols & Cohen-Coon methods</p>
             <p style="margin-top: 10px;"><a href="PID-Tuning-Guide.md"
-                    style="color: var(--primary); text-decoration: none; font-weight: 500;">📖 Read the Beginner's
-                    Guide</a></p>
+                style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖 Read the Beginner's
+                Guide</a></p>
         </header>
 
         <div class="grid">
             <!-- Configuration Panel -->
             <div class="card">
                 <div class="card-header">
-                    System Configuration
+                    <span data-i18n="systemConfig">System Configuration</span>
                 </div>
 
                 <div class="form-group">
-                    <label>Process Model</label>
+                    <label data-i18n="processModel">Process Model</label>
                     <select id="processType">
-                        <option value="first-order">First-Order + Dead Time (FOPDT)</option>
-                        <option value="integrating">Integrating Process</option>
+                        <option value="first-order" data-i18n-option="processType_fopdt">First-Order + Dead Time (FOPDT)</option>
+                        <option value="integrating" data-i18n-option="processType_integrating">Integrating Process</option>
                     </select>
                 </div>
 
                 <div class="row">
                     <div class="form-group">
-                        <label>Gain \( K \)</label>
+                        <label data-i18n-html="gainLabel">Gain \( K \)</label>
                         <input type="number" id="processGain" value="1.5" step="0.1">
                     </div>
                     <div class="form-group">
-                        <label>Time Constant \( \tau \)</label>
+                        <label data-i18n-html="tauLabel">Time Constant \( \tau \)</label>
                         <input type="number" id="timeConstant" value="5.0" step="0.5">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group">
-                        <label>Dead Time \( \theta \)</label>
+                        <label data-i18n-html="deadTimeLabel">Dead Time \( \theta \)</label>
                         <input type="number" id="deadTime" value="0.5" step="0.1" min="0">
                     </div>
                     <div class="form-group">
-                        <label>Setpoint \( SP \)</label>
+                        <label data-i18n-html="setpointLabel">Setpoint \( SP \)</label>
                         <input type="number" id="setpoint" value="1.0" step="0.1">
                     </div>
                 </div>
 
                 <div class="card-header" style="margin-top: 24px;">
-                    Tuning Method
+                    <span data-i18n="tuningMethodHeader">Tuning Method</span>
                 </div>
 
                 <div class="form-group">
-                    <label>Algorithm</label>
+                    <label data-i18n="algorithmLabel">Algorithm</label>
                     <select id="tuningMethod">
-                        <option value="zn-closed">Ziegler-Nichols (Closed Loop / Relay)</option>
-                        <option value="cc">Cohen-Coon (Open Loop)</option>
+                        <option value="zn-closed" data-i18n-option="tuningMethod_zn">Ziegler-Nichols (Closed Loop / Relay)</option>
+                        <option value="cc" data-i18n-option="tuningMethod_cc">Cohen-Coon (Open Loop)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Desired Behavior</label>
+                    <label data-i18n="desiredBehaviorLabel">Desired Behavior</label>
                     <select id="behavior">
-                        <option value="moderate">Moderate (Balanced)</option>
-                        <option value="fast">Fast (Aggressive)</option>
-                        <option value="smooth">Smooth (No Overshoot)</option>
+                        <option value="moderate" data-i18n-option="behavior_moderate">Moderate (Balanced)</option>
+                        <option value="fast" data-i18n-option="behavior_fast">Fast (Aggressive)</option>
+                        <option value="smooth" data-i18n-option="behavior_smooth">Smooth (No Overshoot)</option>
                     </select>
                 </div>
 
                 <div class="row">
                     <div class="form-group">
-                        <label>Sim Time (s)</label>
+                        <label data-i18n="simTimeLabel">Sim Time (s)</label>
                         <input type="number" id="simTime" value="60">
                     </div>
                 </div>
 
                 <div style="margin-top: 24px;">
-                    <button class="btn btn-primary" onclick="app.runAutoTune()">Auto-Tune & Simulate</button>
-                    <button class="btn btn-secondary" onclick="app.runSimulationOnly()">Simulate Current Gains</button>
+                    <button class="btn btn-primary" onclick="app.runAutoTune()" data-i18n="btnAutoTune">Auto-Tune & Simulate</button>
+                    <button class="btn btn-secondary" onclick="app.runSimulationOnly()" data-i18n="btnSimCurrent">Simulate Current Gains</button>
                 </div>
 
                 <div id="statusBox" class="status"></div>
@@ -361,25 +361,25 @@
             <!-- Visualization Panel -->
             <div class="card">
                 <div class="card-header">
-                    Response Analysis
+                    <span data-i18n="responseAnalysisHeader">Response Analysis</span>
                 </div>
 
                 <div class="metrics-grid">
                     <div class="metric-box">
                         <div class="metric-val" id="valOvershoot">-</div>
-                        <div class="metric-label">Overshoot %</div>
+                        <div class="metric-label" data-i18n="metricOvershoot">Overshoot %</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-val" id="valSettling">-</div>
-                        <div class="metric-label">Settling Time</div>
+                        <div class="metric-label" data-i18n="metricSettling">Settling Time</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-val" id="valRise">-</div>
-                        <div class="metric-label">Rise Time</div>
+                        <div class="metric-label" data-i18n="metricRise">Rise Time</div>
                     </div>
                     <div class="metric-box">
                         <div class="metric-val" id="valEss">-</div>
-                        <div class="metric-label">SS Error</div>
+                        <div class="metric-label" data-i18n="metricSSError">SS Error</div>
                     </div>
                 </div>
 
@@ -389,30 +389,30 @@
 
                 <div class="results-panel">
                     <div class="card-header" style="font-size: 1rem; border: none; padding: 0; margin-bottom: 12px;">
-                        Controller Parameters
+                        <span data-i18n="controllerParamsHeader">Controller Parameters</span>
                     </div>
                     <div class="row">
                         <div>
                             <div class="result-item">
-                                <span>\( K_p \) (Prop. Gain)</span>
+                                <span data-i18n-html="kpLabel">\( K_p \) (Prop. Gain)</span>
                                 <span class="result-value" id="resKp">-</span>
                             </div>
                             <div class="result-item">
-                                <span>\( K_i \) (Integral Gain)</span>
+                                <span data-i18n-html="kiLabel">\( K_i \) (Integral Gain)</span>
                                 <span class="result-value" id="resKi">-</span>
                             </div>
                             <div class="result-item">
-                                <span>\( K_d \) (Deriv. Gain)</span>
+                                <span data-i18n-html="kdLabel">\( K_d \) (Deriv. Gain)</span>
                                 <span class="result-value" id="resKd">-</span>
                             </div>
                         </div>
                         <div style="padding-left: 20px; border-left: 1px solid #eee;">
                             <div class="result-item">
-                                <span>\( T_u \) (Ult. Period)</span>
+                                <span data-i18n-html="tuLabel">\( T_u \) (Ult. Period)</span>
                                 <span class="result-value" id="resTu">-</span>
                             </div>
                             <div class="result-item">
-                                <span>\( K_u \) (Ult. Gain)</span>
+                                <span data-i18n-html="kuLabel">\( K_u \) (Ult. Gain)</span>
                                 <span class="result-value" id="resKu">-</span>
                             </div>
                         </div>
@@ -423,6 +423,299 @@
     </div>
 
     <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: 'PID Auto-Tuner',
+                subtitle: 'Automatic controller tuning using Ziegler-Nichols & Cohen-Coon methods',
+                readGuide: "📖 Read the Beginner's Guide",
+                systemConfig: 'System Configuration',
+                processModel: 'Process Model',
+                processType_fopdt: 'First-Order + Dead Time (FOPDT)',
+                processType_integrating: 'Integrating Process',
+                gainLabel: 'Gain \\ ( K \\)',
+                tauLabel: 'Time Constant \\ ( \\tau \\)',
+                deadTimeLabel: 'Dead Time \\ ( \\theta \\)',
+                setpointLabel: 'Setpoint \\ ( SP \\)',
+                tuningMethodHeader: 'Tuning Method',
+                algorithmLabel: 'Algorithm',
+                tuningMethod_zn: 'Ziegler-Nichols (Closed Loop / Relay)',
+                tuningMethod_cc: 'Cohen-Coon (Open Loop)',
+                desiredBehaviorLabel: 'Desired Behavior',
+                behavior_moderate: 'Moderate (Balanced)',
+                behavior_fast: 'Fast (Aggressive)',
+                behavior_smooth: 'Smooth (No Overshoot)',
+                simTimeLabel: 'Sim Time (s)',
+                btnAutoTune: 'Auto-Tune & Simulate',
+                btnSimCurrent: 'Simulate Current Gains',
+                responseAnalysisHeader: 'Response Analysis',
+                metricOvershoot: 'Overshoot %',
+                metricSettling: 'Settling Time',
+                metricRise: 'Rise Time',
+                metricSSError: 'SS Error',
+                controllerParamsHeader: 'Controller Parameters',
+                kpLabel: '\\( K_p \\) (Prop. Gain)',
+                kiLabel: '\\( K_i \\) (Integral Gain)',
+                kdLabel: '\\( K_d \\) (Deriv. Gain)',
+                tuLabel: '\\( T_u \\) (Ult. Period)',
+                kuLabel: '\\( K_u \\) (Ult. Gain)',
+                statusRunning: 'Running Robust Relay Tuning...',
+                statusRelayFailed: 'Relay test failed (no oscillation). System might be too stable or overdamped.',
+                statusTuningComplete: 'Tuning complete.',
+                chartAmplitude: 'Amplitude',
+                chartTime: 'Time (s)'
+            },
+            pl: {
+                title: 'Auto-strojenie PID',
+                subtitle: 'Automatyczne strojenie regulatora metodami Zieglera–Nicholsa i Cohena–Coona',
+                readGuide: '📖 Przeczytaj poradnik dla początkujących',
+                systemConfig: 'Konfiguracja układu',
+                processModel: 'Model procesu',
+                processType_fopdt: 'I rzędu + opóźnienie (FOPDT)',
+                processType_integrating: 'Proces całkujący',
+                gainLabel: 'Wzmocnienie \\ ( K \\)',
+                tauLabel: 'Stała czasowa \\ ( \\tau \\)',
+                deadTimeLabel: 'Opóźnienie \\ ( \\theta \\)',
+                setpointLabel: 'Wartość zadana \\ ( SP \\)',
+                tuningMethodHeader: 'Metoda strojenia',
+                algorithmLabel: 'Algorytm',
+                tuningMethod_zn: 'Ziegler–Nichols (pętla zamknięta / przekaźnik)',
+                tuningMethod_cc: 'Cohen–Coon (pętla otwarta)',
+                desiredBehaviorLabel: 'Pożądane zachowanie',
+                behavior_moderate: 'Umiarkowane (zbalansowane)',
+                behavior_fast: 'Szybkie (agresywne)',
+                behavior_smooth: 'Gładkie (bez przeregulowania)',
+                simTimeLabel: 'Czas sym. (s)',
+                btnAutoTune: 'Strojenie + symulacja',
+                btnSimCurrent: 'Symuluj bieżące nastawy',
+                responseAnalysisHeader: 'Analiza odpowiedzi',
+                metricOvershoot: 'Przereg. %',
+                metricSettling: 'Czas ustalania',
+                metricRise: 'Czas narastania',
+                metricSSError: 'Błąd ustalony',
+                controllerParamsHeader: 'Parametry regulatora',
+                kpLabel: '\\( K_p \\) (wzm. proporc.)',
+                kiLabel: '\\( K_i \\) (wzm. całkujące)',
+                kdLabel: '\\( K_d \\) (wzm. różnicz.)',
+                tuLabel: '\\( T_u \\) (okres gran.)',
+                kuLabel: '\\( K_u \\) (wzm. gran.)',
+                statusRunning: 'Trwa strojenie przekaźnikowe...',
+                statusRelayFailed: 'Test przekaźnikowy nie powiódł się (brak oscylacji). Układ może być zbyt stabilny lub przetłumiony.',
+                statusTuningComplete: 'Strojenie zakończone.',
+                chartAmplitude: 'Amplituda',
+                chartTime: 'Czas (s)'
+            },
+            fr: {
+                title: 'Auto-réglage PID',
+                subtitle: 'Réglage automatique du contrôleur via Ziegler–Nichols et Cohen–Coon',
+                readGuide: '📖 Lire le guide du débutant',
+                systemConfig: 'Configuration du système',
+                processModel: 'Modèle du procédé',
+                processType_fopdt: '1er ordre + retard (FOPDT)',
+                processType_integrating: 'Procédé intégrateur',
+                gainLabel: 'Gain \\ ( K \\)',
+                tauLabel: 'Constante de temps \\ ( \\tau \\)',
+                deadTimeLabel: 'Retard \\ ( \\theta \\)',
+                setpointLabel: 'Consigne \\ ( SP \\)',
+                tuningMethodHeader: 'Méthode de réglage',
+                algorithmLabel: 'Algorithme',
+                tuningMethod_zn: 'Ziegler–Nichols (boucle fermée / relais)',
+                tuningMethod_cc: 'Cohen–Coon (boucle ouverte)',
+                desiredBehaviorLabel: 'Comportement souhaité',
+                behavior_moderate: 'Modéré (équilibré)',
+                behavior_fast: 'Rapide (agressif)',
+                behavior_smooth: 'Doux (sans dépassement)',
+                simTimeLabel: 'Temps sim. (s)',
+                btnAutoTune: 'Auto-réglage & simuler',
+                btnSimCurrent: 'Simuler les gains actuels',
+                responseAnalysisHeader: 'Analyse de la réponse',
+                metricOvershoot: 'Dépassement %',
+                metricSettling: 'Temps d’établissement',
+                metricRise: 'Temps de montée',
+                metricSSError: 'Erreur statique',
+                controllerParamsHeader: 'Paramètres du contrôleur',
+                kpLabel: '\\( K_p \\) (gain prop.)',
+                kiLabel: '\\( K_i \\) (gain intégral)',
+                kdLabel: '\\( K_d \\) (gain dérivé)',
+                tuLabel: '\\( T_u \\) (période ultime)',
+                kuLabel: '\\( K_u \\) (gain ultime)',
+                statusRunning: 'Réglage relais en cours...',
+                statusRelayFailed: 'Échec du test relais (pas d’oscillation). Le système peut être trop stable ou sur-amorti.',
+                statusTuningComplete: 'Réglage terminé.',
+                chartAmplitude: 'Amplitude',
+                chartTime: 'Temps (s)'
+            },
+            es: {
+                title: 'Autoajuste PID',
+                subtitle: 'Ajuste automático del controlador con Ziegler–Nichols y Cohen–Coon',
+                readGuide: '📖 Leer la guía para principiantes',
+                systemConfig: 'Configuración del sistema',
+                processModel: 'Modelo del proceso',
+                processType_fopdt: '1er orden + retardo (FOPDT)',
+                processType_integrating: 'Proceso integrador',
+                gainLabel: 'Ganancia \\ ( K \\)',
+                tauLabel: 'Constante de tiempo \\ ( \\tau \\)',
+                deadTimeLabel: 'Tiempo muerto \\ ( \\theta \\)',
+                setpointLabel: 'Consigna \\ ( SP \\)',
+                tuningMethodHeader: 'Método de ajuste',
+                algorithmLabel: 'Algoritmo',
+                tuningMethod_zn: 'Ziegler–Nichols (lazo cerrado / relé)',
+                tuningMethod_cc: 'Cohen–Coon (lazo abierto)',
+                desiredBehaviorLabel: 'Comportamiento deseado',
+                behavior_moderate: 'Moderado (equilibrado)',
+                behavior_fast: 'Rápido (agresivo)',
+                behavior_smooth: 'Suave (sin sobreimpulso)',
+                simTimeLabel: 'Tiempo sim. (s)',
+                btnAutoTune: 'Autoajustar y simular',
+                btnSimCurrent: 'Simular ganancias actuales',
+                responseAnalysisHeader: 'Análisis de respuesta',
+                metricOvershoot: 'Sobreimpulso %',
+                metricSettling: 'Tiempo de establecimiento',
+                metricRise: 'Tiempo de subida',
+                metricSSError: 'Error estacionario',
+                controllerParamsHeader: 'Parámetros del controlador',
+                kpLabel: '\\( K_p \\) (gan. prop.)',
+                kiLabel: '\\( K_i \\) (gan. integral)',
+                kdLabel: '\\( K_d \\) (gan. deriv.)',
+                tuLabel: '\\( T_u \\) (período último)',
+                kuLabel: '\\( K_u \\) (gan. última)',
+                statusRunning: 'Ejecutando ajuste por relé...',
+                statusRelayFailed: 'Falló la prueba de relé (sin oscilación). El sistema puede ser demasiado estable o sobreamortiguado.',
+                statusTuningComplete: 'Ajuste completado.',
+                chartAmplitude: 'Amplitud',
+                chartTime: 'Tiempo (s)'
+            },
+            pt: {
+                title: 'Autoajuste PID',
+                subtitle: 'Ajuste automático do controlador via Ziegler–Nichols e Cohen–Coon',
+                readGuide: '📖 Ler o guia do iniciante',
+                systemConfig: 'Configuração do sistema',
+                processModel: 'Modelo do processo',
+                processType_fopdt: '1ª ordem + atraso (FOPDT)',
+                processType_integrating: 'Processo integrador',
+                gainLabel: 'Ganho \\ ( K \\)',
+                tauLabel: 'Constante de tempo \\ ( \\tau \\)',
+                deadTimeLabel: 'Tempo morto \\ ( \\theta \\)',
+                setpointLabel: 'Setpoint \\ ( SP \\)',
+                tuningMethodHeader: 'Método de ajuste',
+                algorithmLabel: 'Algoritmo',
+                tuningMethod_zn: 'Ziegler–Nichols (malha fechada / relé)',
+                tuningMethod_cc: 'Cohen–Coon (malha aberta)',
+                desiredBehaviorLabel: 'Comportamento desejado',
+                behavior_moderate: 'Moderado (equilibrado)',
+                behavior_fast: 'Rápido (agressivo)',
+                behavior_smooth: 'Suave (sem overshoot)',
+                simTimeLabel: 'Tempo sim. (s)',
+                btnAutoTune: 'Autoajustar e simular',
+                btnSimCurrent: 'Simular ganhos atuais',
+                responseAnalysisHeader: 'Análise da resposta',
+                metricOvershoot: 'Overshoot %',
+                metricSettling: 'Tempo de acomodação',
+                metricRise: 'Tempo de subida',
+                metricSSError: 'Erro em regime',
+                controllerParamsHeader: 'Parâmetros do controlador',
+                kpLabel: '\\( K_p \\) (ganho prop.)',
+                kiLabel: '\\( K_i \\) (ganho integral)',
+                kdLabel: '\\( K_d \\) (ganho deriv.)',
+                tuLabel: '\\( T_u \\) (período último)',
+                kuLabel: '\\( K_u \\) (ganho último)',
+                statusRunning: 'Executando ajuste por relé...',
+                statusRelayFailed: 'Falha no teste de relé (sem oscilação). O sistema pode estar muito estável ou superamortecido.',
+                statusTuningComplete: 'Ajuste concluído.',
+                chartAmplitude: 'Amplitude',
+                chartTime: 'Tempo (s)'
+            },
+            de: {
+                title: 'PID-Autotuning',
+                subtitle: 'Automatische Reglereinstellung nach Ziegler–Nichols und Cohen–Coon',
+                readGuide: '📖 Anfängerleitfaden lesen',
+                systemConfig: 'Systemkonfiguration',
+                processModel: 'Prozessmodell',
+                processType_fopdt: '1. Ordnung + Totzeit (FOPDT)',
+                processType_integrating: 'Integrierender Prozess',
+                gainLabel: 'Verstärkung \\ ( K \\)',
+                tauLabel: 'Zeitkonstante \\ ( \\tau \\)',
+                deadTimeLabel: 'Totzeit \\ ( \\theta \\)',
+                setpointLabel: 'Sollwert \\ ( SP \\)',
+                tuningMethodHeader: 'Einstellmethode',
+                algorithmLabel: 'Algorithmus',
+                tuningMethod_zn: 'Ziegler–Nichols (geschl. Regelkreis / Relais)',
+                tuningMethod_cc: 'Cohen–Coon (offener Kreis)',
+                desiredBehaviorLabel: 'Gewünschtes Verhalten',
+                behavior_moderate: 'Moderat (ausgewogen)',
+                behavior_fast: 'Schnell (aggressiv)',
+                behavior_smooth: 'Sanft (kein Überschwingen)',
+                simTimeLabel: 'Sim.-Zeit (s)',
+                btnAutoTune: 'Auto-Tuning & Simulation',
+                btnSimCurrent: 'Aktuelle Werte simulieren',
+                responseAnalysisHeader: 'Antwortanalyse',
+                metricOvershoot: 'Überschwingen %',
+                metricSettling: 'Einschwingzeit',
+                metricRise: 'Anstiegszeit',
+                metricSSError: 'Stationärer Fehler',
+                controllerParamsHeader: 'Reglerparameter',
+                kpLabel: '\\( K_p \\) (P-Anteil)',
+                kiLabel: '\\( K_i \\) (I-Anteil)',
+                kdLabel: '\\( K_d \\) (D-Anteil)',
+                tuLabel: '\\( T_u \\) (Grenzperiode)',
+                kuLabel: '\\( K_u \\) (Grenzverst.)',
+                statusRunning: 'Relais-Tuning läuft...',
+                statusRelayFailed: 'Relais-Test fehlgeschlagen (keine Schwingung). System evtl. zu stabil oder überdämpft.',
+                statusTuningComplete: 'Tuning abgeschlossen.',
+                chartAmplitude: 'Amplitude',
+                chartTime: 'Zeit (s)'
+            },
+            uk: {
+                title: 'Автоналаштування PID',
+                subtitle: 'Автоматичне налаштування регулятора методами Ziegler–Nichols та Cohen–Coon',
+                readGuide: '📖 Прочитати посібник для початківців',
+                systemConfig: 'Конфігурація системи',
+                processModel: 'Модель процесу',
+                processType_fopdt: '1-го порядку + запізнення (FOPDT)',
+                processType_integrating: 'Інтегруючий процес',
+                gainLabel: 'Підсилення \\ ( K \\)',
+                tauLabel: 'Стала часу \\ ( \\tau \\)',
+                deadTimeLabel: 'Запізнення \\ ( \\theta \\)',
+                setpointLabel: 'Задання \\ ( SP \\)',
+                tuningMethodHeader: 'Метод налаштування',
+                algorithmLabel: 'Алгоритм',
+                tuningMethod_zn: 'Ziegler–Nichols (замкн. контур / реле)',
+                tuningMethod_cc: 'Cohen–Coon (відкритий контур)',
+                desiredBehaviorLabel: 'Бажана поведінка',
+                behavior_moderate: 'Помірна (збалансована)',
+                behavior_fast: 'Швидка (агресивна)',
+                behavior_smooth: 'Плавна (без перерегулювання)',
+                simTimeLabel: 'Час сим. (с)',
+                btnAutoTune: 'Налаштувати й симулювати',
+                btnSimCurrent: 'Симулювати поточні коефіцієнти',
+                responseAnalysisHeader: 'Аналіз відгуку',
+                metricOvershoot: 'Перерегул. %',
+                metricSettling: 'Час встановлення',
+                metricRise: 'Час наростання',
+                metricSSError: 'Статична похибка',
+                controllerParamsHeader: 'Параметри регулятора',
+                kpLabel: '\\( K_p \\) (проп.)',
+                kiLabel: '\\( K_i \\) (інтегр.)',
+                kdLabel: '\\( K_d \\) (диф.)',
+                tuLabel: '\\( T_u \\) (граничний період)',
+                kuLabel: '\\( K_u \\) (граничне підсилення)',
+                statusRunning: 'Виконується релейне налаштування...',
+                statusRelayFailed: 'Релейний тест не вдався (немає коливань). Система може бути надто стабільною або перетлумленою.',
+                statusTuningComplete: 'Налаштування завершено.',
+                chartAmplitude: 'Амплітуда',
+                chartTime: 'Час (с)'
+            }
+        };
+
+        const pageT = (key, fallback) => {
+            const lang = document.documentElement.getAttribute('lang') || 'en';
+            const dict = window.PAGE_TRANSLATIONS?.[lang] || window.PAGE_TRANSLATIONS?.en || {};
+            const v = dict[key];
+            return (v !== undefined && v !== null) ? v : (fallback ?? key);
+        };
+
+        window.PAGE_I18N_ONCHANGE = () => {
+            // Ensure canvas labels redraw with new language on next update.
+        };
         /**
          * Core Physics and Control Classes
          */
@@ -711,7 +1004,7 @@
                 const status = document.getElementById('statusBox');
 
                 status.className = 'status show info';
-                status.textContent = 'Running Robust Relay Tuning...';
+                status.textContent = pageT('statusRunning', 'Running Robust Relay Tuning...');
 
                 // Use timeout to allow UI to update
                 setTimeout(() => {
@@ -727,7 +1020,7 @@
                             kp = res.kp; ki = res.ki; kd = res.kd;
                         } else {
                             status.className = 'status show warning';
-                            status.textContent = 'Relay test failed (no oscillation). System might be too stable or overdamped.';
+                            status.textContent = pageT('statusRelayFailed', 'Relay test failed (no oscillation). System might be too stable or overdamped.');
                             return;
                         }
                     } else {
@@ -740,7 +1033,7 @@
                     app.simulate(kp, ki, kd);
 
                     status.className = 'status show success';
-                    status.textContent = 'Tuning Complete.';
+                    status.textContent = pageT('statusTuningComplete', 'Tuning complete.');
                 }, 50);
             },
 
@@ -856,8 +1149,8 @@
                 // Labels
                 ctx.fillStyle = cssVar('--text-light', '#64748b');
                 ctx.font = '12px Inter';
-                ctx.fillText('Amplitude', 10, 20);
-                ctx.fillText('Time (s)', w / 2, h - 10);
+                ctx.fillText(pageT('chartAmplitude', 'Amplitude'), 10, 20);
+                ctx.fillText(pageT('chartTime', 'Time (s)'), w / 2, h - 10);
             },
 
             calcMetrics: (data, params) => {

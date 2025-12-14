@@ -8,18 +8,48 @@ import url from 'node:url';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const ROOT = path.resolve(__dirname, '..');
+function readArgValue(flag) {
+  const args = process.argv.slice(2);
+  const direct = args.find((a) => a === `--${flag}`);
+  if (direct) {
+    const i = args.indexOf(direct);
+    return args[i + 1] || null;
+  }
+
+  const withEq = args.find((a) => a.startsWith(`--${flag}=`));
+  if (!withEq) return null;
+  return withEq.split('=').slice(1).join('=') || null;
+}
+
+const preset = (readArgValue('preset') || 'control').toLowerCase();
+const rootArg = readArgValue('root');
+
+const ROOT = rootArg
+  ? path.resolve(process.cwd(), rootArg)
+  : path.resolve(__dirname, '..');
+
 const OUT_DIR = path.resolve(ROOT, 'audit', new Date().toISOString().slice(0, 10));
 
-const PAGES = [
-  { name: 'home', file: 'index.html' },
-  { name: 'project1', file: 'project1/index.html' },
-  { name: 'project2', file: 'project2/index.html' },
-  { name: 'project3', file: 'project3/index.html' },
-  { name: 'project4', file: 'project4/index.html' },
-  { name: 'project5', file: 'project5/index.html' },
-  { name: 'project6', file: 'project6/index.html' },
-];
+const PAGES = preset === 'math'
+  ? [
+    { name: 'home', file: 'index.html' },
+    { name: 'project1', file: 'project1/index.html' },
+    { name: 'project2', file: 'project2/index.html' },
+    { name: 'project3', file: 'project3/index.html' },
+    { name: 'project4', file: 'project4/index.html' },
+    { name: 'project5', file: 'project5/index.html' },
+    { name: 'project6', file: 'project6/index.html' },
+    { name: 'project7', file: 'project7/index.html' },
+  ]
+  : [
+    { name: 'home', file: 'index.html' },
+    { name: 'project1', file: 'project1/index.html' },
+    { name: 'project2', file: 'project2/index.html' },
+    { name: 'project3', file: 'project3/index.html' },
+    { name: 'project4', file: 'project4/index.html' },
+    { name: 'project5', file: 'project5/index.html' },
+    { name: 'project6', file: 'project6/index.html' },
+  ];
 
 const MIME = new Map([
   ['.html', 'text/html; charset=utf-8'],

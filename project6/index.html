@@ -161,11 +161,11 @@
 
     <div class="header-bar">
         <div class="header-title">
-            <h1>Microgrid AI Manager</h1>
-            <p>Day-Ahead Optimization using Dynamic Programming (15-min Resolution)</p>
+            <h1 data-i18n="title">Microgrid AI Manager</h1>
+            <p data-i18n="subtitle">Day-Ahead Optimization using Dynamic Programming (15-min Resolution)</p>
         </div>
         <div>
-            <a href="Energy-MPC-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;">📖
+            <a href="Energy-MPC-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;" data-i18n="viewDocs">📖
                 View Documentation</a>
         </div>
     </div>
@@ -173,36 +173,36 @@
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="card">
-            <h3>Live Status</h3>
+            <h3 data-i18n="liveStatus">Live Status</h3>
             <div class="kpi-grid">
                 <div class="kpi-card">
                     <div class="kpi-val" id="dispTime">00:00</div>
-                    <div class="kpi-label">Time</div>
+                    <div class="kpi-label" data-i18n="kpiTime">Time</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-val" id="dispSoC">50%</div>
-                    <div class="kpi-label">Battery SoC</div>
+                    <div class="kpi-label" data-i18n="kpiSoc">Battery SoC</div>
                 </div>
                 <!-- Full Width KPI -->
                 <div class="kpi-card" style="grid-column: 1/-1;">
                     <div class="kpi-val" id="dispProfit">+$0.00</div>
-                    <div class="kpi-label">Cumulative Profit</div>
+                    <div class="kpi-label" data-i18n="kpiProfit">Cumulative Profit</div>
                 </div>
                 <div class="kpi-card" style="grid-column: 1/-1;">
                     <div class="kpi-val neg" id="dispCost">-</div>
-                    <div class="kpi-label">Current Grid Power</div>
+                    <div class="kpi-label" data-i18n="kpiGridPower">Current Grid Power</div>
                 </div>
             </div>
 
             <div class="control-panel">
-                <button class="btn-primary" onclick="app.solve()">🚀 Run AI Optimizer</button>
-                <button class="btn-sec" onclick="app.reset()">↺ Reset Simulation</button>
+                <button class="btn-primary" onclick="app.solve()" data-i18n="btnRun">🚀 Run AI Optimizer</button>
+                <button class="btn-sec" onclick="app.reset()" data-i18n="btnReset">↺ Reset Simulation</button>
                 <div id="status"
                     style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #059669; min-height: 20px;">
                 </div>
             </div>
 
-            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.5;">
+            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.5;" data-i18n-html="specsHtml">
                 <strong>System Specs:</strong><br>
                 • 100 kWh Battery Storage<br>
                 • 50 kW Max Charge Rate<br>
@@ -214,14 +214,14 @@
         <!-- Main Content -->
         <div class="card">
             <div class="chart-header">
-                <span>💸 Market & Forecast</span>
+                <span data-i18n="chartHeaderMarket">💸 Market & Forecast</span>
             </div>
             <div class="chart-container">
                 <canvas id="marketChart"></canvas>
             </div>
 
             <div class="chart-header">
-                <span>🔋 Battery & Asset Schedule</span>
+                <span data-i18n="chartHeaderSchedule">🔋 Battery & Asset Schedule</span>
             </div>
             <div class="chart-container">
                 <canvas id="powerChart"></canvas>
@@ -230,6 +230,190 @@
     </div>
 
     <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: "Microgrid AI Manager",
+                subtitle: "Day-Ahead Optimization using Dynamic Programming (15-min Resolution)",
+                viewDocs: "📖 View Documentation",
+                liveStatus: "Live Status",
+                kpiTime: "Time",
+                kpiSoc: "Battery SoC",
+                kpiProfit: "Cumulative Profit",
+                kpiGridPower: "Current Grid Power",
+                btnRun: "🚀 Run AI Optimizer",
+                btnReset: "↺ Reset Simulation",
+                specsHtml: "<strong>System Specs:</strong><br>• 100 kWh Battery Storage<br>• 50 kW Max Charge Rate<br>• 50 kW Wind Turbine<br>• 96 Decision Steps (15m)",
+                chartHeaderMarket: "💸 Market & Forecast",
+                chartHeaderSchedule: "🔋 Battery & Asset Schedule",
+                dsGridPrice: "Grid Price ($/kWh)",
+                dsWindPower: "Wind Power (kW)",
+                axisPrice: "Price ($)",
+                axisPower: "Power (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Battery Action (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Ready to optimize.",
+                statusRunning: "Running DP Optimizer...",
+                statusDone: "Optimization Complete. Playback Started."
+            },
+            pl: {
+                title: "Menedżer mikrosieci (AI)",
+                subtitle: "Optymalizacja day-ahead metodą programowania dynamicznego (krok 15 min)",
+                viewDocs: "📖 Zobacz dokumentację",
+                liveStatus: "Status na żywo",
+                kpiTime: "Czas",
+                kpiSoc: "SoC baterii",
+                kpiProfit: "Zysk skumulowany",
+                kpiGridPower: "Aktualna moc z sieci",
+                btnRun: "🚀 Uruchom optymalizator AI",
+                btnReset: "↺ Reset symulacji",
+                specsHtml: "<strong>Specyfikacja systemu:</strong><br>• Magazyn energii 100 kWh<br>• Maks. moc ładowania 50 kW<br>• Turbina wiatrowa 50 kW<br>• 96 kroków decyzyjnych (15 min)",
+                chartHeaderMarket: "💸 Rynek i prognoza",
+                chartHeaderSchedule: "🔋 Harmonogram baterii i zasobów",
+                dsGridPrice: "Cena z sieci ($/kWh)",
+                dsWindPower: "Moc wiatru (kW)",
+                axisPrice: "Cena ($)",
+                axisPower: "Moc (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Działanie baterii (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Gotowe do optymalizacji.",
+                statusRunning: "Uruchamianie optymalizatora DP...",
+                statusDone: "Optymalizacja zakończona. Rozpoczęto odtwarzanie."
+            },
+            fr: {
+                title: "Gestionnaire de micro-réseau (IA)",
+                subtitle: "Optimisation day-ahead via programmation dynamique (pas de 15 min)",
+                viewDocs: "📖 Voir la documentation",
+                liveStatus: "Statut en direct",
+                kpiTime: "Heure",
+                kpiSoc: "SoC batterie",
+                kpiProfit: "Profit cumulé",
+                kpiGridPower: "Puissance réseau actuelle",
+                btnRun: "🚀 Lancer l'optimiseur IA",
+                btnReset: "↺ Réinitialiser la simulation",
+                specsHtml: "<strong>Spécifications du système :</strong><br>• Batterie 100 kWh<br>• Puissance max de charge 50 kW<br>• Éolienne 50 kW<br>• 96 pas de décision (15 min)",
+                chartHeaderMarket: "💸 Marché et prévisions",
+                chartHeaderSchedule: "🔋 Planning batterie et actifs",
+                dsGridPrice: "Prix réseau ($/kWh)",
+                dsWindPower: "Puissance éolienne (kW)",
+                axisPrice: "Prix ($)",
+                axisPower: "Puissance (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Action batterie (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Prêt à optimiser.",
+                statusRunning: "Exécution de l'optimiseur DP...",
+                statusDone: "Optimisation terminée. Lecture démarrée."
+            },
+            es: {
+                title: "Gestor de microred (IA)",
+                subtitle: "Optimización day-ahead con programación dinámica (resolución 15 min)",
+                viewDocs: "📖 Ver documentación",
+                liveStatus: "Estado en vivo",
+                kpiTime: "Hora",
+                kpiSoc: "SoC de batería",
+                kpiProfit: "Ganancia acumulada",
+                kpiGridPower: "Potencia actual de red",
+                btnRun: "🚀 Ejecutar optimizador IA",
+                btnReset: "↺ Reiniciar simulación",
+                specsHtml: "<strong>Especificaciones del sistema:</strong><br>• Batería 100 kWh<br>• Potencia máx. de carga 50 kW<br>• Turbina eólica 50 kW<br>• 96 pasos de decisión (15 min)",
+                chartHeaderMarket: "💸 Mercado y pronóstico",
+                chartHeaderSchedule: "🔋 Plan de batería y activos",
+                dsGridPrice: "Precio de red ($/kWh)",
+                dsWindPower: "Potencia eólica (kW)",
+                axisPrice: "Precio ($)",
+                axisPower: "Potencia (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Acción de batería (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Listo para optimizar.",
+                statusRunning: "Ejecutando optimizador DP...",
+                statusDone: "Optimización completa. Reproducción iniciada."
+            },
+            pt: {
+                title: "Gerenciador de microrede (IA)",
+                subtitle: "Otimização day-ahead com programação dinâmica (15 min)",
+                viewDocs: "📖 Ver documentação",
+                liveStatus: "Status ao vivo",
+                kpiTime: "Hora",
+                kpiSoc: "SoC da bateria",
+                kpiProfit: "Lucro acumulado",
+                kpiGridPower: "Potência atual da rede",
+                btnRun: "🚀 Executar otimizador IA",
+                btnReset: "↺ Reiniciar simulação",
+                specsHtml: "<strong>Especificações do sistema:</strong><br>• Bateria 100 kWh<br>• Potência máx. de carga 50 kW<br>• Turbina eólica 50 kW<br>• 96 etapas de decisão (15 min)",
+                chartHeaderMarket: "💸 Mercado e previsão",
+                chartHeaderSchedule: "🔋 Agenda da bateria e ativos",
+                dsGridPrice: "Preço da rede ($/kWh)",
+                dsWindPower: "Potência eólica (kW)",
+                axisPrice: "Preço ($)",
+                axisPower: "Potência (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Ação da bateria (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Pronto para otimizar.",
+                statusRunning: "Executando otimizador DP...",
+                statusDone: "Otimização concluída. Reprodução iniciada."
+            },
+            de: {
+                title: "Microgrid-AI-Manager",
+                subtitle: "Day-Ahead-Optimierung per dynamischer Programmierung (15-min Auflösung)",
+                viewDocs: "📖 Dokumentation ansehen",
+                liveStatus: "Live-Status",
+                kpiTime: "Zeit",
+                kpiSoc: "Batterie-SoC",
+                kpiProfit: "Kumulativer Gewinn",
+                kpiGridPower: "Aktuelle Netzleistung",
+                btnRun: "🚀 KI-Optimierer starten",
+                btnReset: "↺ Simulation zurücksetzen",
+                specsHtml: "<strong>Systemdaten:</strong><br>• Batteriespeicher 100 kWh<br>• Max. Ladeleistung 50 kW<br>• Windturbine 50 kW<br>• 96 Entscheidungsschritte (15 min)",
+                chartHeaderMarket: "💸 Markt & Prognose",
+                chartHeaderSchedule: "🔋 Batterie- & Anlagenplan",
+                dsGridPrice: "Netzpreis ($/kWh)",
+                dsWindPower: "Windleistung (kW)",
+                axisPrice: "Preis ($)",
+                axisPower: "Leistung (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Batterieaktion (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Bereit zur Optimierung.",
+                statusRunning: "DP-Optimierer läuft...",
+                statusDone: "Optimierung abgeschlossen. Wiedergabe gestartet."
+            },
+            uk: {
+                title: "Менеджер мікромережі (AI)",
+                subtitle: "Оптимізація day-ahead методом динамічного програмування (крок 15 хв)",
+                viewDocs: "📖 Переглянути документацію",
+                liveStatus: "Статус",
+                kpiTime: "Час",
+                kpiSoc: "SoC батареї",
+                kpiProfit: "Накопичений прибуток",
+                kpiGridPower: "Поточна потужність мережі",
+                btnRun: "🚀 Запустити AI-оптимізатор",
+                btnReset: "↺ Скинути симуляцію",
+                specsHtml: "<strong>Характеристики системи:</strong><br>• Батарея 100 kWh<br>• Макс. потужність заряду 50 kW<br>• Вітротурбіна 50 kW<br>• 96 кроків рішення (15 хв)",
+                chartHeaderMarket: "💸 Ринок і прогноз",
+                chartHeaderSchedule: "🔋 Розклад батареї та активів",
+                dsGridPrice: "Ціна мережі ($/kWh)",
+                dsWindPower: "Потужність вітру (kW)",
+                axisPrice: "Ціна ($)",
+                axisPower: "Потужність (kW)",
+                dsSoc: "SoC (%)",
+                dsBatteryAction: "Дія батареї (kW)",
+                axisSoc: "SoC (%)",
+                statusReady: "Готово до оптимізації.",
+                statusRunning: "Запуск оптимізатора DP...",
+                statusDone: "Оптимізацію завершено. Відтворення розпочато."
+            }
+        };
+
+        function pageT(key, fallback) {
+            const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+            const dict = window.PAGE_TRANSLATIONS?.[lang] || window.PAGE_TRANSLATIONS?.en || {};
+            return (dict && Object.prototype.hasOwnProperty.call(dict, key)) ? dict[key] : fallback;
+        }
+
         // --- High Resolution Data Generation ---
         const STEPS = 96; // 15 min intervals
         const HOURS = 24;
@@ -280,6 +464,7 @@
             simInterval: null,
             marketChart: null,
             powerChart: null,
+            statusKey: 'statusReady',
 
             init: () => {
                 app.initCharts();
@@ -295,7 +480,7 @@
                         labels: LABELS,
                         datasets: [
                             {
-                                label: 'Grid Price ($/kWh)',
+                                label: pageT('dsGridPrice', 'Grid Price ($/kWh)'),
                                 data: PRICE_DATA,
                                 borderColor: '#f59e0b',
                                 backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -304,7 +489,7 @@
                                 fill: true
                             },
                             {
-                                label: 'Wind Power (kW)',
+                                label: pageT('dsWindPower', 'Wind Power (kW)'),
                                 data: WIND_DATA,
                                 borderColor: '#10b981',
                                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -320,8 +505,8 @@
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
                         scales: {
-                            y1: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'Price ($)' } },
-                            y2: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Power (kW)' } },
+                            y1: { type: 'linear', display: true, position: 'left', title: { display: true, text: pageT('axisPrice', 'Price ($)') } },
+                            y2: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: pageT('axisPower', 'Power (kW)') } },
                             x: { ticks: { maxTicksLimit: 12 } }
                         },
                         plugins: { legend: { position: 'top' } }
@@ -337,7 +522,7 @@
                         datasets: [
                             {
                                 type: 'line',
-                                label: 'SoC (%)',
+                                label: pageT('dsSoc', 'SoC (%)'),
                                 data: Array(STEPS).fill(50),
                                 borderColor: '#3b82f6',
                                 borderWidth: 2,
@@ -346,7 +531,7 @@
                             },
                             {
                                 type: 'bar',
-                                label: 'Battery Action (kW)',
+                                label: pageT('dsBatteryAction', 'Battery Action (kW)'),
                                 data: Array(STEPS).fill(0),
                                 backgroundColor: (ctx) => {
                                     const v = ctx.raw;
@@ -361,8 +546,8 @@
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
                         scales: {
-                            y1: { min: 0, max: 100, title: { display: true, text: 'SoC (%)' } },
-                            y2: { position: 'right', title: { display: true, text: 'Power (kW)' } },
+                            y1: { min: 0, max: 100, title: { display: true, text: pageT('axisSoc', 'SoC (%)') } },
+                            y2: { position: 'right', title: { display: true, text: pageT('axisPower', 'Power (kW)') } },
                             x: { ticks: { maxTicksLimit: 12 } }
                         }
                     }
@@ -382,11 +567,13 @@
                 app.powerChart.update();
 
                 app.updateUI();
-                document.getElementById('status').innerText = "Ready to optimize.";
+                app.statusKey = 'statusReady';
+                document.getElementById('status').innerText = pageT('statusReady', 'Ready to optimize.');
             },
 
             solve: () => {
-                document.getElementById('status').innerText = "Running DP Optimizer...";
+                app.statusKey = 'statusRunning';
+                document.getElementById('status').innerText = pageT('statusRunning', 'Running DP Optimizer...');
                 // Allow UI to update before blocking
                 setTimeout(app.runDP, 50);
             },
@@ -495,7 +682,8 @@
                 app.powerChart.data.datasets[0].data = socPath;
                 app.powerChart.update();
 
-                document.getElementById('status').innerText = "Optimization Complete. Playback Started.";
+                app.statusKey = 'statusDone';
+                document.getElementById('status').innerText = pageT('statusDone', 'Optimization Complete. Playback Started.');
 
                 // Start Sim
                 app.startSimPlayback();
@@ -543,6 +731,30 @@
                 const net = app.plan[stepIdx] - WIND_DATA[stepIdx];
                 document.getElementById('dispCost').innerText = net.toFixed(1) + " kW";
                 document.getElementById('dispCost').className = net > 0 ? "kpi-val neg" : "kpi-val"; // Buy = Neg, Sell = Pos (Green?) No, usually Buy is Red flow.
+            }
+        };
+
+        window.PAGE_I18N_ONCHANGE = () => {
+            // Refresh status text
+            const statusEl = document.getElementById('status');
+            if (statusEl && app && app.statusKey) {
+                statusEl.innerText = pageT(app.statusKey, statusEl.innerText || '');
+            }
+
+            // Refresh chart labels/axis titles
+            if (app?.marketChart) {
+                app.marketChart.data.datasets[0].label = pageT('dsGridPrice', 'Grid Price ($/kWh)');
+                app.marketChart.data.datasets[1].label = pageT('dsWindPower', 'Wind Power (kW)');
+                app.marketChart.options.scales.y1.title.text = pageT('axisPrice', 'Price ($)');
+                app.marketChart.options.scales.y2.title.text = pageT('axisPower', 'Power (kW)');
+                app.marketChart.update();
+            }
+            if (app?.powerChart) {
+                app.powerChart.data.datasets[0].label = pageT('dsSoc', 'SoC (%)');
+                app.powerChart.data.datasets[1].label = pageT('dsBatteryAction', 'Battery Action (kW)');
+                app.powerChart.options.scales.y1.title.text = pageT('axisSoc', 'SoC (%)');
+                app.powerChart.options.scales.y2.title.text = pageT('axisPower', 'Power (kW)');
+                app.powerChart.update();
             }
         };
 

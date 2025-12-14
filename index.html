@@ -7,98 +7,375 @@
     <title>Control Engineering Lab | Cloudflare Pages</title>
     <meta name="description" content="Hands-on control engineering laboratory with interactive PID, MIMO, LQR, MPC, and robust control sandboxes. Ready for Cloudflare Pages hosting.">
     <link rel="stylesheet" href="./assets/site.css">
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                heroTitle: 'Control Engineering Laboratory',
+                heroDesc: 'Six interactive sandboxes for modern control: tune PID loops, decouple MIMO plants, stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize microgrid energy flows. Optimized for mobile and desktop, deployable instantly on Cloudflare Pages.',
+                ctaLaunch: 'Launch a Lab',
+                ctaCfGuide: 'Cloudflare Pages Guide',
+                chipResponsive: 'Responsive UX',
+                chipMathjax: 'MathJax Ready',
+                chipChart: 'Chart.js Visuals',
+                chipDocs: 'One-click Docs',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Deployment checklist <span>Cloudflare Pages</span></h4>',
+                checklist1: 'Root index.html links every lab',
+                checklist2: 'Shared assets in /assets for consistent styling',
+                checklist3: 'Relative paths for offline + CDN hosting',
+                checklist4: 'Mobile-first nav with Home/Back/Docs',
+                ctaDashboard: 'Open Cloudflare Dashboard',
+                ctaGettingStarted: 'Getting Started',
+                sectionTitle: 'Laboratory Collection',
+                sectionSubtitle: 'Pick a sandbox to start experimenting',
+                tile1Chip: 'PID · Auto-tuning',
+                tile1Title: 'PID Auto-Tuner',
+                tile1Desc: 'Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and plotting.',
+                tile2Chip: 'MIMO · Decoupling',
+                tile2Title: 'MIMO Decoupling',
+                tile2Desc: 'Relative gain analysis, pairing recommendations, and decoupler simulation for 2×2 systems.',
+                tile3Chip: 'LQR · Cart-Pole',
+                tile3Title: 'Inverted Pendulum',
+                tile3Desc: 'Design LQR gains, visualize real-time cart-pole stabilization, and test disturbances.',
+                tile4Chip: 'H∞ · Robustness',
+                tile4Title: 'Robust Control',
+                tile4Desc: 'Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID controllers.',
+                tile5Chip: 'Autonomy · MPC',
+                tile5Title: 'Path Tracking',
+                tile5Desc: 'Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini charts.',
+                tile6Chip: 'Energy · MPC',
+                tile6Title: 'Microgrid AI Manager',
+                tile6Desc: 'Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.',
+                openLab: 'Open Lab',
+                docs: 'Docs'
+            },
+            pl: {
+                heroTitle: 'Laboratorium Inżynierii Sterowania',
+                heroDesc: 'Sześć interaktywnych sandboxów nowoczesnego sterowania: strojenie PID, rozsprzęganie MIMO, stabilizacja wahadła odwróconego, testy odporności H∞, śledzenie toru oraz optymalizacja przepływów energii w mikrosieci. UX dopracowany pod mobile i desktop, gotowe do wdrożenia na Cloudflare Pages.',
+                ctaLaunch: 'Uruchom laboratorium',
+                ctaCfGuide: 'Poradnik Cloudflare Pages',
+                chipResponsive: 'Responsywny UX',
+                chipMathjax: 'Gotowe na MathJax',
+                chipChart: 'Wizualizacje Chart.js',
+                chipDocs: 'Dokumentacja jednym kliknięciem',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Lista wdrożeniowa <span>Cloudflare Pages</span></h4>',
+                checklist1: 'Główny index.html linkuje wszystkie laboratoria',
+                checklist2: 'Wspólne assety w /assets dla spójnego stylu',
+                checklist3: 'Ścieżki względne: offline + CDN',
+                checklist4: 'Nawigacja mobile-first: Start/Wstecz/Dokumentacja',
+                ctaDashboard: 'Otwórz panel Cloudflare',
+                ctaGettingStarted: 'Pierwsze kroki',
+                sectionTitle: 'Kolekcja laboratoriów',
+                sectionSubtitle: 'Wybierz sandbox i zacznij eksperymentować',
+                tile1Chip: 'PID · Autostrojenie',
+                tile1Title: 'Auto-strojenie PID',
+                tile1Desc: 'Strojenie w pętli zamkniętej metodami Zieglera–Nicholsa i Cohena–Coona z analizą odpowiedzi i wykresami.',
+                tile2Chip: 'MIMO · Rozsprzęganie',
+                tile2Title: 'Rozsprzęganie MIMO',
+                tile2Desc: 'Analiza RGA, rekomendacje parowania oraz symulacja rozsprzęgacza dla układów 2×2.',
+                tile3Chip: 'LQR · Wózek–wahadło',
+                tile3Title: 'Wahadło odwrócone',
+                tile3Desc: 'Dobór wzmocnień LQR, wizualizacja stabilizacji w czasie rzeczywistym oraz testy zakłóceń.',
+                tile4Chip: 'H∞ · Odporność',
+                tile4Title: 'Sterowanie odporne',
+                tile4Desc: 'Testy Monte Carlo stabilności, ograniczenia Bodego oraz przemiatanie niepewności dla regulatorów PID.',
+                tile5Chip: 'Autonomia · MPC',
+                tile5Title: 'Śledzenie toru',
+                tile5Desc: 'Porównanie Stanley vs MPC na generowanych trasach z KPI na żywo i mini wykresami.',
+                tile6Chip: 'Energia · MPC',
+                tile6Title: 'Menedżer AI mikrosieci',
+                tile6Desc: 'Planowanie day-ahead metodą DP, wizualizacja SoC oraz śledzenie zysku.',
+                openLab: 'Otwórz lab',
+                docs: 'Dokumentacja'
+            },
+            fr: {
+                heroTitle: 'Laboratoire d’ingénierie de commande',
+                heroDesc: 'Six bacs à sable interactifs pour la commande moderne : réglage PID, découplage MIMO, stabilisation du pendule inversé, tests robustes H∞, suivi de trajectoire autonome et optimisation énergétique de micro-réseau. Optimisé mobile/desktop, déployable sur Cloudflare Pages.',
+                ctaLaunch: 'Lancer un labo',
+                ctaCfGuide: 'Guide Cloudflare Pages',
+                chipResponsive: 'UX responsive',
+                chipMathjax: 'Prêt pour MathJax',
+                chipChart: 'Visuels Chart.js',
+                chipDocs: 'Docs en un clic',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Checklist de déploiement <span>Cloudflare Pages</span></h4>',
+                checklist1: 'Le index.html racine relie chaque labo',
+                checklist2: 'Assets partagés dans /assets pour un style cohérent',
+                checklist3: 'Chemins relatifs pour offline + CDN',
+                checklist4: 'Nav mobile-first avec Accueil/Retour/Docs',
+                ctaDashboard: 'Ouvrir le tableau de bord Cloudflare',
+                ctaGettingStarted: 'Bien démarrer',
+                sectionTitle: 'Collection de laboratoires',
+                sectionSubtitle: 'Choisissez un bac à sable pour commencer',
+                tile1Chip: 'PID · Auto-réglage',
+                tile1Title: 'Auto-réglage PID',
+                tile1Desc: 'Réglage en boucle fermée Ziegler–Nichols et Cohen–Coon avec analyse de réponse.',
+                tile2Chip: 'MIMO · Découplage',
+                tile2Title: 'Découplage MIMO',
+                tile2Desc: 'Analyse RGA, recommandations d’appariement et simulation de découpleur pour 2×2.',
+                tile3Chip: 'LQR · Chariot-pendule',
+                tile3Title: 'Pendule inversé',
+                tile3Desc: 'Concevez les gains LQR, visualisez la stabilisation temps réel et testez des perturbations.',
+                tile4Chip: 'H∞ · Robustesse',
+                tile4Title: 'Commande robuste',
+                tile4Desc: 'Tests Monte Carlo, limites de Bode et balayages d’incertitude pour PID.',
+                tile5Chip: 'Autonomie · MPC',
+                tile5Title: 'Suivi de trajectoire',
+                tile5Desc: 'Comparez Stanley vs MPC sur des pistes procédurales avec KPI et mini-graphes.',
+                tile6Chip: 'Énergie · MPC',
+                tile6Title: 'Gestionnaire IA micro-réseau',
+                tile6Desc: 'Planification day-ahead par DP, visualisation du SoC et suivi du profit.',
+                openLab: 'Ouvrir',
+                docs: 'Docs'
+            },
+            es: {
+                heroTitle: 'Laboratorio de ingeniería de control',
+                heroDesc: 'Seis sandboxes interactivos de control moderno: ajuste PID, desacoplo MIMO, estabilización de péndulo invertido, pruebas H∞ robustas, seguimiento de trayectoria y optimización energética de microred. Optimizado para móvil/escritorio, listo para Cloudflare Pages.',
+                ctaLaunch: 'Abrir un lab',
+                ctaCfGuide: 'Guía de Cloudflare Pages',
+                chipResponsive: 'UX responsive',
+                chipMathjax: 'Listo para MathJax',
+                chipChart: 'Gráficos Chart.js',
+                chipDocs: 'Docs con un clic',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Checklist de despliegue <span>Cloudflare Pages</span></h4>',
+                checklist1: 'El index.html raíz enlaza cada laboratorio',
+                checklist2: 'Assets compartidos en /assets para estilo consistente',
+                checklist3: 'Rutas relativas para offline + CDN',
+                checklist4: 'Navegación mobile-first con Inicio/Atrás/Docs',
+                ctaDashboard: 'Abrir panel de Cloudflare',
+                ctaGettingStarted: 'Primeros pasos',
+                sectionTitle: 'Colección de laboratorios',
+                sectionSubtitle: 'Elige un sandbox para empezar',
+                tile1Chip: 'PID · Autoajuste',
+                tile1Title: 'Autoajuste PID',
+                tile1Desc: 'Ajuste en lazo cerrado Ziegler–Nichols y Cohen–Coon con análisis y gráficos.',
+                tile2Chip: 'MIMO · Desacoplo',
+                tile2Title: 'Desacoplo MIMO',
+                tile2Desc: 'Análisis RGA, recomendaciones de emparejamiento y simulación de desacoplador 2×2.',
+                tile3Chip: 'LQR · Carro–péndulo',
+                tile3Title: 'Péndulo invertido',
+                tile3Desc: 'Diseña ganancias LQR, visualiza estabilización en tiempo real y prueba perturbaciones.',
+                tile4Chip: 'H∞ · Robustez',
+                tile4Title: 'Control robusto',
+                tile4Desc: 'Pruebas Monte Carlo, límites de Bode y barridos de incertidumbre para PID.',
+                tile5Chip: 'Autonomía · MPC',
+                tile5Title: 'Seguimiento de trayectoria',
+                tile5Desc: 'Compara Stanley vs MPC en pistas procedurales con KPIs y mini-gráficas.',
+                tile6Chip: 'Energía · MPC',
+                tile6Title: 'Gestor IA de microred',
+                tile6Desc: 'Programación day-ahead con DP, visualización de SoC y seguimiento de ganancias.',
+                openLab: 'Abrir',
+                docs: 'Docs'
+            },
+            pt: {
+                heroTitle: 'Laboratório de engenharia de controle',
+                heroDesc: 'Seis sandboxes interativos para controle moderno: sintonia PID, desacoplamento MIMO, pêndulo invertido, testes robustos H∞, rastreamento de trajetória e otimização energética de microrede. Otimizado para mobile/desktop, pronto para Cloudflare Pages.',
+                ctaLaunch: 'Abrir um lab',
+                ctaCfGuide: 'Guia do Cloudflare Pages',
+                chipResponsive: 'UX responsivo',
+                chipMathjax: 'Pronto para MathJax',
+                chipChart: 'Visuais Chart.js',
+                chipDocs: 'Docs em um clique',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Checklist de deploy <span>Cloudflare Pages</span></h4>',
+                checklist1: 'O index.html raiz linka todos os labs',
+                checklist2: 'Assets compartilhados em /assets para estilo consistente',
+                checklist3: 'Caminhos relativos para offline + CDN',
+                checklist4: 'Navegação mobile-first com Início/Voltar/Docs',
+                ctaDashboard: 'Abrir painel da Cloudflare',
+                ctaGettingStarted: 'Começar',
+                sectionTitle: 'Coleção de laboratórios',
+                sectionSubtitle: 'Escolha um sandbox para começar',
+                tile1Chip: 'PID · Autoajuste',
+                tile1Title: 'Autoajuste PID',
+                tile1Desc: 'Sintonia em malha fechada Ziegler–Nichols e Cohen–Coon com análise e gráficos.',
+                tile2Chip: 'MIMO · Desacoplamento',
+                tile2Title: 'Desacoplamento MIMO',
+                tile2Desc: 'Análise RGA, recomendações de pareamento e simulação de desacoplador 2×2.',
+                tile3Chip: 'LQR · Carrinho-pêndulo',
+                tile3Title: 'Pêndulo invertido',
+                tile3Desc: 'Projete ganhos LQR, visualize a estabilização em tempo real e teste perturbações.',
+                tile4Chip: 'H∞ · Robustez',
+                tile4Title: 'Controle robusto',
+                tile4Desc: 'Testes Monte Carlo, limites de Bode e varreduras de incerteza para PID.',
+                tile5Chip: 'Autonomia · MPC',
+                tile5Title: 'Rastreamento de trajetória',
+                tile5Desc: 'Compare Stanley vs MPC em pistas procedurais com KPIs e mini-gráficos.',
+                tile6Chip: 'Energia · MPC',
+                tile6Title: 'Gerente IA de microrede',
+                tile6Desc: 'Agendamento day-ahead com DP, visualização de SoC e acompanhamento de lucro.',
+                openLab: 'Abrir',
+                docs: 'Docs'
+            },
+            de: {
+                heroTitle: 'Regelungstechnik-Labor',
+                heroDesc: 'Sechs interaktive Sandboxes für moderne Regelung: PID-Tuning, MIMO-Entkopplung, invertiertes Pendel, robuste H∞-Tests, Pfadverfolgung und Microgrid-Energieoptimierung. Für Mobile/Desktop optimiert, bereit für Cloudflare Pages.',
+                ctaLaunch: 'Labor starten',
+                ctaCfGuide: 'Cloudflare Pages Guide',
+                chipResponsive: 'Responsives UX',
+                chipMathjax: 'MathJax bereit',
+                chipChart: 'Chart.js Visuals',
+                chipDocs: 'Docs mit einem Klick',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Deployment-Checkliste <span>Cloudflare Pages</span></h4>',
+                checklist1: 'Root index.html verlinkt jedes Labor',
+                checklist2: 'Geteilte Assets in /assets für konsistenten Stil',
+                checklist3: 'Relative Pfade für Offline + CDN',
+                checklist4: 'Mobile-first Nav mit Start/Zurück/Docs',
+                ctaDashboard: 'Cloudflare-Dashboard öffnen',
+                ctaGettingStarted: 'Erste Schritte',
+                sectionTitle: 'Labor-Kollektion',
+                sectionSubtitle: 'Wähle eine Sandbox und starte',
+                tile1Chip: 'PID · Autotuning',
+                tile1Title: 'PID-Autotuner',
+                tile1Desc: 'Ziegler–Nichols und Cohen–Coon im geschlossenen Regelkreis mit Analyse und Plotting.',
+                tile2Chip: 'MIMO · Entkopplung',
+                tile2Title: 'MIMO-Entkopplung',
+                tile2Desc: 'RGA-Analyse, Pairing-Empfehlungen und Entkoppler-Simulation für 2×2.',
+                tile3Chip: 'LQR · Cart-Pole',
+                tile3Title: 'Invertiertes Pendel',
+                tile3Desc: 'LQR-Gewinne entwerfen, Stabilisierung in Echtzeit visualisieren und Störungen testen.',
+                tile4Chip: 'H∞ · Robustheit',
+                tile4Title: 'Robuste Regelung',
+                tile4Desc: 'Monte-Carlo-Checks, Bode-Grenzen und Unsicherheits-Sweeps für PID.',
+                tile5Chip: 'Autonomie · MPC',
+                tile5Title: 'Pfadverfolgung',
+                tile5Desc: 'Stanley vs MPC auf prozeduralen Strecken mit KPIs und Mini-Charts vergleichen.',
+                tile6Chip: 'Energie · MPC',
+                tile6Title: 'Microgrid-KI-Manager',
+                tile6Desc: 'Day-ahead Planung per DP, SoC-Visualisierung und Profit-Tracking.',
+                openLab: 'Öffnen',
+                docs: 'Docs'
+            },
+            uk: {
+                heroTitle: 'Лабораторія керування',
+                heroDesc: 'Шість інтерактивних sandbox-лабораторій сучасного керування: налаштування PID, розв’язування MIMO, стабілізація перевернутого маятника, робастні H∞-тести, відстеження траєкторії та оптимізація енергопотоків мікромережі. Оптимізовано для мобільних і ПК, готово до Cloudflare Pages.',
+                ctaLaunch: 'Запустити лабораторію',
+                ctaCfGuide: 'Гід Cloudflare Pages',
+                chipResponsive: 'Адаптивний UX',
+                chipMathjax: 'Готово для MathJax',
+                chipChart: 'Візуалізації Chart.js',
+                chipDocs: 'Документація в один клік',
+                checklistHtml: '<h4 class="section-title" style="margin:0 0 10px;">Чекліст розгортання <span>Cloudflare Pages</span></h4>',
+                checklist1: 'Кореневий index.html посилається на всі лабораторії',
+                checklist2: 'Спільні assets у /assets для єдиного стилю',
+                checklist3: 'Відносні шляхи для offline + CDN',
+                checklist4: 'Навігація mobile-first: Home/Back/Docs',
+                ctaDashboard: 'Відкрити панель Cloudflare',
+                ctaGettingStarted: 'Початок роботи',
+                sectionTitle: 'Колекція лабораторій',
+                sectionSubtitle: 'Оберіть sandbox і починайте',
+                tile1Chip: 'PID · Автоналаштування',
+                tile1Title: 'PID автоналаштування',
+                tile1Desc: 'Налаштування Ziegler–Nichols і Cohen–Coon у замкненому контурі з аналітикою та графіками.',
+                tile2Chip: 'MIMO · Розв’язування',
+                tile2Title: 'MIMO розв’язування',
+                tile2Desc: 'Аналіз RGA, рекомендації парування та симуляція розв’язувача для 2×2.',
+                tile3Chip: 'LQR · Візок-маятник',
+                tile3Title: 'Перевернутий маятник',
+                tile3Desc: 'Проєктування LQR, візуалізація стабілізації в реальному часі та тести збурень.',
+                tile4Chip: 'H∞ · Робастність',
+                tile4Title: 'Робастне керування',
+                tile4Desc: 'Monte Carlo перевірки, межі Боде та прогін невизначеностей для PID.',
+                tile5Chip: 'Автономія · MPC',
+                tile5Title: 'Відстеження траєкторії',
+                tile5Desc: 'Порівняння Stanley vs MPC на процедурних треках з KPI та міні-графіками.',
+                tile6Chip: 'Енергія · MPC',
+                tile6Title: 'AI-менеджер мікромережі',
+                tile6Desc: 'Планування day-ahead через DP, візуалізація SoC та відстеження прибутку.',
+                openLab: 'Відкрити',
+                docs: 'Документи'
+            }
+        };
+    </script>
 </head>
 
 <body data-page-name="Control Lab" data-home="./index.html" data-tags="Control, Simulation, MPC, LQR, PID, Robustness">
     <div class="lab-shell">
         <section class="hero lab-card soft">
             <div>
-                <h1>Control Engineering Laboratory</h1>
-                <p>Six interactive sandboxes for modern control: tune PID loops, decouple MIMO plants, stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize microgrid energy flows. Optimized for mobile and desktop, deployable instantly on Cloudflare Pages.</p>
+                <h1 data-i18n="heroTitle">Control Engineering Laboratory</h1>
+                <p data-i18n="heroDesc">Six interactive sandboxes for modern control: tune PID loops, decouple MIMO plants, stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize microgrid energy flows. Optimized for mobile and desktop, deployable instantly on Cloudflare Pages.</p>
                 <div class="cta-row">
-                    <a class="pill primary" href="#labs">Launch a Lab</a>
-                    <a class="pill" href="https://developers.cloudflare.com/pages/" target="_blank" rel="noreferrer">Cloudflare Pages Guide</a>
+                    <a class="pill primary" href="#labs" data-i18n="ctaLaunch">Launch a Lab</a>
+                    <a class="pill" href="https://developers.cloudflare.com/pages/" target="_blank" rel="noreferrer" data-i18n="ctaCfGuide">Cloudflare Pages Guide</a>
                 </div>
                 <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <span class="chip">Responsive UX</span>
-                    <span class="chip">MathJax Ready</span>
-                    <span class="chip">Chart.js Visuals</span>
-                    <span class="chip">One-click Docs</span>
+                    <span class="chip" data-i18n="chipResponsive">Responsive UX</span>
+                    <span class="chip" data-i18n="chipMathjax">MathJax Ready</span>
+                    <span class="chip" data-i18n="chipChart">Chart.js Visuals</span>
+                    <span class="chip" data-i18n="chipDocs">One-click Docs</span>
                 </div>
             </div>
             <div class="lab-card">
-                <h4 class="section-title" style="margin:0 0 10px;">Deployment checklist <span>Cloudflare Pages</span></h4>
+                <div data-i18n-html="checklistHtml"><h4 class="section-title" style="margin:0 0 10px;">Deployment checklist <span>Cloudflare Pages</span></h4></div>
                 <ul style="margin:0; padding-left: 18px; color: var(--text-light);">
-                    <li>Root index.html links every lab</li>
-                    <li>Shared assets in /assets for consistent styling</li>
-                    <li>Relative paths for offline + CDN hosting</li>
-                    <li>Mobile-first nav with Home/Back/Docs</li>
+                    <li data-i18n="checklist1">Root index.html links every lab</li>
+                    <li data-i18n="checklist2">Shared assets in /assets for consistent styling</li>
+                    <li data-i18n="checklist3">Relative paths for offline + CDN hosting</li>
+                    <li data-i18n="checklist4">Mobile-first nav with Home/Back/Docs</li>
                 </ul>
                 <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                    <a class="pill" href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer">Open Cloudflare Dashboard</a>
-                    <a class="pill ghost" href="https://developers.cloudflare.com/pages/get-started/" target="_blank" rel="noreferrer">Getting Started</a>
+                    <a class="pill" href="https://dash.cloudflare.com/" target="_blank" rel="noreferrer" data-i18n="ctaDashboard">Open Cloudflare Dashboard</a>
+                    <a class="pill ghost" href="https://developers.cloudflare.com/pages/get-started/" target="_blank" rel="noreferrer" data-i18n="ctaGettingStarted">Getting Started</a>
                 </div>
             </div>
         </section>
 
         <div id="labs" class="section-title" style="margin-top: 12px;">
-            <h2 style="margin:0; font-size:1.1rem; color: var(--text-main);">Laboratory Collection</h2>
-            <span>Pick a sandbox to start experimenting</span>
+            <h2 style="margin:0; font-size:1.1rem; color: var(--text-main);" data-i18n="sectionTitle">Laboratory Collection</h2>
+            <span data-i18n="sectionSubtitle">Pick a sandbox to start experimenting</span>
         </div>
 
         <div class="lab-grid">
             <div class="lab-card lab-tile">
-                <div class="chip">PID · Auto-tuning</div>
-                <h3>PID Auto-Tuner</h3>
-                <p>Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and plotting.</p>
+                <div class="chip" data-i18n="tile1Chip">PID · Auto-tuning</div>
+                <h3 data-i18n="tile1Title">PID Auto-Tuner</h3>
+                <p data-i18n="tile1Desc">Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and plotting.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project1/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project1/PID-Tuning-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project1/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project1/PID-Tuning-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
             <div class="lab-card lab-tile">
-                <div class="chip">MIMO · Decoupling</div>
-                <h3>MIMO Decoupling</h3>
-                <p>Relative gain analysis, pairing recommendations, and decoupler simulation for 2×2 systems.</p>
+                <div class="chip" data-i18n="tile2Chip">MIMO · Decoupling</div>
+                <h3 data-i18n="tile2Title">MIMO Decoupling</h3>
+                <p data-i18n="tile2Desc">Relative gain analysis, pairing recommendations, and decoupler simulation for 2×2 systems.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project2/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project2/MIMO-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project2/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project2/MIMO-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
             <div class="lab-card lab-tile">
-                <div class="chip">LQR · Cart-Pole</div>
-                <h3>Inverted Pendulum</h3>
-                <p>Design LQR gains, visualize real-time cart-pole stabilization, and test disturbances.</p>
+                <div class="chip" data-i18n="tile3Chip">LQR · Cart-Pole</div>
+                <h3 data-i18n="tile3Title">Inverted Pendulum</h3>
+                <p data-i18n="tile3Desc">Design LQR gains, visualize real-time cart-pole stabilization, and test disturbances.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project3/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project3/LQR-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project3/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project3/LQR-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
             <div class="lab-card lab-tile">
-                <div class="chip">H∞ · Robustness</div>
-                <h3>Robust Control</h3>
-                <p>Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID controllers.</p>
+                <div class="chip" data-i18n="tile4Chip">H∞ · Robustness</div>
+                <h3 data-i18n="tile4Title">Robust Control</h3>
+                <p data-i18n="tile4Desc">Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID controllers.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project4/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project4/Robust-Control-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project4/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project4/Robust-Control-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
             <div class="lab-card lab-tile">
-                <div class="chip">Autonomy · MPC</div>
-                <h3>Path Tracking</h3>
-                <p>Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini charts.</p>
+                <div class="chip" data-i18n="tile5Chip">Autonomy · MPC</div>
+                <h3 data-i18n="tile5Title">Path Tracking</h3>
+                <p data-i18n="tile5Desc">Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini charts.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project5/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project5/Path-Tracking-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project5/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project5/Path-Tracking-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
             <div class="lab-card lab-tile">
-                <div class="chip">Energy · MPC</div>
-                <h3>Microgrid AI Manager</h3>
-                <p>Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.</p>
+                <div class="chip" data-i18n="tile6Chip">Energy · MPC</div>
+                <h3 data-i18n="tile6Title">Microgrid AI Manager</h3>
+                <p data-i18n="tile6Desc">Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.</p>
                 <div class="tile-actions">
-                    <a class="pill primary" href="./project6/index.html">Open Lab</a>
-                    <a class="pill ghost" href="./project6/Energy-MPC-Guide.md">Docs</a>
+                    <a class="pill primary" href="./project6/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project6/Energy-MPC-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
         </div>

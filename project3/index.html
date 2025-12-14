@@ -239,10 +239,10 @@
 
     <div class="container">
         <header>
-            <h1>Inverted Pendulum Control</h1>
-            <p class="subtitle">Linear Quadratic Regulator (LQR) on Cart-Pole System</p>
+            <h1 data-i18n="title">Inverted Pendulum Control</h1>
+            <p class="subtitle" data-i18n="subtitle">Linear Quadratic Regulator (LQR) on Cart-Pole System</p>
             <p style="margin-top: 10px;"><a href="LQR-Guide.md"
-                    style="color: var(--primary); text-decoration: none; font-weight: 500;">📖 Read the Beginner's
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖 Read the Beginner's
                     Guide</a></p>
         </header>
 
@@ -250,47 +250,47 @@
             <!-- Controls -->
             <div>
                 <div class="card">
-                    <div class="card-header">Physical Parameters</div>
+                    <div class="card-header" data-i18n="cardPhysical">Physical Parameters</div>
                     <div class="form-group">
-                        <label>Cart Mass \( M \) (kg)</label>
+                        <label data-i18n-html="labelCartMass">Cart Mass \( M \) (kg)</label>
                         <input type="number" id="M" value="1.0" step="0.1">
                     </div>
                     <div class="form-group">
-                        <label>Pendulum Mass \( m \) (kg)</label>
+                        <label data-i18n-html="labelPendulumMass">Pendulum Mass \( m \) (kg)</label>
                         <input type="number" id="m" value="0.1" step="0.05">
                     </div>
                     <div class="form-group">
-                        <label>Pendulum Length \( l \) (m)</label>
+                        <label data-i18n-html="labelPendulumLength">Pendulum Length \( l \) (m)</label>
                         <input type="number" id="l" value="1.0" step="0.1">
                     </div>
 
-                    <div class="card-header" style="margin-top: 24px;">LQR Tuning</div>
+                    <div class="card-header" style="margin-top: 24px;" data-i18n="cardTuning">LQR Tuning</div>
                     <div class="form-group">
-                        <label>State Cost \( Q_{pos} \) (x)</label>
+                        <label data-i18n-html="labelQpos">State Cost \( Q_{pos} \) (x)</label>
                         <input type="number" id="Qx" value="1.0">
                     </div>
                     <div class="form-group">
-                        <label>State Cost \( Q_{angle} \) (θ)</label>
+                        <label data-i18n-html="labelQangle">State Cost \( Q_{angle} \) (θ)</label>
                         <input type="number" id="Qtheta" value="10.0">
                     </div>
                     <div class="form-group">
-                        <label>Control Cost \( R \)</label>
+                        <label data-i18n-html="labelR">Control Cost \( R \)</label>
                         <input type="number" id="R" value="0.1" step="0.01">
                     </div>
 
                     <div class="form-group">
-                        <label>Initial Angle (deg)</label>
+                        <label data-i18n="labelInitAngle">Initial Angle (deg)</label>
                         <input type="number" id="initTheta" value="15">
                     </div>
 
-                    <button class="btn btn-primary" onclick="app.updateAndRun()">Re-Calculate LQR & Reset</button>
+                    <button class="btn btn-primary" onclick="app.updateAndRun()" data-i18n="btnRecalc">Re-Calculate LQR & Reset</button>
                     <div id="statusBox" class="status"></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">Computed Feedback Gains</div>
+                    <div class="card-header" data-i18n="cardGains">Computed Feedback Gains</div>
                     <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">
-                        \( u = -K \mathbf{x} \) where \( \mathbf{x} = [x, \dot{x}, \theta, \dot{\theta}]^T \)
+                        <span data-i18n-html="gainsNote">\( u = -K \mathbf{x} \) where \( \mathbf{x} = [x, \dot{x}, \theta, \dot{\theta}]^T \)</span>
                     </div>
                     <div class="gains-display">
                         <div>\( K_x \): <span id="kx" class="gain-val">-</span></div>
@@ -303,7 +303,7 @@
 
             <!-- Simulation -->
             <div class="card">
-                <div class="card-header">Real-Time Simulation</div>
+                <div class="card-header" data-i18n="cardSim">Real-Time Simulation</div>
                 <div class="anim-container">
                     <canvas id="simCanvas"></canvas>
                 </div>
@@ -311,28 +311,205 @@
                 <div class="metrics">
                     <div class="metric-box">
                         <div class="m-val" id="dispTheta">0°</div>
-                        <div class="m-lbl">Angle</div>
+                        <div class="m-lbl" data-i18n="metricAngle">Angle</div>
                     </div>
                     <div class="metric-box">
                         <div class="m-val" id="dispX">0m</div>
-                        <div class="m-lbl">Position</div>
+                        <div class="m-lbl" data-i18n="metricPosition">Position</div>
                     </div>
                     <div class="metric-box">
                         <div class="m-val" id="dispU">0N</div>
-                        <div class="m-lbl">Force</div>
+                        <div class="m-lbl" data-i18n="metricForce">Force</div>
                     </div>
                     <div class="metric-box">
                         <div class="m-val" id="dispTime">0s</div>
-                        <div class="m-lbl">Time</div>
+                        <div class="m-lbl" data-i18n="metricTime">Time</div>
                     </div>
                 </div>
 
-                <button class="btn btn-sec" onclick="app.perturb()">Add Disturbance (+5N impulse)</button>
+                <button class="btn btn-sec" onclick="app.perturb()" data-i18n="btnDisturbance">Add Disturbance (+5N impulse)</button>
             </div>
         </div>
     </div>
 
     <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: "Inverted Pendulum Control",
+                subtitle: "Linear Quadratic Regulator (LQR) on Cart-Pole System",
+                readGuide: "📖 Read the Beginner's Guide",
+                cardPhysical: "Physical Parameters",
+                labelCartMass: "Cart Mass \\( M \\) (kg)",
+                labelPendulumMass: "Pendulum Mass \\( m \\) (kg)",
+                labelPendulumLength: "Pendulum Length \\( l \\) (m)",
+                cardTuning: "LQR Tuning",
+                labelQpos: "State Cost \\( Q_{pos} \\) (x)",
+                labelQangle: "State Cost \\( Q_{angle} \\) (θ)",
+                labelR: "Control Cost \\( R \\)",
+                labelInitAngle: "Initial Angle (deg)",
+                btnRecalc: "Re-Calculate LQR & Reset",
+                statusUpdated: "LQR Gains Updated Successfully",
+                cardGains: "Computed Feedback Gains",
+                gainsNote: "\\( u = -K \\mathbf{x} \\) where \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Real-Time Simulation",
+                metricAngle: "Angle",
+                metricPosition: "Position",
+                metricForce: "Force",
+                metricTime: "Time",
+                btnDisturbance: "Add Disturbance (+5N impulse)"
+            },
+            pl: {
+                title: "Sterowanie odwróconym wahadłem",
+                subtitle: "Regulator LQR (Linear Quadratic Regulator) dla układu wózek–wahadło",
+                readGuide: "📖 Przeczytaj poradnik dla początkujących",
+                cardPhysical: "Parametry fizyczne",
+                labelCartMass: "Masa wózka \\( M \\) (kg)",
+                labelPendulumMass: "Masa wahadła \\( m \\) (kg)",
+                labelPendulumLength: "Długość wahadła \\( l \\) (m)",
+                cardTuning: "Strojenie LQR",
+                labelQpos: "Koszt stanu \\( Q_{pos} \\) (x)",
+                labelQangle: "Koszt stanu \\( Q_{angle} \\) (θ)",
+                labelR: "Koszt sterowania \\( R \\)",
+                labelInitAngle: "Kąt początkowy (deg)",
+                btnRecalc: "Przelicz LQR i zresetuj",
+                statusUpdated: "Zaktualizowano wzmocnienia LQR",
+                cardGains: "Wyznaczone wzmocnienia sprzężenia zwrotnego",
+                gainsNote: "\\( u = -K \\mathbf{x} \\), gdzie \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Symulacja w czasie rzeczywistym",
+                metricAngle: "Kąt",
+                metricPosition: "Pozycja",
+                metricForce: "Siła",
+                metricTime: "Czas",
+                btnDisturbance: "Dodaj zakłócenie (+5N impuls)"
+            },
+            fr: {
+                title: "Commande du pendule inversé",
+                subtitle: "Régulateur LQR (Linear Quadratic Regulator) sur système chariot–pendule",
+                readGuide: "📖 Lire le guide du débutant",
+                cardPhysical: "Paramètres physiques",
+                labelCartMass: "Masse du chariot \\( M \\) (kg)",
+                labelPendulumMass: "Masse du pendule \\( m \\) (kg)",
+                labelPendulumLength: "Longueur du pendule \\( l \\) (m)",
+                cardTuning: "Réglage LQR",
+                labelQpos: "Coût d'état \\( Q_{pos} \\) (x)",
+                labelQangle: "Coût d'état \\( Q_{angle} \\) (θ)",
+                labelR: "Coût de commande \\( R \\)",
+                labelInitAngle: "Angle initial (deg)",
+                btnRecalc: "Recalculer le LQR et réinitialiser",
+                statusUpdated: "Gains LQR mis à jour",
+                cardGains: "Gains de retour calculés",
+                gainsNote: "\\( u = -K \\mathbf{x} \\) où \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Simulation en temps réel",
+                metricAngle: "Angle",
+                metricPosition: "Position",
+                metricForce: "Force",
+                metricTime: "Temps",
+                btnDisturbance: "Ajouter une perturbation (+5N impulsion)"
+            },
+            es: {
+                title: "Control del péndulo invertido",
+                subtitle: "Regulador LQR (Linear Quadratic Regulator) en sistema carro–péndulo",
+                readGuide: "📖 Leer la guía para principiantes",
+                cardPhysical: "Parámetros físicos",
+                labelCartMass: "Masa del carro \\( M \\) (kg)",
+                labelPendulumMass: "Masa del péndulo \\( m \\) (kg)",
+                labelPendulumLength: "Longitud del péndulo \\( l \\) (m)",
+                cardTuning: "Ajuste LQR",
+                labelQpos: "Costo de estado \\( Q_{pos} \\) (x)",
+                labelQangle: "Costo de estado \\( Q_{angle} \\) (θ)",
+                labelR: "Costo de control \\( R \\)",
+                labelInitAngle: "Ángulo inicial (deg)",
+                btnRecalc: "Recalcular LQR y reiniciar",
+                statusUpdated: "Ganancias LQR actualizadas",
+                cardGains: "Ganancias de realimentación calculadas",
+                gainsNote: "\\( u = -K \\mathbf{x} \\) donde \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Simulación en tiempo real",
+                metricAngle: "Ángulo",
+                metricPosition: "Posición",
+                metricForce: "Fuerza",
+                metricTime: "Tiempo",
+                btnDisturbance: "Añadir perturbación (+5N impulso)"
+            },
+            pt: {
+                title: "Controle do pêndulo invertido",
+                subtitle: "Regulador LQR (Linear Quadratic Regulator) no sistema carro–pêndulo",
+                readGuide: "📖 Ler o guia para iniciantes",
+                cardPhysical: "Parâmetros físicos",
+                labelCartMass: "Massa do carrinho \\( M \\) (kg)",
+                labelPendulumMass: "Massa do pêndulo \\( m \\) (kg)",
+                labelPendulumLength: "Comprimento do pêndulo \\( l \\) (m)",
+                cardTuning: "Ajuste LQR",
+                labelQpos: "Custo de estado \\( Q_{pos} \\) (x)",
+                labelQangle: "Custo de estado \\( Q_{angle} \\) (θ)",
+                labelR: "Custo de controle \\( R \\)",
+                labelInitAngle: "Ângulo inicial (deg)",
+                btnRecalc: "Recalcular LQR e redefinir",
+                statusUpdated: "Ganhos LQR atualizados",
+                cardGains: "Ganhos de realimentação calculados",
+                gainsNote: "\\( u = -K \\mathbf{x} \\) onde \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Simulação em tempo real",
+                metricAngle: "Ângulo",
+                metricPosition: "Posição",
+                metricForce: "Força",
+                metricTime: "Tempo",
+                btnDisturbance: "Adicionar perturbação (+5N impulso)"
+            },
+            de: {
+                title: "Regelung des inversen Pendels",
+                subtitle: "Linear Quadratic Regulator (LQR) für das Cart-Pole-System",
+                readGuide: "📖 Einsteigerleitfaden lesen",
+                cardPhysical: "Physikalische Parameter",
+                labelCartMass: "Wagenmasse \\( M \\) (kg)",
+                labelPendulumMass: "Pendelmasse \\( m \\) (kg)",
+                labelPendulumLength: "Pendellänge \\( l \\) (m)",
+                cardTuning: "LQR-Abstimmung",
+                labelQpos: "Zustandskosten \\( Q_{pos} \\) (x)",
+                labelQangle: "Zustandskosten \\( Q_{angle} \\) (θ)",
+                labelR: "Stellkosten \\( R \\)",
+                labelInitAngle: "Anfangswinkel (deg)",
+                btnRecalc: "LQR neu berechnen & zurücksetzen",
+                statusUpdated: "LQR-Verstärkungen aktualisiert",
+                cardGains: "Berechnete Rückführverstärkungen",
+                gainsNote: "\\( u = -K \\mathbf{x} \\) wobei \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Echtzeitsimulation",
+                metricAngle: "Winkel",
+                metricPosition: "Position",
+                metricForce: "Kraft",
+                metricTime: "Zeit",
+                btnDisturbance: "Störung hinzufügen (+5N Impuls)"
+            },
+            uk: {
+                title: "Керування перевернутим маятником",
+                subtitle: "Регулятор LQR (Linear Quadratic Regulator) для системи візок–маятник",
+                readGuide: "📖 Прочитати посібник для початківців",
+                cardPhysical: "Фізичні параметри",
+                labelCartMass: "Маса візка \\( M \\) (kg)",
+                labelPendulumMass: "Маса маятника \\( m \\) (kg)",
+                labelPendulumLength: "Довжина маятника \\( l \\) (m)",
+                cardTuning: "Налаштування LQR",
+                labelQpos: "Вартість стану \\( Q_{pos} \\) (x)",
+                labelQangle: "Вартість стану \\( Q_{angle} \\) (θ)",
+                labelR: "Вартість керування \\( R \\)",
+                labelInitAngle: "Початковий кут (deg)",
+                btnRecalc: "Перерахувати LQR і скинути",
+                statusUpdated: "Підсилення LQR оновлено",
+                cardGains: "Обчислені коефіцієнти зворотного зв’язку",
+                gainsNote: "\\( u = -K \\mathbf{x} \\), де \\( \\mathbf{x} = [x, \\dot{x}, \\theta, \\dot{\\theta}]^T \\)",
+                cardSim: "Симуляція в реальному часі",
+                metricAngle: "Кут",
+                metricPosition: "Положення",
+                metricForce: "Сила",
+                metricTime: "Час",
+                btnDisturbance: "Додати збурення (+5N імпульс)"
+            }
+        };
+
+        function pageT(key, fallback) {
+            const lang = (document.documentElement.getAttribute('lang') || 'en').toLowerCase();
+            const dict = window.PAGE_TRANSLATIONS?.[lang] || window.PAGE_TRANSLATIONS?.en || {};
+            return (dict && Object.prototype.hasOwnProperty.call(dict, key)) ? dict[key] : fallback;
+        }
+
         const cssVar = (name, fallback = '') => {
             const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
             return value || fallback;
@@ -538,7 +715,7 @@
                 document.getElementById('kdth').textContent = K_computed[3].toFixed(2);
 
                 document.getElementById('statusBox').className = "status show success";
-                document.getElementById('statusBox').textContent = "LQR Gains Updated Successfully";
+                document.getElementById('statusBox').textContent = pageT('statusUpdated', 'LQR Gains Updated Successfully');
 
                 // Reset State
                 const initDeg = parseFloat(document.getElementById('initTheta').value);
@@ -671,6 +848,13 @@
                     ctx.lineTo(as + dir * len, by);
                     ctx.stroke();
                 }
+            }
+        };
+
+        window.PAGE_I18N_ONCHANGE = () => {
+            const sb = document.getElementById('statusBox');
+            if (sb && sb.className.includes('show')) {
+                sb.textContent = pageT('statusUpdated', 'LQR Gains Updated Successfully');
             }
         };
 
