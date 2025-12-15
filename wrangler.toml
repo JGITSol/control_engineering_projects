@@ -1,0 +1,6 @@
+name = "control-engineering-projects"
+compatibility_date = "2024-12-15"
+
+[assets]
+directory = "."
+binding = "ASSETS"
