@@ -1,0 +1,10 @@
+node_modules
+.git
+.vscode
+.github
+audit
+tools
+package.json
+package-lock.json
+wrangler.toml
+*.md
