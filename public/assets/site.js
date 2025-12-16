@@ -372,15 +372,17 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="lab-actions">
             <a class="pill" href="${home}" data-i18n-ui="home">${getT().home}</a>
             <button class="pill ghost" type="button" data-nav-back data-i18n-ui="back" data-i18n-ui-aria="backAria" aria-label="${getT().backAria}">${getT().back}</button>
-            <select class="pill ghost" data-lang-select aria-label="${getT().langAria}">
-                <option value="en">EN</option>
-                <option value="pl">PL</option>
-                <option value="fr">FR</option>
-                <option value="es">ES</option>
-                <option value="pt">PT</option>
-                <option value="de">DE</option>
-                <option value="uk">UK</option>
-            </select>
+            <div class="pill ghost select-wrapper">
+                <select data-lang-select aria-label="${getT().langAria}">
+                    <option value="en">EN</option>
+                    <option value="pl">PL</option>
+                    <option value="fr">FR</option>
+                    <option value="es">ES</option>
+                    <option value="pt">PT</option>
+                    <option value="de">DE</option>
+                    <option value="uk">UK</option>
+                </select>
+            </div>
             <button class="pill ghost" type="button" data-theme-toggle data-i18n-ui-aria="themeAria" aria-label="${getT().themeAria}">${theme === 'dark' ? getT().light : getT().dark}</button>
             ${guide ? `<a class="pill" href="${guide}" target="_blank" rel="noreferrer" data-i18n-ui="docs" data-i18n-ui-aria="docsAria" aria-label="${getT().docsAria}">${getT().docs}</a>` : ''}
         </div>
