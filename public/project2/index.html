@@ -41,7 +41,7 @@
             background-color: var(--surface);
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+
         }
 
         .container {
@@ -282,7 +282,8 @@
                         <input type="number" id="tau" value="5.0" step="0.5">
                     </div>
 
-                    <button class="btn btn-primary" onclick="app.analyze()" data-i18n="btnAnalyze">Analyze Interactions (RGA)</button>
+                    <button class="btn btn-primary" onclick="app.analyze()" data-i18n="btnAnalyze">Analyze Interactions
+                        (RGA)</button>
                     <div id="statusRGA" class="status"></div>
                 </div>
 
@@ -314,7 +315,8 @@
                     <div class="form-group">
                         <label data-i18n="labelStrategy">Control Strategy</label>
                         <select id="strategy">
-                            <option value="decoupled" data-i18n-option="optionDecoupled">Decoupled (Static Decoupler)</option>
+                            <option value="decoupled" data-i18n-option="optionDecoupled">Decoupled (Static Decoupler)
+                            </option>
                             <option value="simple" data-i18n-option="optionIndependent">Independent Loops (PID)</option>
                         </select>
                     </div>
@@ -330,7 +332,8 @@
                         </div>
                     </div>
 
-                    <button class="btn btn-primary" onclick="app.simulate()" data-i18n="btnSimulate">Run Simulation</button>
+                    <button class="btn btn-primary" onclick="app.simulate()" data-i18n="btnSimulate">Run
+                        Simulation</button>
                 </div>
             </div>
 
@@ -340,14 +343,16 @@
                 <div class="chart-row">
                     <div>
                         <div style="text-align:center; font-weight:600; margin-bottom:8px; color:var(--text-light)">
-                            <span data-i18n-html="chartY1Title">Output \( y_1 \) vs \( SP_1 \)</span></div>
+                            <span data-i18n-html="chartY1Title">Output \( y_1 \) vs \( SP_1 \)</span>
+                        </div>
                         <div class="canvas-container">
                             <canvas id="chartY1"></canvas>
                         </div>
                     </div>
                     <div>
                         <div style="text-align:center; font-weight:600; margin-bottom:8px; color:var(--text-light)">
-                            <span data-i18n-html="chartY2Title">Output \( y_2 \) vs \( SP_2 \)</span></div>
+                            <span data-i18n-html="chartY2Title">Output \( y_2 \) vs \( SP_2 \)</span>
+                        </div>
                         <div class="canvas-container">
                             <canvas id="chartY2"></canvas>
                         </div>

@@ -49,7 +49,7 @@
             background-color: var(--surface);
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+
             line-height: 1.5;
         }
 
@@ -280,9 +280,11 @@
     <div class="container">
         <header>
             <h1 data-i18n="title">Robust Control Analysis</h1>
-            <p class="subtitle" data-i18n="subtitle">Monte Carlo Verification of Control Stability under Parametric Uncertainty</p>
+            <p class="subtitle" data-i18n="subtitle">Monte Carlo Verification of Control Stability under Parametric
+                Uncertainty</p>
             <p style="margin-top: 10px;"><a href="Robust-Control-Guide.md"
-                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖 Read the Beginner's
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖
+                    Read the Beginner's
                     Guide</a></p>
         </header>
 
@@ -312,20 +314,20 @@
                 </div>
                 <!-- Sliders for Uncertainty -->
                 <div class="form-group">
-                    <label style="display:flex;"><span data-i18n="gainUncertainty">Gain Uncertainty</span> <span class="uncertainty-badge"
-                            id="dispUncK">20%</span></label>
+                    <label style="display:flex;"><span data-i18n="gainUncertainty">Gain Uncertainty</span> <span
+                            class="uncertainty-badge" id="dispUncK">20%</span></label>
                     <input type="range" id="uncK" min="0" max="100" value="20"
                         oninput="document.getElementById('dispUncK').innerText = this.value + '%'">
                 </div>
                 <div class="form-group">
-                    <label style="display:flex;"><span data-i18n="tauUncertainty">Tau Uncertainty</span> <span class="uncertainty-badge"
-                            id="dispUncTau">15%</span></label>
+                    <label style="display:flex;"><span data-i18n="tauUncertainty">Tau Uncertainty</span> <span
+                            class="uncertainty-badge" id="dispUncTau">15%</span></label>
                     <input type="range" id="uncTau" min="0" max="100" value="15"
                         oninput="document.getElementById('dispUncTau').innerText = this.value + '%'">
                 </div>
                 <div class="form-group">
-                    <label style="display:flex;"><span data-i18n="delayUncertainty">Delay Uncertainty</span> <span class="uncertainty-badge"
-                            id="dispUncTheta">10%</span></label>
+                    <label style="display:flex;"><span data-i18n="delayUncertainty">Delay Uncertainty</span> <span
+                            class="uncertainty-badge" id="dispUncTheta">10%</span></label>
                     <input type="range" id="uncTheta" min="0" max="100" value="10"
                         oninput="document.getElementById('dispUncTheta').innerText = this.value + '%'">
                 </div>
@@ -349,11 +351,14 @@
                 </div>
 
                 <div style="margin-top: 24px;">
-                    <button class="btn btn-primary" onclick="app.runMonteCarlo()" data-i18n="runMonteCarlo">Run Monte Carlo Analysis</button>
+                    <button class="btn btn-primary" onclick="app.runMonteCarlo()" data-i18n="runMonteCarlo">Run Monte
+                        Carlo Analysis</button>
                     <div class="row">
                         <button class="btn btn-secondary" style="border:1px solid #ddd;"
-                            onclick="app.setController('nominal')" data-i18n="presetAggressive">Preset: Aggressive</button>
-                        <button class="btn btn-green" onclick="app.setController('robust')" data-i18n="presetRobust">Preset: Robust</button>
+                            onclick="app.setController('nominal')" data-i18n="presetAggressive">Preset:
+                            Aggressive</button>
+                        <button class="btn btn-green" onclick="app.setController('robust')"
+                            data-i18n="presetRobust">Preset: Robust</button>
                     </div>
                 </div>
             </div>
@@ -361,8 +366,10 @@
             <!-- Visualizations -->
             <div>
                 <div class="tab-group">
-                    <button class="tab active" onclick="app.switchTab('time')" data-i18n="tabStepResponse">Step Response</button>
-                    <button class="tab" onclick="app.switchTab('freq')" data-i18n="tabBode">Bode Plot (Magnitude)</button>
+                    <button class="tab active" onclick="app.switchTab('time')" data-i18n="tabStepResponse">Step
+                        Response</button>
+                    <button class="tab" onclick="app.switchTab('freq')" data-i18n="tabBode">Bode Plot
+                        (Magnitude)</button>
                 </div>
 
                 <!-- Time Domain Card -->
@@ -385,8 +392,10 @@
                         <canvas id="timeChart"></canvas>
                     </div>
                     <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                        <span style="color: #0f766e; font-weight: bold;">— <span data-i18n="legendNominal">Nominal</span></span> &nbsp;&nbsp;
-                        <span style="color: var(--text-light); font-weight: bold;">— <span data-i18n="legendUncertainInstances">Uncertain Instances (N=50)</span></span>
+                        <span style="color: #0f766e; font-weight: bold;">— <span
+                                data-i18n="legendNominal">Nominal</span></span> &nbsp;&nbsp;
+                        <span style="color: var(--text-light); font-weight: bold;">— <span
+                                data-i18n="legendUncertainInstances">Uncertain Instances (N=50)</span></span>
                     </p>
                 </div>
 
@@ -410,8 +419,10 @@
                         <canvas id="freqChart"></canvas>
                     </div>
                     <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                        <span style="color: #0f766e; font-weight: bold;">— <span data-i18n="legendNominalLoop">Nominal Loop L(jw)</span></span> &nbsp;&nbsp;
-                        <span style="color: #ef4444; font-weight: bold;">— <span data-i18n="legendStabilityLimit">Stability Limit (0dB)</span></span>
+                        <span style="color: #0f766e; font-weight: bold;">— <span data-i18n="legendNominalLoop">Nominal
+                                Loop L(jw)</span></span> &nbsp;&nbsp;
+                        <span style="color: #ef4444; font-weight: bold;">— <span
+                                data-i18n="legendStabilityLimit">Stability Limit (0dB)</span></span>
                     </p>
                 </div>
             </div>

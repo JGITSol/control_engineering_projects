@@ -42,7 +42,7 @@
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
-            padding: 40px 20px;
+
         }
 
         .container {
@@ -242,7 +242,8 @@
             <h1 data-i18n="title">Inverted Pendulum Control</h1>
             <p class="subtitle" data-i18n="subtitle">Linear Quadratic Regulator (LQR) on Cart-Pole System</p>
             <p style="margin-top: 10px;"><a href="LQR-Guide.md"
-                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖 Read the Beginner's
+                    style="color: var(--primary); text-decoration: none; font-weight: 500;" data-i18n="readGuide">📖
+                    Read the Beginner's
                     Guide</a></p>
         </header>
 
@@ -283,14 +284,16 @@
                         <input type="number" id="initTheta" value="15">
                     </div>
 
-                    <button class="btn btn-primary" onclick="app.updateAndRun()" data-i18n="btnRecalc">Re-Calculate LQR & Reset</button>
+                    <button class="btn btn-primary" onclick="app.updateAndRun()" data-i18n="btnRecalc">Re-Calculate LQR
+                        & Reset</button>
                     <div id="statusBox" class="status"></div>
                 </div>
 
                 <div class="card">
                     <div class="card-header" data-i18n="cardGains">Computed Feedback Gains</div>
                     <div style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 10px;">
-                        <span data-i18n-html="gainsNote">\( u = -K \mathbf{x} \) where \( \mathbf{x} = [x, \dot{x}, \theta, \dot{\theta}]^T \)</span>
+                        <span data-i18n-html="gainsNote">\( u = -K \mathbf{x} \) where \( \mathbf{x} = [x, \dot{x},
+                            \theta, \dot{\theta}]^T \)</span>
                     </div>
                     <div class="gains-display">
                         <div>\( K_x \): <span id="kx" class="gain-val">-</span></div>
@@ -327,7 +330,8 @@
                     </div>
                 </div>
 
-                <button class="btn btn-sec" onclick="app.perturb()" data-i18n="btnDisturbance">Add Disturbance (+5N impulse)</button>
+                <button class="btn btn-sec" onclick="app.perturb()" data-i18n="btnDisturbance">Add Disturbance (+5N
+                    impulse)</button>
             </div>
         </div>
     </div>

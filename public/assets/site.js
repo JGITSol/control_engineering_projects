@@ -218,10 +218,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(THEME_KEY, theme);
 
-        const t = getT();
-        const label = theme === 'dark' ? t.light : t.dark;
+        const icons = {
+            light: `<svg class="theme-icon" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>`,
+            dark: `<svg class="theme-icon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>`
+        };
+
+        const targetIcon = theme === 'dark' ? icons.light : icons.dark; // Show what it WILL become OR show current state? Usually show "Switch to X"
+        // Conventional toggle: if Dark, show Sun (switch to light). If Light, show Moon (switch to dark).
+        // Let's stick to showing the icon of the TARGET theme or the CURRENT one?
+        // Button usually represents the action. "Switch to Light Mode" -> Sun icon.
+
         document.querySelectorAll('[data-theme-toggle]').forEach(btn => {
-            btn.textContent = label;
+            btn.innerHTML = targetIcon;
+            btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode');
         });
 
         window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
@@ -362,6 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nav.className = 'lab-nav';
     nav.setAttribute('aria-label', getT().navAria);
     nav.setAttribute('data-i18n-ui-aria', 'navAria');
+    // REMOVED: Home and Back buttons
     nav.innerHTML = `
         <div class="lab-brand">
             <span class="dot"></span>
@@ -370,8 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="lab-current" data-i18n-name="page">${translatePageName()}</span>
         </div>
         <div class="lab-actions">
-            <a class="pill" href="${home}" data-i18n-ui="home">${getT().home}</a>
-            <button class="pill ghost" type="button" data-nav-back data-i18n-ui="back" data-i18n-ui-aria="backAria" aria-label="${getT().backAria}">${getT().back}</button>
             <div class="pill ghost select-wrapper">
                 <select data-lang-select aria-label="${getT().langAria}">
                     <option value="en">EN</option>
@@ -383,21 +391,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <option value="uk">UK</option>
                 </select>
             </div>
-            <button class="pill ghost" type="button" data-theme-toggle data-i18n-ui-aria="themeAria" aria-label="${getT().themeAria}">${theme === 'dark' ? getT().light : getT().dark}</button>
+            <button class="pill ghost" type="button" data-theme-toggle data-i18n-ui-aria="themeAria" style="padding: 0 10px;"></button>
             ${guide ? `<a class="pill" href="${guide}" target="_blank" rel="noreferrer" data-i18n-ui="docs" data-i18n-ui-aria="docsAria" aria-label="${getT().docsAria}">${getT().docs}</a>` : ''}
         </div>
     `;
-
-    const backButtons = nav.querySelectorAll('[data-nav-back]');
-    backButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                window.location.href = home;
-            }
-        });
-    });
 
     nav.querySelectorAll('[data-theme-toggle]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -420,6 +417,132 @@ document.addEventListener('DOMContentLoaded', () => {
         tagBar.innerHTML = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
         nav.after(tagBar);
     }
+
+    // --- Markup & Modal Logic ---
+
+    // Load marked.js for markdown parsing
+    const loadMarked = () => {
+        if (window.marked) return Promise.resolve(window.marked);
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/marked/marked.min.js';
+            s.onload = () => resolve(window.marked);
+            s.onerror = () => reject(new Error('Failed to load marked.js'));
+            document.head.appendChild(s);
+        });
+    };
+
+    const createModal = () => {
+        let modal = document.getElementById('docs-modal');
+        if (modal) return modal;
+
+        const backdrop = document.createElement('div');
+        backdrop.id = 'docs-modal';
+        backdrop.className = 'modal-backdrop';
+        backdrop.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 data-i18n="docs">Documentation</h2>
+                    <button class="modal-close" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body" id="docs-body">
+                    <div style="text-align:center; padding: 20px;">Loading...</div>
+                </div>
+            </div>
+        `;
+
+        // Close logic
+        const close = () => {
+            backdrop.classList.remove('open');
+            setTimeout(() => {
+                backdrop.style.display = 'none'; // fully hide after transition
+            }, 300);
+        };
+
+        backdrop.querySelector('.modal-close').addEventListener('click', close);
+        backdrop.addEventListener('click', (e) => {
+            if (e.target === backdrop) close();
+        });
+
+        // ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && backdrop.classList.contains('open')) close();
+        });
+
+        document.body.appendChild(backdrop);
+        return backdrop;
+    };
+
+    const openDocs = async (url) => {
+        const modal = createModal();
+        const body = modal.querySelector('#docs-body');
+
+        modal.style.display = 'flex';
+        // Force reflow
+        void modal.offsetWidth;
+        modal.classList.add('open');
+        body.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-light);">Loading documentation...</div>';
+
+        let targetUrl = url;
+        // Attempt localization if not English
+        if (lang !== 'en') {
+            const parts = url.split('.');
+            if (parts.length > 1) {
+                const ext = parts.pop();
+                targetUrl = parts.join('.') + '.' + lang + '.' + ext;
+            }
+        }
+
+        try {
+            const [marked, response] = await Promise.all([
+                loadMarked(),
+                fetch(targetUrl).then(res => {
+                    if (res.ok) return res;
+                    // Fallback to default if localized fails and we tried a localized one
+                    if (targetUrl !== url) {
+                        console.warn(`Localized docs not found for ${targetUrl}, falling back to ${url}`);
+                        return fetch(url);
+                    }
+                    throw new Error('Failed to load documentation');
+                })
+            ]);
+
+            if (!response.ok) throw new Error('Failed to load documentation');
+            const text = await response.text();
+
+            // Basic Markdown Parsing
+            body.innerHTML = marked.parse(text);
+
+            // Trigger MathJax if present
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([body]);
+            }
+        } catch (err) {
+            body.innerHTML = `<div style="color: var(--error); padding: 20px;">Error loading docs: ${err.message}</div>`;
+        }
+    };
+
+    // Global listener for Docs links
+    // Intercepts:
+    // 1. data-i18n-ui="docs" (Nav button)
+    // 2. data-i18n="readGuide" (Project index button)
+    // 3. Any link ending in .md
+    document.addEventListener('click', (e) => {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+
+        const href = anchor.getAttribute('href');
+        if (!href) return;
+
+        const isDocsLink = anchor.getAttribute('data-i18n-ui') === 'docs'
+            || anchor.getAttribute('data-i18n') === 'readGuide'
+            || href.endsWith('.md');
+
+        if (isDocsLink && !anchor.hasAttribute('data-no-modal')) {
+            e.preventDefault();
+            openDocs(href);
+        }
+    });
 
     // Sync labels and emit initial themechange.
     setTheme(theme);
