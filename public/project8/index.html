@@ -71,6 +71,8 @@
 
                 <button class="btn" onclick="resetSim()" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
                     Simulation</button>
+                <button class="btn ghost" onclick="applyImpulse()" style="margin-top: 10px; width:100%;"
+                    data-i18n="impulse">Apply Impulse</button>
             </div>
 
             <!-- Visualization -->
@@ -102,7 +104,8 @@
                 slopeLambda: 'Surface Slope (λ)',
                 slopeDesc: 'Steeper = Faster but needs more gain.',
                 viz: 'Phase Plane (Error vs Error Rate)',
-                reset: 'Reset Simulation'
+                reset: 'Reset Simulation',
+                impulse: 'Apply Impulse (Disturbance)'
             },
             pl: {
                 title: 'Sterowanie Ślizgowe (SMC)',
@@ -113,7 +116,8 @@
                 slopeLambda: 'Nachylenie powierzchni (λ)',
                 slopeDesc: 'Stromiej = Szybciej, ale wymaga większego K.',
                 viz: 'Płaszczyzna fazowa',
-                reset: 'Resetuj symulację'
+                reset: 'Resetuj symulację',
+                impulse: 'Zastosuj Impuls (Zakłócenie)'
             }
         };
 
@@ -270,6 +274,12 @@
             SMC.e = startX;
             SMC.edot = 0;
             trajData.length = 0;
+        }
+
+        function applyImpulse() {
+            // Add a sudden kick to velocity (edot)
+            const strength = 8.0;
+            SMC.edot += (Math.random() > 0.5 ? 1 : -1) * strength;
         }
 
         // Sliders

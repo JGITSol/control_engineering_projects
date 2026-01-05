@@ -21,14 +21,32 @@ The **Kalman Filter** finds the perfect balance between:
 
 ---
 
-## **Key Concept: The Kalman Gain (K)**
+### **The Math (Formal)**
 
-The filter calculates a "Trust Factor" called **K**.
+The filter operates in a loop:
 
-\[ K = \frac{\text{Uncertainty in Prediction}}{\text{Uncertainty in Prediction} + \text{Uncertainty in Sensor}} \]
+1.  **Prediction (Time Update)**:
+    \[ \hat{x}_{k|k-1} = F \hat{x}_{k-1|k-1} + B u_k \]
+    \[ P_{k|k-1} = F P_{k-1|k-1} F^T + Q \]
 
-- **If Sensor is precise (Low Noise):** \( K \approx 1 \). We trust the sensor.
-- **If Sensor is noisy (High Noise):** \( K \approx 0 \). We trust the prediction.
+2.  **Correction (Measurement Update)**:
+    - **Compute Gain**:
+      \[ K_k = P_{k|k-1} H^T (H P_{k|k-1} H^T + R)^{-1} \]
+    - **Update State**:
+      \[ \hat{x}_{k|k} = \hat{x}_{k|k-1} + K_k (z_k - H \hat{x}_{k|k-1}) \]
+    - **Update Uncertainty**:
+      \[ P_{k|k} = (I - K_k H) P_{k|k-1} \]
+
+Where:
+- \( Q \): Process Noise Covariance (Real world jitters).
+- \( R \): Measurement Noise Covariance (Sensor jitters).
+- \( P \): Error Covariance (Our confidence).
+
+### **Intuition (Scalar Case)**
+\[ K = \frac{\text{Uncertainty}_{pred}}{\text{Uncertainty}_{pred} + \text{Uncertainty}_{sensor}} \]
+
+- **If Sensor is precise (Low R):** \( K \to 1 \). Trust the sensor.
+- **If Sensor is noisy (High R):** \( K \to 0 \). Trust the prediction.
 
 ---
 

@@ -65,6 +65,8 @@
 
                 <button class="btn" onclick="resetSim()" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
                     Simulation</button>
+                <button class="btn ghost" onclick="applyDisturbance()" style="margin-top: 10px; width:100%;"
+                    data-i18n="disturbance">Inject Disturbance</button>
             </div>
 
             <!-- Visualization -->
@@ -97,7 +99,8 @@
                 adaptRate: 'Adaptation Rate (γ)',
                 adaptRateDesc: 'Higher = Faster learning but risks oscillation.',
                 viz: 'Adaptive Response',
-                reset: 'Reset Simulation'
+                reset: 'Reset Simulation',
+                disturbance: 'Inject Disturbance'
             },
             pl: {
                 title: 'Adaptacyjne Sterowanie Modelowe (MRAC)',
@@ -109,7 +112,8 @@
                 adaptRate: 'Szybkość adaptacji (γ)',
                 adaptRateDesc: 'Większa = szybsza nauka, ryzyko oscylacji.',
                 viz: 'Odpowiedź adaptacyjna',
-                reset: 'Resetuj symulację'
+                reset: 'Resetuj symulację',
+                disturbance: 'Wstrzyknij zakłócenie'
             }
         };
 
@@ -282,6 +286,12 @@
             dataTheta.length = 0;
             labels.length = 0;
             time = 0;
+        }
+
+        function applyDisturbance() {
+            // Inject an output disturbance (e.g. wind gust)
+            MRAC.y += (Math.random() > 0.5 ? 1 : -1) * 0.8;
+            // This causes a sudden error 'e', forcing the adaptive law to react.
         }
 
         // Sliders

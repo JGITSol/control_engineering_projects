@@ -70,6 +70,8 @@
 
                 <button class="btn" onclick="resetSim()" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
                     Simulation</button>
+                <button class="btn ghost" onclick="applyJump()" style="margin-top: 10px; width:100%;"
+                    data-i18n="jump">Jump System</button>
             </div>
 
             <!-- Visualization -->
@@ -104,7 +106,8 @@
                 procNoise: 'Process Noise (Q)',
                 procNoiseDesc: 'High Q = Erratic System.',
                 viz: 'Real-time Estimation',
-                reset: 'Reset Simulation'
+                reset: 'Reset Simulation',
+                jump: 'Jump System'
             },
             pl: {
                 title: 'Wizualizacja Filtru Kalmana',
@@ -116,7 +119,8 @@
                 procNoise: 'Szum procesu (Q)',
                 procNoiseDesc: 'Duże Q = Nieprzewidywalny system.',
                 viz: 'Estymacja w czasie rzeczywistym',
-                reset: 'Resetuj symulację'
+                reset: 'Resetuj symulację',
+                jump: 'Skok Systemu'
             },
             // Add other languages as needed...
             fr: {
@@ -283,6 +287,11 @@
             dataEst.length = 0;
             labels.length = 0;
             if (chart) chart.update();
+        }
+
+        function applyJump() {
+            // Teleport true value to simulate a sudden position change
+            trueValue = (Math.random() > 0.5 ? 80 : 20);
         }
 
         // Sliders

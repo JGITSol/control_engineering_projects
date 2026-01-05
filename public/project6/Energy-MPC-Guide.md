@@ -33,6 +33,19 @@ In this project, the controller is an Investment Banker.
 The controller solves a puzzle:
 *"Find the schedule of charging/discharging for the next 24 hours that results in the MAXIMUM PROFIT."*
 
+### The Math
+We want to **Maximize Profit** \( J \):
+
+\[ J = \sum_{k=0}^{N-1} \left( P_{price}(k) \cdot P_{discharge}(k) - P_{cost}(k) \cdot P_{charge}(k) \right) \]
+
+**Subject to Constraints:**
+1.  **Battery Dynamics**:
+    \[ SoC[k+1] = SoC[k] + \eta \cdot (P_{charge}[k] - P_{discharge}[k]) \cdot \Delta t \]
+2.  **Capacity Limits**:
+    \[ SoC_{min} \le SoC[k] \le SoC_{max} \]
+3.  **Power Limits**:
+    \[ 0 \le P_{charge} \le P_{max} \]
+
 **Example Plan:**
 - **1 PM - 4 PM:** Wind is high, Price is low. **CHARGE** the battery.
 - **5 PM - 8 PM:** Sun sets, Price skyrockets. **DISCHARGE** (Sell) energy to the grid.
