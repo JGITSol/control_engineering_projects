@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Reference Adaptive Control | Control Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
+</head>
+
+<body data-page-name="MRAC" data-guide="MRAC-Guide.md" data-home="../index.html"
+    data-tags="Adaptive, MRAC, MIT Rule, Flight Control">
+
+    <div class="lab-shell">
+        <header class="hero lab-card soft">
+            <div>
+                <h1 data-i18n="title">Micro Adaptive Control (MRAC)</h1>
+                <p data-i18n="subtitle">See how the controller "learns" to compensate for changing system parameters in
+                    real-time.</p>
+                <div style="margin-top: 12px;">
+                    <a class="pill ghost" href="MRAC-Guide.md" data-i18n="readGuide">📖 Read Guide</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="lab-grid" style="grid-template-columns: 350px 1fr;">
+            <!-- Configuration -->
+            <div class="lab-card">
+                <h3 data-i18n="config">Configuration</h3>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span data-i18n="plantGain">Actual Plant Gain (Kp)</span>
+                        <span id="valKp"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">1.0</span>
+                    </label>
+                    <input type="range" id="sliderKp" min="0.1" max="5.0" step="0.1" value="1.0" style="width:100%">
+                    <small style="color:var(--text-light);" data-i18n="plantGainDesc">Simulate damage or load
+                        change.</small>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span data-i18n="adaptRate">Adaptation Rate (γ)</span>
+                        <span id="valGamma"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">0.5</span>
+                    </label>
+                    <input type="range" id="sliderGamma" min="0.01" max="5" step="0.01" value="0.5" style="width:100%">
+                    <small style="color:var(--text-light);" data-i18n="adaptRateDesc">Learning speed. Too high =
+                        Instability.</small>
+                </div>
+
+                <div
+                    style="margin-top: 24px; padding: 16px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="margin:0 0 12px 0;">Live Parameters</h4>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Adaptive Theta:</span>
+                        <span id="metricTheta"
+                            style="font-family:monospace; font-weight:bold; color:var(--accent);">0.00</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="resetSim()" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
+                    Simulation</button>
+            </div>
+
+            <!-- Visualization -->
+            <div class="lab-card">
+                <h3 data-i18n="viz">Adaptive Response</h3>
+                <div style="height: 400px; width: 100%;">
+                    <canvas id="mracChart"></canvas>
+                </div>
+                <div style="margin-top: 10px; text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                    <span style="color: #94a3b8; border-bottom: 2px dashed #94a3b8;">-- Reference Model</span> |
+                    <span style="color: #22c55e;">▬ Actual Plant</span> |
+                    <span style="color: #f59e0b;">▬ Adaptive Gain</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/glossary.js"></script>
+    <script src="../assets/site.js"></script>
+
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: 'Model Reference Adaptive Control',
+                subtitle: 'See how the controller "learns" to compensate for changing system parameters.',
+                readGuide: '📖 Read Guide',
+                config: 'Configuration',
+                plantGain: 'Actual Plant Gain (Kp)',
+                plantGainDesc: 'Simulate damage or load change (Nominal = 1.0).',
+                adaptRate: 'Adaptation Rate (γ)',
+                adaptRateDesc: 'Higher = Faster learning but risks oscillation.',
+                viz: 'Adaptive Response',
+                reset: 'Reset Simulation'
+            },
+            pl: {
+                title: 'Adaptacyjne Sterowanie Modelowe (MRAC)',
+                subtitle: 'Zobacz jak regulator "uczy się" kompensować zmiany parametrów obiektu.',
+                readGuide: '📖 Przeczytaj poradnik',
+                config: 'Konfiguracja',
+                plantGain: 'Rzeczywiste wzmocnienie (Kp)',
+                plantGainDesc: 'Symuluj uszkodzenie lub zmianę obciążenia.',
+                adaptRate: 'Szybkość adaptacji (γ)',
+                adaptRateDesc: 'Większa = szybsza nauka, ryzyko oscylacji.',
+                viz: 'Odpowiedź adaptacyjna',
+                reset: 'Resetuj symulację'
+            }
+        };
+
+        // --- MRAC Logic ---
+        // Reference Model: First order, tau_m = 1, k_m = 1
+        // dy_m/dt = -y_m + r
+
+        // Plant: First order, tau = 1, k_p (Unknown/Variable)
+        // dy/dt = -y + k_p * u
+
+        // Control Law: u = theta * r
+        // We want y -> y_m
+
+        // Matching condition: if u = (1/k_p) * r, then dy/dt = -y + r, which matches reference.
+        // So ideal theta* = 1 / k_p.
+
+        // Adaptation Law (MIT Rule simplified):
+        // Error e = y - y_m
+        // d(theta)/dt = -gamma * e * (sensitivity) 
+        // Sensitivity ~ r (approx)
+        // d(theta)/dt = -gamma * e * r
+
+        const MRAC = {
+            y_m: 0, // Model output
+            y: 0,   // Plant output
+            theta: 1.0, // Adaptive Parameter
+
+            // True Plant Params
+            k_p: 1.0,
+
+            // Hyperparams
+            gamma: 0.5,
+
+            update: function (r, dt) {
+                // 1. Reference Model Update
+                // y_m_dot = -y_m + r
+                const y_m_dot = -this.y_m + r;
+                this.y_m += y_m_dot * dt;
+
+                // 2. Control Input
+                const u = this.theta * r;
+
+                // 3. Plant Update
+                // y_dot = -y + k_p * u
+                const y_dot = -this.y + this.k_p * u;
+                this.y += y_dot * dt;
+
+                // 4. Adaptation using MIT Rule
+                const e = this.y - this.y_m;
+                // theta_dot = -gamma * e * r
+                const theta_dot = -this.gamma * e * r;
+                this.theta += theta_dot * dt;
+
+                return { y_m: this.y_m, y: this.y, theta: this.theta };
+            }
+        };
+
+        // --- Visualization ---
+        let chart = null;
+        let timer = null;
+        let time = 0;
+        const maxPoints = 300;
+
+        const dataRef = [];
+        const dataPlant = [];
+        const dataTheta = [];
+        const labels = [];
+
+        function initChart() {
+            const ctx = document.getElementById('mracChart').getContext('2d');
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Reference Model',
+                            data: dataRef,
+                            borderColor: '#94a3b8',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Plant Output',
+                            data: dataPlant,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 0, // smooth
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Adaptive Gain (Theta)',
+                            data: dataTheta,
+                            borderColor: '#f59e0b',
+                            borderWidth: 1.5,
+                            pointRadius: 0,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    scales: {
+                        x: { display: false },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: -0.5, max: 2.5,
+                            grid: { color: gridColor },
+                            title: { display: true, text: 'Output' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 0, max: 5,
+                            grid: { drawOnChartArea: false }, // only right grid
+                            title: { display: true, text: 'Gain' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSim() {
+            const dt = 0.05;
+
+            // Square wave reference
+            const period = 200; // in ticks (200 * 50ms = 10s)
+            const r = (time % period) < (period / 2) ? 1.0 : 0.0;
+
+            const res = MRAC.update(r, dt);
+
+            time++;
+            labels.push(time);
+            dataRef.push(res.y_m);
+            dataPlant.push(res.y);
+            dataTheta.push(res.theta);
+
+            if (labels.length > maxPoints) {
+                labels.shift();
+                dataRef.shift();
+                dataPlant.shift();
+                dataTheta.shift();
+            }
+
+            if (chart) chart.update();
+
+            // Update UI
+            document.getElementById('metricTheta').textContent = res.theta.toFixed(3);
+        }
+
+        function resetSim() {
+            MRAC.y = 0;
+            MRAC.y_m = 0;
+            MRAC.theta = 1.0; // Reset learning
+
+            dataRef.length = 0;
+            dataPlant.length = 0;
+            dataTheta.length = 0;
+            labels.length = 0;
+            time = 0;
+        }
+
+        // Sliders
+        document.getElementById('sliderKp').addEventListener('input', (e) => {
+            MRAC.k_p = parseFloat(e.target.value);
+            document.getElementById('valKp').textContent = MRAC.k_p.toFixed(1);
+        });
+
+        document.getElementById('sliderGamma').addEventListener('input', (e) => {
+            MRAC.gamma = parseFloat(e.target.value);
+            document.getElementById('valGamma').textContent = MRAC.gamma.toFixed(2);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            timer = setInterval(updateSim, 50);
+        });
+    </script>
+</body>
+
+</html>

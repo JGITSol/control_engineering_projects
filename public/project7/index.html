@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalman Filter Visualizer | Control Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- MathJax for nice equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="../assets/site.css">
+</head>
+
+<body data-page-name="Kalman Filter" data-guide="Kalman-Guide.md" data-home="../index.html"
+    data-tags="Kalman, Estimation, Noise, Sensor Fusion">
+
+    <div class="lab-shell">
+        <header class="hero lab-card soft">
+            <div>
+                <h1 data-i18n="title">Kalman Filter Visualizer</h1>
+                <p data-i18n="subtitle">Optimal state estimation in the presence of noisy measurements. See the
+                    algorithm filter out the noise.</p>
+                <div style="margin-top: 12px;">
+                    <a class="pill ghost" href="Kalman-Guide.md" data-i18n="readGuide">📖 Read Guide</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="lab-grid" style="grid-template-columns: 350px 1fr;">
+            <!-- Configuration -->
+            <div class="lab-card">
+                <h3 data-i18n="config">Configuration</h3>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span data-i18n="measNoise">Measurement Noise (R)</span>
+                        <span id="valR"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">10.0</span>
+                    </label>
+                    <input type="range" id="sliderR" min="0.1" max="50" step="0.1" value="10.0" style="width:100%">
+                    <small style="color:var(--text-light);" data-i18n="measNoiseDesc">How much we trust the sensor. High
+                        R = Low Trust.</small>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span data-i18n="procNoise">Process Noise (Q)</span>
+                        <span id="valQ"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">0.1</span>
+                    </label>
+                    <input type="range" id="sliderQ" min="0.001" max="2" step="0.001" value="0.1" style="width:100%">
+                    <small style="color:var(--text-light);" data-i18n="procNoiseDesc">Uncertainty in the physics
+                        model.</small>
+                </div>
+
+                <div
+                    style="margin-top: 24px; padding: 16px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="margin:0 0 12px 0;">Live Metrics</h4>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Kalman Gain (K):</span>
+                        <span id="metricK"
+                            style="font-family:monospace; font-weight:bold; color:var(--accent);">0.00</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Est. Error (P):</span>
+                        <span id="metricP" style="font-family:monospace; font-weight:bold;">0.00</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="resetSim()" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
+                    Simulation</button>
+            </div>
+
+            <!-- Visualization -->
+            <div class="lab-card">
+                <h3 data-i18n="viz">Real-time Estimation</h3>
+                <div style="height: 400px; width: 100%;">
+                    <canvas id="kfChart"></canvas>
+                </div>
+                <div style="margin-top: 10px; text-align: center; color: var(--text-light); font-size: 0.9rem;">
+                    <span style="color: #ef4444;">● Measurement</span> |
+                    <span style="color: #22c55e;">▬ Estimate</span> |
+                    <span style="color: #94a3b8; border-bottom: 1px dashed #94a3b8;">-- True Value</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glossary & Site Scripts -->
+    <script src="../assets/glossary.js"></script>
+    <script src="../assets/site.js"></script>
+
+    <script>
+        // --- Translations for this page ---
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                title: 'Kalman Filter Visualizer',
+                subtitle: 'Optimal state estimation in the presence of noisy measurements.',
+                readGuide: '📖 Read Guide',
+                config: 'Configuration',
+                measNoise: 'Measurement Noise (R)',
+                measNoiseDesc: 'High R = Noisy Sensor = Low Trust.',
+                procNoise: 'Process Noise (Q)',
+                procNoiseDesc: 'High Q = Erratic System.',
+                viz: 'Real-time Estimation',
+                reset: 'Reset Simulation'
+            },
+            pl: {
+                title: 'Wizualizacja Filtru Kalmana',
+                subtitle: 'Optymalna estymacja stanu w obecności szumu pomiarowego.',
+                readGuide: '📖 Przeczytaj poradnik',
+                config: 'Konfiguracja',
+                measNoise: 'Szum pomiarowy (R)',
+                measNoiseDesc: 'Duże R = Zaszumiony czujnik = Małe zaufanie.',
+                procNoise: 'Szum procesu (Q)',
+                procNoiseDesc: 'Duże Q = Nieprzewidywalny system.',
+                viz: 'Estymacja w czasie rzeczywistym',
+                reset: 'Resetuj symulację'
+            },
+            // Add other languages as needed...
+            fr: {
+                title: 'Visualiseur de Filtre de Kalman',
+                subtitle: 'Estimation d\'état optimale en présence de mesures bruitées.'
+            }
+        };
+
+        // --- Kalman Filter Logic ---
+        const KF = {
+            x: 0, // State estimate
+            P: 1, // Estimate covariance
+            Q: 0.1, // Process noise covariance
+            R: 10, // Measurement noise covariance
+            K: 0, // Kalman gain
+
+            predict: function () {
+                // x = x (Constant position model for simplicity, or random walk)
+                // P = P + Q
+                this.P = this.P + this.Q;
+            },
+
+            update: function (z) {
+                // K = P / (P + R)
+                this.K = this.P / (this.P + this.R);
+                // x = x + K * (z - x)
+                this.x = this.x + this.K * (z - this.x);
+                // P = (1 - K) * P
+                this.P = (1 - this.K) * this.P;
+            }
+        };
+
+        // --- Simulation Loop ---
+        let trueValue = 50;
+        let time = 0;
+        let timer = null;
+        let chart = null;
+
+        const maxPoints = 100;
+        const dataTrue = [];
+        const dataMeas = [];
+        const dataEst = [];
+        const labels = [];
+
+        function initChart() {
+            const ctx = document.getElementById('kfChart').getContext('2d');
+
+            // Shared check for dark mode
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const gridColor = isDark ? '#334155' : '#e2e8f0';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'True Value',
+                            data: dataTrue,
+                            borderColor: '#94a3b8',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Estimate',
+                            data: dataEst,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Measurement',
+                            data: dataMeas,
+                            borderColor: '#ef4444',
+                            backgroundColor: '#ef4444',
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            showLine: false // Scatter style
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            display: false, // hide time axis for cleanliness
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false } // Custom legend in HTML
+                    }
+                }
+            });
+        }
+
+        function updateSim() {
+            // physics: random walk
+            trueValue += (Math.random() - 0.5) * 2;
+            // bounds
+            if (trueValue > 90) trueValue -= 1;
+            if (trueValue < 10) trueValue += 1;
+
+            // measure
+            const noise = (Math.random() - 0.5) * KF.R; // Roughly scaling noise with R for visual effect
+            // Actually R is variance, so std dev is sqrt(R). 
+            // Let's make the visual noise proportional to sqrt(R) * gaussianish
+            const stdDev = Math.sqrt(KF.R);
+            // Box-Muller transform for gaussian
+            const u1 = Math.random();
+            const u2 = Math.random();
+            const zScore = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            const z = trueValue + zScore * stdDev;
+
+            // Kalman Step
+            KF.predict();
+            KF.update(z);
+
+            // Update Data
+            time++;
+            labels.push(time);
+            dataTrue.push(trueValue);
+            dataMeas.push(z);
+            dataEst.push(KF.x);
+
+            if (labels.length > maxPoints) {
+                labels.shift();
+                dataTrue.shift();
+                dataMeas.shift();
+                dataEst.shift();
+            }
+
+            // Update UI
+            document.getElementById('metricK').textContent = KF.K.toFixed(3);
+            document.getElementById('metricP').textContent = KF.P.toFixed(3);
+
+            if (chart) chart.update();
+        }
+
+        function resetSim() {
+            KF.x = 50;
+            KF.P = 1;
+            trueValue = 50;
+            dataTrue.length = 0;
+            dataMeas.length = 0;
+            dataEst.length = 0;
+            labels.length = 0;
+            if (chart) chart.update();
+        }
+
+        // Sliders
+        const sliderR = document.getElementById('sliderR');
+        const valR = document.getElementById('valR');
+        sliderR.addEventListener('input', (e) => {
+            KF.R = parseFloat(e.target.value);
+            valR.textContent = KF.R.toFixed(1);
+        });
+
+        const sliderQ = document.getElementById('sliderQ');
+        const valQ = document.getElementById('valQ');
+        sliderQ.addEventListener('input', (e) => {
+            KF.Q = parseFloat(e.target.value);
+            valQ.textContent = KF.Q.toFixed(3);
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            timer = setInterval(updateSim, 100); // 10Hz
+        });
+
+    </script>
+</body>
+
+</html>

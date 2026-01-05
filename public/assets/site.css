@@ -667,11 +667,57 @@ header h1,
 @media (prefers-reduced-motion: reduce) {
 
     *,
-    *::before,
     *::after {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Glossary Tooltips */
+.glossary-term {
+    border-bottom: 1px dotted var(--primary-light);
+    cursor: help;
+    transition: color 0.2s;
+}
+
+.glossary-term:hover,
+.glossary-term:focus {
+    color: var(--accent);
+    background: rgba(249, 115, 22, 0.1);
+    border-radius: 4px;
+}
+
+.glossary-tooltip {
+    position: fixed;
+    z-index: 1000;
+    background: var(--card-alt);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    max-width: 250px;
+    font-size: 0.9rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    transform: translateY(5px);
+}
+
+.glossary-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.glossary-tooltip strong {
+    color: var(--primary-light);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.glossary-tooltip p {
+    margin: 0;
+    color: var(--text-light);
+    line-height: 1.4;
 }

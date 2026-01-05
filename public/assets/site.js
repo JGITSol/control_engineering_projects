@@ -198,6 +198,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 pt: 'Gerente de IA da microrrede',
                 de: 'KI-Manager für Microgrid',
                 uk: 'AI-менеджер мікромережі'
+            },
+            'Kalman Filter Visualizer': {
+                en: 'Kalman Filter Visualizer',
+                pl: 'Wizualizacja Filtru Kalmana',
+                fr: 'Visualiseur de Filtre de Kalman',
+                es: 'Visualizador de Filtro de Kalman',
+                pt: 'Visualizador de Filtro de Kalman',
+                de: 'Kalman-Filter Visualisierung',
+                uk: 'Візуалізація фільтра Калмана'
+            },
+            'Sliding Mode Control': {
+                en: 'Sliding Mode Control',
+                pl: 'Sterowanie Ślizgowe (SMC)',
+                fr: 'Commande par Mode Glissant',
+                es: 'Control por Modo Deslizante',
+                pt: 'Controle por Modo Deslizante',
+                de: 'Gleitmodenregelung',
+                uk: 'Ковзний режим керування'
+            },
+            'Model Reference Adaptive Control': {
+                en: 'Model Reference Adaptive Control',
+                pl: 'Adaptacyjne Sterowanie Modelowe',
+                fr: 'Commande Adaptative à Modèle de Référence',
+                es: 'Control Adaptativo por Modelo de Referencia',
+                pt: 'Controle Adaptativo por Modelo de Referência',
+                de: 'Modellreferenz-Adaptive Regelung',
+                uk: 'Адаптивне керування з еталонною моделлю'
             }
         }
     };
@@ -269,7 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const pageTranslations = window.PAGE_TRANSLATIONS;
-        const pageDict = (pageTranslations && (pageTranslations[lang] || pageTranslations.en)) || {};
+        const baseDict = (pageTranslations && pageTranslations.en) || {};
+        const targetDict = (pageTranslations && pageTranslations[lang]) || {};
+        const pageDict = { ...baseDict, ...targetDict };
 
         const setText = (el, value) => {
             if (value === undefined || value === null) return;

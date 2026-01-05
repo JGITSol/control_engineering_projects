@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control Engineering Lab | Cloudflare Pages</title>
-    <meta name="description" content="Hands-on control engineering laboratory with interactive PID, MIMO, LQR, MPC, and robust control sandboxes. Ready for Cloudflare Pages hosting.">
+    <meta name="description"
+        content="Hands-on control engineering laboratory with interactive PID, MIMO, LQR, MPC, and robust control sandboxes. Ready for Cloudflare Pages hosting.">
     <link rel="stylesheet" href="./assets/site.css">
     <script>
         window.PAGE_TRANSLATIONS = {
@@ -38,7 +39,16 @@
                 tile6Title: 'Microgrid AI Manager',
                 tile6Desc: 'Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.',
                 openLab: 'Open Lab',
-                docs: 'Docs'
+                docs: 'Docs',
+                tile7Chip: 'Estimation · Filtering',
+                tile7Title: 'Kalman Filter Visualizer',
+                tile7Desc: 'Optimal state estimation (1D) with interactive noise sliders and real-time visualization.',
+                tile8Chip: 'Robust · Nonlinear',
+                tile8Title: 'Sliding Mode Control',
+                tile8Desc: 'Visualize phase plane trajectories, reaching phase dynamics, and chattering effects.',
+                tile9Chip: 'Adaptive · Learning',
+                tile9Title: 'MRAC',
+                tile9Desc: 'Model Reference Adaptive Control simulation with real-time parameter estimation.'
             },
             pl: {
                 heroTitle: 'Laboratorium Inżynierii Sterowania',
@@ -235,7 +245,9 @@
         <section class="hero lab-card soft" style="display: block;">
             <div>
                 <h1 data-i18n="heroTitle">Control Engineering Laboratory</h1>
-                <p data-i18n="heroDesc">Interactive sandboxes for modern control: tune PID loops, decouple MIMO plants, stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize microgrid energy flows. Optimized for mobile and desktop.</p>
+                <p data-i18n="heroDesc">Interactive sandboxes for modern control: tune PID loops, decouple MIMO plants,
+                    stabilize inverted pendulums, stress-test H∞ designs, explore autonomous path tracking, and optimize
+                    microgrid energy flows. Optimized for mobile and desktop.</p>
                 <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
                     <span class="chip" data-i18n="chipResponsive">Responsive UX</span>
                     <span class="chip" data-i18n="chipMathjax">MathJax Ready</span>
@@ -246,7 +258,8 @@
         </section>
 
         <div id="labs" class="section-title" style="margin-top: 12px;">
-            <h2 style="margin:0; font-size:1.1rem; color: var(--text-main);" data-i18n="sectionTitle">Laboratory Collection</h2>
+            <h2 style="margin:0; font-size:1.1rem; color: var(--text-main);" data-i18n="sectionTitle">Laboratory
+                Collection</h2>
             <span data-i18n="sectionSubtitle">Pick a sandbox to start experimenting</span>
         </div>
 
@@ -254,7 +267,8 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile1Chip">PID · Auto-tuning</div>
                 <h3 data-i18n="tile1Title">PID Auto-Tuner</h3>
-                <p data-i18n="tile1Desc">Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and plotting.</p>
+                <p data-i18n="tile1Desc">Closed-loop Ziegler–Nichols and Cohen–Coon tuning with response analytics and
+                    plotting.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project1/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project1/PID-Tuning-Guide.md" data-i18n="docs">Docs</a>
@@ -263,7 +277,8 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile2Chip">MIMO · Decoupling</div>
                 <h3 data-i18n="tile2Title">MIMO Decoupling</h3>
-                <p data-i18n="tile2Desc">Relative gain analysis, pairing recommendations, and decoupler simulation for 2×2 systems.</p>
+                <p data-i18n="tile2Desc">Relative gain analysis, pairing recommendations, and decoupler simulation for
+                    2×2 systems.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project2/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project2/MIMO-Guide.md" data-i18n="docs">Docs</a>
@@ -272,7 +287,8 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile3Chip">LQR · Cart-Pole</div>
                 <h3 data-i18n="tile3Title">Inverted Pendulum</h3>
-                <p data-i18n="tile3Desc">Design LQR gains, visualize real-time cart-pole stabilization, and test disturbances.</p>
+                <p data-i18n="tile3Desc">Design LQR gains, visualize real-time cart-pole stabilization, and test
+                    disturbances.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project3/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project3/LQR-Guide.md" data-i18n="docs">Docs</a>
@@ -281,7 +297,8 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile4Chip">H∞ · Robustness</div>
                 <h3 data-i18n="tile4Title">Robust Control</h3>
-                <p data-i18n="tile4Desc">Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID controllers.</p>
+                <p data-i18n="tile4Desc">Monte Carlo stability checks, Bode limits, and uncertainty sweeps for PID
+                    controllers.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project4/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project4/Robust-Control-Guide.md" data-i18n="docs">Docs</a>
@@ -290,7 +307,8 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile5Chip">Autonomy · MPC</div>
                 <h3 data-i18n="tile5Title">Path Tracking</h3>
-                <p data-i18n="tile5Desc">Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini charts.</p>
+                <p data-i18n="tile5Desc">Compare Stanley vs MPC steering on procedural tracks with live KPIs and mini
+                    charts.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project5/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project5/Path-Tracking-Guide.md" data-i18n="docs">Docs</a>
@@ -299,16 +317,47 @@
             <div class="lab-card lab-tile">
                 <div class="chip" data-i18n="tile6Chip">Energy · MPC</div>
                 <h3 data-i18n="tile6Title">Microgrid AI Manager</h3>
-                <p data-i18n="tile6Desc">Day-ahead scheduling with dynamic programming, SoC visualization, and profit tracking.</p>
+                <p data-i18n="tile6Desc">Day-ahead scheduling with dynamic programming, SoC visualization, and profit
+                    tracking.</p>
                 <div class="tile-actions">
                     <a class="pill primary" href="./project6/index.html" data-i18n="openLab">Open Lab</a>
                     <a class="pill ghost" href="./project6/Energy-MPC-Guide.md" data-i18n="docs">Docs</a>
                 </div>
             </div>
+            <!-- New Projects -->
+            <div class="lab-card lab-tile">
+                <div class="chip" data-i18n="tile7Chip">Estimation · Filtering</div>
+                <h3 data-i18n="tile7Title">Kalman Filter Visualizer</h3>
+                <p data-i18n="tile7Desc">Optimal state estimation (1D) with interactive noise sliders and real-time
+                    visualization.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project7/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project7/Kalman-Guide.md" data-i18n="docs">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip" data-i18n="tile8Chip">Robust · Nonlinear</div>
+                <h3 data-i18n="tile8Title">Sliding Mode Control</h3>
+                <p data-i18n="tile8Desc">Visualize phase plane trajectories, reaching phase dynamics, and chattering
+                    effects.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project8/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project8/SMC-Guide.md" data-i18n="docs">Docs</a>
+                </div>
+            </div>
+            <div class="lab-card lab-tile">
+                <div class="chip" data-i18n="tile9Chip">Adaptive · Learning</div>
+                <h3 data-i18n="tile9Title">MRAC</h3>
+                <p data-i18n="tile9Desc">Model Reference Adaptive Control simulation with real-time parameter
+                    estimation.</p>
+                <div class="tile-actions">
+                    <a class="pill primary" href="./project9/index.html" data-i18n="openLab">Open Lab</a>
+                    <a class="pill ghost" href="./project9/MRAC-Guide.md" data-i18n="docs">Docs</a>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script src="./assets/glossary.js"></script>
     <script src="./assets/site.js"></script>
 </body>
-
-</html>

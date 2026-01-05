@@ -7,6 +7,14 @@
     <title>Energy MPC Manager | Project 6</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../assets/site.css">
     <style>
@@ -153,6 +161,56 @@
             font-weight: 600;
             color: var(--dark);
         }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Diagram Styles */
+        .diagram-container {
+            width: 100%;
+            height: 250px;
+            background: var(--surf);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .flow-arrow {
+            stroke-dasharray: 10;
+            animation: flow 1s linear infinite;
+        }
+
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .math-section {
+            margin-top: 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 20px;
+        }
+
+        .math-block {
+            background: var(--surf);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
     </style>
 </head>
 
@@ -165,7 +223,8 @@
             <p data-i18n="subtitle">Day-Ahead Optimization using Dynamic Programming (15-min Resolution)</p>
         </div>
         <div>
-            <a href="Energy-MPC-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;" data-i18n="viewDocs">📖
+            <a href="Energy-MPC-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;"
+                data-i18n="viewDocs">📖
                 View Documentation</a>
         </div>
     </div>
@@ -195,6 +254,20 @@
             </div>
 
             <div class="control-panel">
+                <div style="margin-bottom: 15px;">
+                    <label
+                        style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:5px; color:var(--muted);"
+                        data-i18n="lblScenario">Scenario</label>
+                    <select id="scenarioSelect"
+                        style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--border); font-family: inherit;"
+                        onchange="app.reset()">
+                        <option value="winter_coast" data-i18n-option="scenWinter">Windy Coast (Winter)</option>
+                        <option value="summer_suburb" data-i18n-option="scenSummer">Solar Suburb (Summer)</option>
+                        <option value="mix_island" data-i18n-option="scenMix">Island Microgrid (Solar + Wind)</option>
+                        <option value="industrial" data-i18n-option="scenInd">Industrial Hub</option>
+                    </select>
+                </div>
+
                 <button class="btn-primary" onclick="app.solve()" data-i18n="btnRun">🚀 Run AI Optimizer</button>
                 <button class="btn-sec" onclick="app.reset()" data-i18n="btnReset">↺ Reset Simulation</button>
                 <div id="status"
@@ -202,7 +275,8 @@
                 </div>
             </div>
 
-            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.5;" data-i18n-html="specsHtml">
+            <div style="margin-top: 20px; font-size: 0.85rem; color: var(--muted); line-height: 1.5;"
+                data-i18n-html="specsHtml">
                 <strong>System Specs:</strong><br>
                 • 100 kWh Battery Storage<br>
                 • 50 kW Max Charge Rate<br>
@@ -212,19 +286,130 @@
         </div>
 
         <!-- Main Content -->
-        <div class="card">
-            <div class="chart-header">
-                <span data-i18n="chartHeaderMarket">💸 Market & Forecast</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="marketChart"></canvas>
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <!-- System Diagram -->
+            <div class="card">
+                <div class="chart-header">
+                    <span data-i18n="headerDiagram">System Status</span>
+                    <button class="btn-sec" style="width:auto; padding: 4px 10px; font-size: 0.8em;"
+                        onclick="app.toggleFault()" id="btnFault">⚠️ Simulate Grid Fault</button>
+                </div>
+                <div class="diagram-container">
+                    <svg width="600" height="200" viewBox="0 0 600 200" id="sysDiagram">
+                        <!-- Definitions -->
+                        <defs>
+                            <marker id="head" orient="auto" markerWidth="6" markerHeight="6" refX="5" refY="3">
+                                <path d="M0,0 L6,3 L0,6 Z" fill="var(--muted)" />
+                            </marker>
+                        </defs>
+
+                        <!-- Nodes -->
+                        <!-- Grid (Left) -->
+                        <!-- Grid (Left) -->
+                        <g transform="translate(50, 100)">
+                            <text x="0" y="-40" text-anchor="middle" font-size="24">🏭</text>
+                            <text x="0" y="-20" text-anchor="middle" font-size="12" font-weight="bold"
+                                fill="var(--text-main)">GRID</text>
+                            <rect x="-40" y="-15" width="80" height="30" rx="4" fill="var(--surf)"
+                                stroke="var(--border)" />
+                            <text id="valGrid" x="0" y="5" text-anchor="middle" font-size="12" font-family="monospace"
+                                fill="var(--text-main)">0
+                                kW</text>
+                        </g>
+
+                        <!-- Renewable (Top) -->
+                        <g transform="translate(300, 40)">
+                            <text x="0" y="-25" text-anchor="middle" font-size="24" id="iconRenew">🌬️</text>
+                            <rect x="-40" y="-15" width="80" height="30" rx="4" fill="var(--surf)"
+                                stroke="var(--border)" />
+                            <text id="valRenew" x="0" y="5" text-anchor="middle" font-size="12" font-family="monospace"
+                                fill="var(--text-main)">0 kW</text>
+                        </g>
+
+                        <!-- House/Load (Bottom) -->
+                        <g transform="translate(300, 160)">
+                            <text x="0" y="35" text-anchor="middle" font-size="24">🏠</text>
+                            <rect x="-40" y="-15" width="80" height="30" rx="4" fill="var(--surf)"
+                                stroke="var(--border)" />
+                            <text id="valLoad" x="0" y="5" text-anchor="middle" font-size="12" font-family="monospace"
+                                fill="var(--text-main)">0
+                                kW</text>
+                        </g>
+
+                        <!-- Battery (Right) -->
+                        <g transform="translate(550, 100)">
+                            <text x="0" y="-40" text-anchor="middle" font-size="24">🔋</text>
+                            <text x="0" y="-20" text-anchor="middle" font-size="12" font-weight="bold"
+                                fill="var(--text-main)">BAT</text>
+                            <rect x="-40" y="-15" width="80" height="30" rx="4" fill="var(--surf)"
+                                stroke="var(--border)" />
+                            <text id="valBat" x="0" y="5" text-anchor="middle" font-size="12" font-family="monospace"
+                                fill="var(--text-main)">50%</text>
+                        </g>
+
+                        <!-- Hub (Center) -->
+                        <circle cx="300" cy="100" r="5" fill="var(--text-main)" />
+
+                        <!-- Lines & Arrows -->
+                        <!-- Grid -> Hub -->
+                        <line x1="90" y1="100" x2="295" y2="100" stroke="var(--border)" stroke-width="2" />
+                        <line id="flowGrid" x1="100" y1="100" x2="290" y2="100" stroke="var(--primary)" stroke-width="4"
+                            stroke-opacity="0" />
+
+                        <!-- Renew -> Hub -->
+                        <line x1="300" y1="70" x2="300" y2="95" stroke="var(--border)" stroke-width="2" />
+                        <line id="flowRenew" x1="300" y1="70" x2="300" y2="90" stroke="#10b981" stroke-width="4"
+                            stroke-opacity="0" marker-end="url(#head)" />
+
+                        <!-- Hub -> Load -->
+                        <line x1="300" y1="105" x2="300" y2="130" stroke="var(--border)" stroke-width="2" />
+                        <line id="flowLoad" x1="300" y1="105" x2="300" y2="135" stroke="#ef4444" stroke-width="4"
+                            opacity="0.5" marker-end="url(#head)" class="flow-arrow" />
+
+                        <!-- Hub <-> Battery -->
+                        <line x1="305" y1="100" x2="510" y2="100" stroke="var(--border)" stroke-width="2" />
+                        <line id="flowBat" x1="305" y1="100" x2="500" y2="100" stroke="#3b82f6" stroke-width="4"
+                            stroke-opacity="0" />
+
+                    </svg>
+                </div>
             </div>
 
-            <div class="chart-header">
-                <span data-i18n="chartHeaderSchedule">🔋 Battery & Asset Schedule</span>
-            </div>
-            <div class="chart-container">
-                <canvas id="powerChart"></canvas>
+            <div class="card">
+                <div class="chart-header">
+                    <span data-i18n="chartHeaderMarket">💸 Market & Forecast</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="marketChart"></canvas>
+                </div>
+
+                <div class="chart-header">
+                    <span data-i18n="chartHeaderSchedule">🔋 Battery & Asset Schedule</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="powerChart"></canvas>
+                </div>
+
+                <!-- Equations Section -->
+                <div class="math-section">
+                    <h3 data-i18n="headerTheory">Control Theory & Physics</h3>
+                    <p data-i18n="theoryIntro">The AI Controller solves the Bellman Equation to find the optimal policy
+                        $\pi^*(x)$ that minimizes cost over the horizon:</p>
+
+                    <div class="math-block">
+                        $$ J(x_t) = \min_{u_t} \left\{ C(x_t, u_t) + J(x_{t+1}) \right\} $$
+                    </div>
+
+                    <p data-i18n="theoryBalance">Subject to the Power Balance Equation:</p>
+
+                    <div class="math-block">
+                        $$ P_{grid} + P_{renewable} + P_{battery} = P_{load} $$
+                    </div>
+
+                    <p><small data-i18n="theoryNote">Where $u_t$ is the battery action and $x_t$ is the State of Charge
+                            (SoC).</small></p>
+                </div>
             </div>
         </div>
     </div>
@@ -236,17 +421,28 @@
                 subtitle: "Day-Ahead Optimization using Dynamic Programming (15-min Resolution)",
                 viewDocs: "📖 View Documentation",
                 liveStatus: "Live Status",
+                lblScenario: "Scenario",
+                scenWinter: "Windy Coast (Winter)",
+                scenSummer: "Solar Suburb (Summer)",
+                scenMix: "Island (Solar + Wind)",
+                scenInd: "Industrial Hub",
+                headerDiagram: "System Status",
+                headerTheory: "Control Theory & Physics",
+                theoryIntro: "The AI Controller solves the Bellman Equation to find the optimal policy $\\pi^*(x)$ that minimizes cost over the horizon:",
+                theoryBalance: "Subject to the Power Balance Equation:",
+                theoryNote: "Where $u_t$ is the battery action and $x_t$ is the State of Charge (SoC).",
                 kpiTime: "Time",
                 kpiSoc: "Battery SoC",
                 kpiProfit: "Cumulative Profit",
                 kpiGridPower: "Current Grid Power",
                 btnRun: "🚀 Run AI Optimizer",
                 btnReset: "↺ Reset Simulation",
-                specsHtml: "<strong>System Specs:</strong><br>• 100 kWh Battery Storage<br>• 50 kW Max Charge Rate<br>• 50 kW Wind Turbine<br>• 96 Decision Steps (15m)",
+                specsHtml: "<strong>System Specs:</strong><br>• 100 kWh Battery Storage<br>• 50 kW Max Charge Rate<br>• 50 kW Renewable Cap<br>• 96 Decision Steps (15m)",
                 chartHeaderMarket: "💸 Market & Forecast",
                 chartHeaderSchedule: "🔋 Battery & Asset Schedule",
                 dsGridPrice: "Grid Price ($/kWh)",
-                dsWindPower: "Wind Power (kW)",
+                dsWindPower: "Renewable (kW)",
+                dsLoad: "Load (kW)",
                 axisPrice: "Price ($)",
                 axisPower: "Power (kW)",
                 dsSoc: "SoC (%)",
@@ -254,24 +450,35 @@
                 axisSoc: "SoC (%)",
                 statusReady: "Ready to optimize.",
                 statusRunning: "Running DP Optimizer...",
-                statusDone: "Optimization Complete. Playback Started."
+                statusDone: "Optimization Complete. Playback Started.",
+                statusFault: "GRID FAULT! Island Mode Active."
             },
             pl: {
                 title: "Menedżer mikrosieci (AI)",
                 subtitle: "Optymalizacja day-ahead metodą programowania dynamicznego (krok 15 min)",
                 viewDocs: "📖 Zobacz dokumentację",
                 liveStatus: "Status na żywo",
+                lblScenario: "Scenariusz",
+                scenWinter: "Wietrzne Wybrzeże (Zima)",
+                scenSummer: "Słoneczne Przedmieście (Lato)",
+                scenInd: "Centrum Przemysłowe",
+                headerDiagram: "Status Systemu",
+                headerTheory: "Teoria Sterowania i Fizyka",
+                theoryIntro: "Sterownik AI rozwiązuje równanie Bellmana, aby znaleźć optymalną strategię $\\pi^*(x)$ minimalizującą koszty:",
+                theoryBalance: "Przy ograniczeniu równania bilansu mocy:",
+                theoryNote: "Gdzie $u_t$ to działanie baterii, a $x_t$ to Stan Naładowania (SoC).",
                 kpiTime: "Czas",
                 kpiSoc: "SoC baterii",
                 kpiProfit: "Zysk skumulowany",
                 kpiGridPower: "Aktualna moc z sieci",
                 btnRun: "🚀 Uruchom optymalizator AI",
                 btnReset: "↺ Reset symulacji",
-                specsHtml: "<strong>Specyfikacja systemu:</strong><br>• Magazyn energii 100 kWh<br>• Maks. moc ładowania 50 kW<br>• Turbina wiatrowa 50 kW<br>• 96 kroków decyzyjnych (15 min)",
+                specsHtml: "<strong>Specyfikacja systemu:</strong><br>• Magazyn energii 100 kWh<br>• Maks. moc ładowania 50 kW<br>• OZE 50 kW<br>• 96 kroków decyzyjnych (15 min)",
                 chartHeaderMarket: "💸 Rynek i prognoza",
                 chartHeaderSchedule: "🔋 Harmonogram baterii i zasobów",
                 dsGridPrice: "Cena z sieci ($/kWh)",
-                dsWindPower: "Moc wiatru (kW)",
+                dsWindPower: "OZE (kW)",
+                dsLoad: "Zapotrzebowanie (kW)",
                 axisPrice: "Cena ($)",
                 axisPower: "Moc (kW)",
                 dsSoc: "SoC (%)",
@@ -279,7 +486,8 @@
                 axisSoc: "SoC (%)",
                 statusReady: "Gotowe do optymalizacji.",
                 statusRunning: "Uruchamianie optymalizatora DP...",
-                statusDone: "Optymalizacja zakończona. Rozpoczęto odtwarzanie."
+                statusDone: "Optymalizacja zakończona. Rozpoczęto odtwarzanie.",
+                statusFault: "AWARIA SIECI! Tryb Wyspowy."
             },
             fr: {
                 title: "Gestionnaire de micro-réseau (IA)",
@@ -336,17 +544,21 @@
                 subtitle: "Otimização day-ahead com programação dinâmica (15 min)",
                 viewDocs: "📖 Ver documentação",
                 liveStatus: "Status ao vivo",
+                lblScenario: "Cenário",
+                scenWinter: "Costa Ventosa (Inverno)",
+                scenSummer: "Subúrbio Solar (Verão)",
+                scenInd: "Polo Industrial",
                 kpiTime: "Hora",
                 kpiSoc: "SoC da bateria",
                 kpiProfit: "Lucro acumulado",
                 kpiGridPower: "Potência atual da rede",
                 btnRun: "🚀 Executar otimizador IA",
                 btnReset: "↺ Reiniciar simulação",
-                specsHtml: "<strong>Especificações do sistema:</strong><br>• Bateria 100 kWh<br>• Potência máx. de carga 50 kW<br>• Turbina eólica 50 kW<br>• 96 etapas de decisão (15 min)",
+                specsHtml: "<strong>Especificações do sistema:</strong><br>• Bateria 100 kWh<br>• Potência máx. de carga 50 kW<br>• Potência máx. de geração 50 kW<br>• 96 etapas de decisão (15 min)",
                 chartHeaderMarket: "💸 Mercado e previsão",
                 chartHeaderSchedule: "🔋 Agenda da bateria e ativos",
                 dsGridPrice: "Preço da rede ($/kWh)",
-                dsWindPower: "Potência eólica (kW)",
+                dsWindPower: "Geração (kW)",
                 axisPrice: "Preço ($)",
                 axisPower: "Potência (kW)",
                 dsSoc: "SoC (%)",
@@ -361,17 +573,21 @@
                 subtitle: "Day-Ahead-Optimierung per dynamischer Programmierung (15-min Auflösung)",
                 viewDocs: "📖 Dokumentation ansehen",
                 liveStatus: "Live-Status",
+                lblScenario: "Szenario",
+                scenWinter: "Windige Küste (Winter)",
+                scenSummer: "Solar-Vorstadt (Sommer)",
+                scenInd: "Industriezentrum",
                 kpiTime: "Zeit",
                 kpiSoc: "Batterie-SoC",
                 kpiProfit: "Kumulativer Gewinn",
                 kpiGridPower: "Aktuelle Netzleistung",
                 btnRun: "🚀 KI-Optimierer starten",
                 btnReset: "↺ Simulation zurücksetzen",
-                specsHtml: "<strong>Systemdaten:</strong><br>• Batteriespeicher 100 kWh<br>• Max. Ladeleistung 50 kW<br>• Windturbine 50 kW<br>• 96 Entscheidungsschritte (15 min)",
+                specsHtml: "<strong>Systemdaten:</strong><br>• Batteriespeicher 100 kWh<br>• Max. Ladeleistung 50 kW<br>• Max. Erzeugung 50 kW<br>• 96 Entscheidungsschritte (15 min)",
                 chartHeaderMarket: "💸 Markt & Prognose",
                 chartHeaderSchedule: "🔋 Batterie- & Anlagenplan",
                 dsGridPrice: "Netzpreis ($/kWh)",
-                dsWindPower: "Windleistung (kW)",
+                dsWindPower: "Erzeugung (kW)",
                 axisPrice: "Preis ($)",
                 axisPower: "Leistung (kW)",
                 dsSoc: "SoC (%)",
@@ -386,17 +602,21 @@
                 subtitle: "Оптимізація day-ahead методом динамічного програмування (крок 15 хв)",
                 viewDocs: "📖 Переглянути документацію",
                 liveStatus: "Статус",
+                lblScenario: "Сценарій",
+                scenWinter: "Вітряне узбережжя (Зима)",
+                scenSummer: "Сонячне передмістя (Літо)",
+                scenInd: "Промисловий центр",
                 kpiTime: "Час",
                 kpiSoc: "SoC батареї",
                 kpiProfit: "Накопичений прибуток",
                 kpiGridPower: "Поточна потужність мережі",
                 btnRun: "🚀 Запустити AI-оптимізатор",
                 btnReset: "↺ Скинути симуляцію",
-                specsHtml: "<strong>Характеристики системи:</strong><br>• Батарея 100 kWh<br>• Макс. потужність заряду 50 kW<br>• Вітротурбіна 50 kW<br>• 96 кроків рішення (15 хв)",
+                specsHtml: "<strong>Характеристики системи:</strong><br>• Батарея 100 kWh<br>• Макс. потужність заряду 50 kW<br>• Макс. генерація 50 kW<br>• 96 кроків рішення (15 хв)",
                 chartHeaderMarket: "💸 Ринок і прогноз",
                 chartHeaderSchedule: "🔋 Розклад батареї та активів",
                 dsGridPrice: "Ціна мережі ($/kWh)",
-                dsWindPower: "Потужність вітру (kW)",
+                dsWindPower: "Генерація (kW)",
                 axisPrice: "Ціна ($)",
                 axisPower: "Потужність (kW)",
                 dsSoc: "SoC (%)",
@@ -416,34 +636,104 @@
 
         // --- High Resolution Data Generation ---
         const STEPS = 96; // 15 min intervals
-        const HOURS = 24;
 
         // Generate continuous-ish data
-        const genProfile = (steps) => {
-            const wind = [];
+        const genProfile = (scenario = 'winter_coast') => {
+            const power = []; // Generation (Wind or Solar)
             const price = [];
+            const load = [];
 
-            for (let i = 0; i < steps; i++) {
-                const h = (i / steps) * 24;
+            for (let i = 0; i < STEPS; i++) {
+                const h = (i / STEPS) * 24;
 
-                // Wind: Peak at night, dip multiple times
-                let w = 20 + 20 * Math.sin(h * 0.5 + 1) + 10 * Math.cos(h * 1.5);
-                w = Math.max(0, w + (Math.random() - 0.5) * 5); // Noise
-                wind.push(w);
+                let p_gen = 0;
+                let p_price = 0.10; // Base
+                let p_load = 0;
 
-                // Price: Duck curve (Morning peak 8am, Evening peak 7pm)
-                // Base 0.10
-                let p = 0.10;
-                // Morning peak
-                p += 0.10 * Math.exp(-Math.pow((h - 8) / 2, 2));
-                // Evening peak (Huge)
-                p += 0.35 * Math.exp(-Math.pow((h - 19) / 2.5, 2));
-                price.push(p);
+                // Domestic Load
+                p_load = 5 + 10 * Math.exp(-Math.pow((h - 8) / 2, 2)) + 15 * Math.exp(-Math.pow((h - 20) / 2.5, 2));
+                p_load += (Math.random() - 0.5) * 2;
+                p_load = Math.max(2, p_load);
+
+                if (scenario === 'winter_coast') {
+                    // Wind: Peak at night, dip multiple times
+                    let w = 20 + 20 * Math.sin(h * 0.5 + 1) + 10 * Math.cos(h * 1.5);
+                    w = Math.max(0, w + (Math.random() - 0.5) * 5); // Noise
+                    p_gen = w;
+
+                    // Price: Volatile
+                    p_price += 0.10 * Math.exp(-Math.pow((h - 8) / 2, 2)); // Morning
+                    p_price += 0.35 * Math.exp(-Math.pow((h - 19) / 2.5, 2)); // Evening
+
+                    p_load += 10; // Heating
+                }
+
+                else if (scenario === 'summer_suburb') {
+                    // Solar: Bell curve 6am to 8pm
+                    if (h > 6 && h < 20) {
+                        // Peak at 13h
+                        p_gen = 50 * Math.exp(-Math.pow((h - 13) / 3, 2));
+                        // Add some clouds
+                        if (Math.random() > 0.8) p_gen *= 0.5;
+                    }
+
+                    // Price: Stabilized by solar, lower peaks
+                    p_price = 0.08;
+                    // Evening peak due to AirCon when sun sets
+                    p_price += 0.20 * Math.exp(-Math.pow((h - 18) / 2, 2));
+
+                    p_load += 20 * Math.exp(-Math.pow((h - 16) / 4, 2)); // AC
+                }
+
+                else if (scenario === 'mix_island') {
+                    // Wind Component
+                    let w = 15 + 10 * Math.sin(h * 0.4);
+                    w = Math.max(0, w + (Math.random() - 0.5) * 3);
+
+                    // Solar Component
+                    let s = 0;
+                    if (h > 6 && h < 20) {
+                        s = 30 * Math.exp(-Math.pow((h - 13) / 3, 2));
+                        if (Math.random() > 0.9) s *= 0.6; // Occasional cloud
+                    }
+
+                    p_gen = w + s;
+
+                    // Price: Variable
+                    p_price = 0.12 + 0.05 * Math.sin(h / 3);
+
+                    // Load: Average
+                    p_load += 5;
+                }
+
+                else if (scenario === 'industrial') {
+                    // No Generation (Grid only arbitrage)
+                    p_gen = 0;
+
+                    // Price: Very predictable industrial TOU
+                    // Low at night (0-6), High day (6-22)
+                    if (h >= 6 && h <= 22) p_price = 0.25;
+                    else p_price = 0.05;
+
+                    p_load = 40 + (Math.random() - 0.5) * 5;
+                    if (h < 6 || h > 22) p_load = 15;
+                }
+
+                power.push(p_gen);
+                price.push(p_price);
+                load.push(p_load);
             }
-            return { wind, price };
+            return { power, price, load };
         };
 
-        const { wind: WIND_DATA, price: PRICE_DATA } = genProfile(STEPS);
+        let DATA_GEN = [];
+        let DATA_PRICE = [];
+        // Init with default
+        const initData = genProfile('winter_coast');
+        DATA_GEN = initData.power;
+        DATA_PRICE = initData.price;
+        DATA_LOAD = initData.load;
+
         const LABELS = Array(STEPS).fill(0).map((_, i) => {
             const h = Math.floor(i / 4);
             const m = (i % 4) * 15;
@@ -465,6 +755,7 @@
             marketChart: null,
             powerChart: null,
             statusKey: 'statusReady',
+            faultActive: false,
 
             init: () => {
                 app.initCharts();
@@ -481,7 +772,7 @@
                         datasets: [
                             {
                                 label: pageT('dsGridPrice', 'Grid Price ($/kWh)'),
-                                data: PRICE_DATA,
+                                data: DATA_PRICE,
                                 borderColor: '#f59e0b',
                                 backgroundColor: 'rgba(245, 158, 11, 0.1)',
                                 yAxisID: 'y1',
@@ -489,14 +780,33 @@
                                 fill: true
                             },
                             {
-                                label: pageT('dsWindPower', 'Wind Power (kW)'),
-                                data: WIND_DATA,
+                                label: pageT('dsWindPower', 'Renewable (kW)'),
+                                data: DATA_GEN,
                                 borderColor: '#10b981',
                                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                                 yAxisID: 'y2',
                                 tension: 0.4,
-                                fill: true,
+                                fill: false,
                                 borderDash: [5, 5]
+                            },
+                            {
+                                label: pageT('dsLoad', 'Load (kW)'),
+                                data: DATA_LOAD,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                yAxisID: 'y2', // Same axis for power
+                                tension: 0.4,
+                                fill: false
+                            },
+                            // Time Marker
+                            {
+                                label: 'Time',
+                                data: [],
+                                type: 'scatter',
+                                backgroundColor: 'red',
+                                pointRadius: 6,
+                                pointHoverRadius: 8,
+                                yAxisID: 'y1'
                             }
                         ]
                     },
@@ -555,182 +865,244 @@
             },
 
             reset: () => {
-                if (app.simInterval) clearInterval(app.simInterval);
+                clearInterval(app.simInterval);
+                app.simTime = 0;
                 app.soc = 50;
                 app.profit = 0;
-                app.simTime = 0;
-                app.plan = new Array(STEPS).fill(0);
+                app.plan.fill(0);
+                app.faultActive = false;
 
-                // Reset Charts
-                app.powerChart.data.datasets[1].data = app.plan;
-                app.powerChart.data.datasets[0].data = Array(STEPS).fill(50);
-                app.powerChart.update();
+                document.getElementById('status').textContent = pageT('statusReady', 'Ready to optimize.');
+                document.getElementById('status').style.color = '#059669';
+                document.getElementById('btnFault').style.display = 'none';
 
-                app.updateUI();
-                app.statusKey = 'statusReady';
-                document.getElementById('status').innerText = pageT('statusReady', 'Ready to optimize.');
+                // Regenerate data based on scenario
+                const scen = document.getElementById('scenarioSelect').value;
+                const d = genProfile(scen);
+                DATA_GEN = d.power;
+                DATA_PRICE = d.price;
+                DATA_LOAD = d.load;
+
+                app.updateUI(0);
+
+                app.marketChart.data.datasets[3].data = [];
+                app.marketChart.update();
+
+                // Update Diagram Icon
+                const iconEl = document.getElementById('iconRenew');
+                if (iconEl) {
+                    if (scen === 'winter_coast') iconEl.textContent = '🌬️';
+                    else if (scen === 'summer_suburb') iconEl.textContent = '☀️';
+                    else if (scen === 'mix_island') iconEl.textContent = '☀️🌬️'; // Both
+                    else iconEl.textContent = '🚫';
+                }
             },
 
-            solve: () => {
-                app.statusKey = 'statusRunning';
-                document.getElementById('status').innerText = pageT('statusRunning', 'Running DP Optimizer...');
-                // Allow UI to update before blocking
-                setTimeout(app.runDP, 50);
+            toggleFault: () => {
+                app.faultActive = !app.faultActive;
+                const btn = document.getElementById('btnFault');
+                if (app.faultActive) {
+                    btn.style.backgroundColor = '#ef4444';
+                    btn.style.color = 'white';
+                    document.getElementById('status').textContent = pageT('statusFault', 'GRID FAULT! Island Mode Active.');
+                } else {
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                    document.getElementById('status').textContent = pageT('statusRunning', 'Running...');
+                }
             },
 
-            runDP: () => {
-                // High-Res DP
-                // State quantization: 0..100% in 2% steps (51 states)
-                const N_STATES = 51;
-                const scale = 100 / (N_STATES - 1);
+            solve: async () => {
+                document.getElementById('status').textContent = pageT('statusRunning', 'Running DP Optimizer...');
+                await new Promise(r => setTimeout(r, 50)); // UI Render
 
-                // DP Arrays
-                // Best Profit to reach State S at Time T
-                // Note: Using flat arrays might be faster but 2D is easier to read
-                let dp = new Float32Array(N_STATES).fill(-Infinity);
-                const startIdx = Math.round(app.soc / scale);
-                dp[startIdx] = 0;
+                const N = STEPS;
+                const costToGo = Array(N + 1).fill(null).map(() => Array(101).fill(Infinity));
+                const policy = Array(N).fill(null).map(() => Array(101).fill(0));
 
-                // Parent pointers to reconstruct: [Time][State] -> PrevState
-                const parents = new Int16Array(STEPS * N_STATES);
+                // Terminal cost (0)
+                for (let s = 0; s <= 100; s++) costToGo[N][s] = 0;
 
-                // Optimization Loop
-                for (let t = 0; t < STEPS - 1; t++) {
-                    const price = PRICE_DATA[t];
-                    // const wind = WIND_DATA[t];
+                // Backward Pass
+                for (let k = N - 1; k >= 0; k--) {
+                    const price = DATA_PRICE[k];
+                    const wind = DATA_GEN[k];
+                    const load = DATA_LOAD[k]; // New: Load
 
-                    const next_dp = new Float32Array(N_STATES).fill(-Infinity);
+                    for (let s = 0; s <= 100; s++) { // State: SoC %
+                        let bestCost = Infinity;
+                        let bestU = 0;
 
-                    for (let s = 0; s < N_STATES; s++) {
-                        if (dp[s] === -Infinity) continue;
+                        // Try actions (Charge/Discharge kW)
+                        // Discretize action space for performance (e.g. -50 to 50 in steps of 10)
+                        for (let u = -P_MAX; u <= P_MAX; u += 10) {
+                            // Next SoC
+                            // Energy = Power * Time. 
+                            // Delta SoC % = (u * DT / BAT_CAP) * 100
+                            let ds = (u * DT / 100) * 100;
+                            let nextS = s + ds;
 
-                        // Possible Actions
-                        // Max Energy change in 15 mins: 50kW * 0.25h = 12.5 kWh
-                        // In %: 12.5 / 100 * 100 = 12.5%
-                        // In steps (approx 2%): +/- 6 steps
+                            if (nextS >= 0 && nextS <= 100) {
+                                // Cost calculation
+                                // P_grid = P_load + P_bat - P_renew
+                                // u is P_bat (+ is charge/load, - is discharge/gen)
+                                const p_grid = load + u - wind;
+                                const stageCost = p_grid * price * DT;
 
-                        const minDS = -6;
-                        const maxDS = 6;
+                                // Floor/Ceil interpolation or nearest neighbor for DP
+                                const nextS_idx = Math.round(nextS);
+                                const totalCost = stageCost + costToGo[k + 1][nextS_idx];
 
-                        for (let ds = minDS; ds <= maxDS; ds++) {
-                            const ns = s + ds;
-                            if (ns < 0 || ns >= N_STATES) continue;
-
-                            // Check SoC Constraints (20%-90%)
-                            const soc = ns * scale;
-                            if (soc < 20 || soc > 90) continue;
-
-                            // Calculate Cost
-                            // Energy delta: dSoC * Cap
-                            // dSoC > 0 = Charge = Buy (if wind < charge needed)
-                            // Actually, Cost = NetGrid * Price
-                            // NetGrid = P_bat - P_wind
-                            // If P_bat is +30kW (Charge), and Wind is 10kW, NetGrid = +20 (Buy 20)
-
-                            // dSoC is in %, convert to kW
-                            // dE (kWh) = dSoC% * Cap / 100
-                            // Power (kW) = dE / 0.25h
-                            const dE = (ds * scale / 100) * BAT_CAP;
-                            const pBat = dE / DT;
-
-                            const netGrid = pBat - WIND_DATA[t];
-
-                            // Cost function (Minimize Cost = Maximize -Cost)
-                            const cost = netGrid * price * DT; // $ = kW * $ * h
-
-                            const val = dp[s] - cost;
-
-                            if (val > next_dp[ns]) {
-                                next_dp[ns] = val;
-                                parents[t * N_STATES + ns] = s;
+                                if (totalCost < bestCost) {
+                                    bestCost = totalCost;
+                                    bestU = u;
+                                }
                             }
                         }
-                    }
-                    dp = next_dp;
-                }
-
-                // Backtrack
-                // Find best end state
-                let bestS = -1;
-                let maxVal = -Infinity;
-                for (let s = 0; s < N_STATES; s++) {
-                    if (dp[s] > maxVal) {
-                        maxVal = dp[s];
-                        bestS = s;
+                        costToGo[k][s] = bestCost;
+                        policy[k][s] = bestU;
                     }
                 }
 
-                // Reconstruct Path
-                const socPath = new Array(STEPS);
-                let curr = bestS;
-                for (let t = STEPS - 1; t >= 0; t--) {
-                    socPath[t] = curr * scale;
-                    // prev
-                    if (t > 0) curr = parents[(t - 1) * N_STATES + curr];
+                // Reconstruction (Forward Pass)
+                let currS = 50;
+                for (let k = 0; k < N; k++) {
+                    const u = policy[k][Math.round(currS)];
+                    app.plan[k] = u;
+                    currS += (u * DT / 100) * 100;
+                    if (currS > 100) currS = 100;
+                    if (currS < 0) currS = 0;
                 }
 
-                // Calculate Plan
-                for (let t = 0; t < STEPS - 1; t++) {
-                    const dSoC = socPath[t + 1] - socPath[t];
-                    const kw = (dSoC * BAT_CAP / 100) / DT;
-                    app.plan[t] = kw;
-                }
-                app.plan[STEPS - 1] = 0; // Last step
-
-                // Update Charts
-                app.powerChart.data.datasets[1].data = app.plan;
-                app.powerChart.data.datasets[0].data = socPath;
-                app.powerChart.update();
-
-                app.statusKey = 'statusDone';
-                document.getElementById('status').innerText = pageT('statusDone', 'Optimization Complete. Playback Started.');
-
-                // Start Sim
+                document.getElementById('status').textContent = pageT('statusDone', 'Optimization Complete. Playback Started.');
+                app.updateCharts();
                 app.startSimPlayback();
             },
 
+            updateCharts: () => {
+                // Update datasets with new scenario data
+                app.marketChart.data.datasets[0].data = DATA_PRICE;
+                app.marketChart.data.datasets[1].data = DATA_GEN;
+                app.marketChart.data.datasets[2].data = DATA_LOAD; // Load
+                app.marketChart.update();
+
+                app.powerChart.data.datasets[1].data = app.plan;
+                app.powerChart.update();
+            },
+
             startSimPlayback: () => {
-                if (app.simInterval) clearInterval(app.simInterval);
+                clearInterval(app.simInterval);
                 app.simTime = 0;
+                app.soc = 50;
+                app.profit = 0;
+                document.getElementById('btnFault').style.display = 'inline-block'; // Show Fault button
 
                 app.simInterval = setInterval(() => {
-                    const t = app.simTime;
-                    if (t >= STEPS) {
+                    const k = app.simTime;
+                    if (k >= STEPS) {
                         clearInterval(app.simInterval);
                         return;
                     }
 
-                    // Calculate KPI
-                    const pBat = app.plan[t];
-                    const net = pBat - WIND_DATA[t];
-                    const cost = net * PRICE_DATA[t] * DT;
+                    let u = app.plan[k];
+                    const wind = DATA_GEN[k];
+                    const price = DATA_PRICE[k];
+                    const load = DATA_LOAD[k];
 
-                    app.profit -= cost;
-                    app.soc += (pBat * DT / BAT_CAP) * 100;
+                    // --- FAULT LOGIC ---
+                    if (app.faultActive) {
+                        // Grid Down: NetGrid must be 0
+                        // P_grid = load + u - wind = 0  =>  u = wind - load
+                        u = wind - load;
 
-                    // Highlighting
-                    // Chart.js can't easily scroll highlights without plugin, 
-                    // but we can update the title or KPIs
+                        // Physical Constraints
+                        if (u > P_MAX) u = P_MAX; // Curtail wind if battery logic allows?
+                        if (u < -P_MAX) u = -P_MAX;
 
-                    app.updateUI(t);
+                        // SoC Constraints
+                        const possibleChg = (100 - app.soc) * BAT_CAP / 100 / DT;
+                        const possibleDis = (app.soc) * BAT_CAP / 100 / DT;
 
-                    // Visualize Current Step on Chart?
-                    // Optional: Add a vertical annotation line if plugin existed.
-                    // For now, just KPIs.
+                        if (u > possibleChg) u = possibleChg;
+                        if (u < -possibleDis) u = -possibleDis;
+                    }
+                    // -------------------
+
+                    // Physics Update
+                    const p_grid = load + u - wind;
+                    const cost = p_grid * price * DT;
+
+                    if (!app.faultActive) {
+                        app.profit -= cost; // Revenue is negative cost
+                    }
+
+                    const ds = (u * DT / 100) * 100;
+                    app.soc += ds;
+                    if (app.soc > 100) app.soc = 100;
+                    if (app.soc < 0) app.soc = 0;
+
+                    // Update UI
+                    app.updateUI(k, u, p_grid, load, wind);
 
                     app.simTime++;
-                }, 50); // 50ms per 15min step = 4.8s for full day
+                }, 200); // 200ms per step
             },
 
-            updateUI: (stepIdx = 0) => {
-                document.getElementById('dispTime').innerText = LABELS[stepIdx];
-                document.getElementById('dispSoC').innerText = app.soc.toFixed(1) + "%";
-                const p = app.profit;
-                document.getElementById('dispProfit').innerText = (p >= 0 ? "+$" : "-$") + Math.abs(p).toFixed(2);
+            updateUI: (k, u = 0, p_grid = 0, load = 0, wind = 0) => {
+                // Charts
+                const socData = app.powerChart.data.datasets[0].data;
+                socData[k] = app.soc;
+                // Clear future simulation line if we want "live" feel, but Chart.js handles this fine.
+                app.powerChart.update('none');
 
-                const net = app.plan[stepIdx] - WIND_DATA[stepIdx];
-                document.getElementById('dispCost').innerText = net.toFixed(1) + " kW";
-                document.getElementById('dispCost').className = net > 0 ? "kpi-val neg" : "kpi-val"; // Buy = Neg, Sell = Pos (Green?) No, usually Buy is Red flow.
+                // Time Marker (Scatter Point)
+                // Use the Price axis vs Time Label
+                const timePoint = { x: LABELS[k], y: DATA_PRICE[k] };
+                app.marketChart.data.datasets[3].data = [timePoint];
+                app.marketChart.update('none');
+
+                // KPIs
+                if (document.getElementById('dispTime')) document.getElementById('dispTime').textContent = LABELS[k];
+                if (document.getElementById('dispSoC')) document.getElementById('dispSoC').textContent = app.soc.toFixed(1) + '%';
+                if (document.getElementById('dispProfit')) {
+                    document.getElementById('dispProfit').textContent = '$' + (-app.profit).toFixed(2);
+                    document.getElementById('dispProfit').style.color = app.profit <= 0 ? '#10b981' : '#ef4444';
+                }
+                if (document.getElementById('dispCost')) document.getElementById('dispCost').textContent = p_grid.toFixed(1) + ' kW';
+
+                // DIAGRAM ANIMATION
+                // Nodes
+                document.getElementById('valGrid').textContent = app.faultActive ? 'OFF' : (p_grid.toFixed(1) + ' kW');
+                document.getElementById('valRenew').textContent = wind.toFixed(1) + ' kW';
+                document.getElementById('valLoad').textContent = load.toFixed(1) + ' kW';
+                document.getElementById('valBat').textContent = app.soc.toFixed(1) + '%';
+
+                // Flows
+                // Grid Flow
+                const fGrid = document.getElementById('flowGrid');
+                if (Math.abs(p_grid) < 0.1 || app.faultActive) {
+                    fGrid.style.strokeOpacity = 0.1;
+                } else {
+                    fGrid.style.strokeOpacity = 1;
+                    fGrid.setAttribute('stroke', p_grid > 0 ? '#ef4444' : '#10b981'); // Red = Import, Green = Export
+                }
+
+                // Renew Flow (Always Gen -> Hub)
+                const fRenew = document.getElementById('flowRenew');
+                fRenew.style.strokeOpacity = wind > 0.1 ? 1 : 0.1;
+
+                // Load Flow (Always Hub -> Load)
+                const fLoad = document.getElementById('flowLoad');
+                fLoad.style.strokeOpacity = load > 0.1 ? 1 : 0.1;
+
+                // Bat Flow
+                const fBat = document.getElementById('flowBat');
+                if (Math.abs(u) < 0.1) {
+                    fBat.style.strokeOpacity = 0.1;
+                } else {
+                    fBat.style.strokeOpacity = 1;
+                    fBat.setAttribute('stroke', u > 0 ? '#10b981' : '#f59e0b'); // Green = Charge, Orange = Discharge
+                }
             }
         };
 

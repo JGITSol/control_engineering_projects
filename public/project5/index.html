@@ -152,20 +152,34 @@
         <div class="header">
             <div>
                 <h1 data-i18n="title">Autonomous Path Tracking</h1>
-                <p style="margin: 5px 0 0; color: var(--muted);" data-i18n="subtitle">Stanley Controller vs Model Predictive Control (MPC)</p>
+                <p style="margin: 5px 0 0; color: var(--muted);" data-i18n="subtitle">Stanley Controller vs Model
+                    Predictive Control (MPC)</p>
             </div>
-            <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;" data-i18n="readGuide">📖
+            <a href="Path-Tracking-Guide.md" style="color: var(--primary); font-weight: 600; text-decoration: none;"
+                data-i18n="readGuide">📖
                 Read Guide</a>
         </div>
 
         <!-- Sidebar -->
         <div class="card">
-            <div class="control-group">
-                <label data-i18n="labelArchitecture">Controller Architecture</label>
-                <select id="ctrlType" onchange="sim.reset()">
-                    <option value="stanley" data-i18n-option="optionStanley">Stanley (Geometric)</option>
-                    <option value="mpc" data-i18n-option="optionMpc">MPC (Sampling-based)</option>
-                </select>
+            <div class="control-panel">
+                <div class="control-group">
+                    <label data-i18n="labelScenario">Scenario</label>
+                    <select id="scenarioType" onchange="sim.reset()">
+                        <option value="ideal" data-i18n-option="scenIdeal">Ideal Conditions</option>
+                        <option value="wind" data-i18n-option="scenWind">Strong Crosswind</option>
+                        <option value="ice" data-i18n-option="scenIce">Icy Road (Lag)</option>
+                        <option value="noise" data-i18n-option="scenNoise">Sensor Noise</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label data-i18n="labelArchitecture">Controller Architecture</label>
+                    <select id="ctrlType" onchange="sim.reset()">
+                        <option value="stanley" data-i18n-option="optionStanley">Stanley (Geometric)</option>
+                        <option value="mpc" data-i18n-option="optionMpc">MPC (Sampling-based)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="control-group">
@@ -223,6 +237,11 @@
                 title: "Autonomous Path Tracking",
                 subtitle: "Stanley Controller vs Model Predictive Control (MPC)",
                 readGuide: "📖 Read Guide",
+                labelScenario: "Scenario",
+                scenIdeal: "Ideal Conditions",
+                scenWind: "Strong Crosswind",
+                scenIce: "Icy Road (Lag)",
+                scenNoise: "Sensor Noise",
                 labelArchitecture: "Controller Architecture",
                 optionStanley: "Stanley (Geometric)",
                 optionMpc: "MPC (Sampling-based)",
@@ -410,9 +429,10 @@
         }
 
         const sim = {
-            car: { x: 0, y: 0, yaw: 0, v: 15, L: 2.5 },
+            car: { x: 0, y: 0, yaw: 0, v: 15, L: 2.5, steerActual: 0 },
             track: null,
             paused: false,
+            scenario: 'ideal', // ideal, wind, ice, noise
 
             init: () => {
                 // Init Charts
@@ -434,6 +454,8 @@
                 sim.car.x = 0;
                 sim.car.y = 0;
                 sim.car.yaw = 0.5;
+                sim.car.steerActual = 0;
+                sim.scenario = document.getElementById('scenarioType').value;
 
                 // Clear Charts
                 chartCTE.data.datasets[0].data.fill(null);
@@ -463,9 +485,10 @@
                 const dt = 0.05;
                 const type = document.getElementById('ctrlType').value;
                 sim.car.v = parseFloat(document.getElementById('speed').value);
+                sim.scenario = document.getElementById('scenarioType').value;
 
                 // Control
-                let steer = 0;
+                let steerTarget = 0;
                 let debug = [];
                 const nearest = sim.track.getNearest(sim.car);
 
@@ -476,17 +499,24 @@
                 const rx = sim.car.x - nearest.point.x;
                 // Sign: Cross product z
                 const cp = (next.x - nearest.point.x) * ry - (next.y - nearest.point.y) * rx;
-                const cte = Math.abs(nearest.dist) * (cp > 0 ? 1 : -1);
+                let cte = Math.abs(nearest.dist) * (cp > 0 ? 1 : -1);
+
+                // SCENARIO: Noise
+                // Add noise to sensor readings (CTE and Heading)
+                if (sim.scenario === 'noise') {
+                    cte += (Math.random() - 0.5) * 1.5; // Jittery CTE
+                }
+
+                // Helper: Heading Err
+                let he = pathYaw - sim.car.yaw;
+                while (he > Math.PI) he -= 2 * Math.PI;
+                while (he < -Math.PI) he += 2 * Math.PI;
 
                 if (type === 'stanley') {
                     // Stanley
-                    let yawErr = pathYaw - sim.car.yaw;
-                    while (yawErr > Math.PI) yawErr -= 2 * Math.PI;
-                    while (yawErr < -Math.PI) yawErr += 2 * Math.PI;
-
                     const k = parseFloat(document.getElementById('st_k').value);
                     const delta = Math.atan2(-k * cte, sim.car.v + 1);
-                    steer = yawErr + delta;
+                    steerTarget = he + delta;
                 } else {
                     // MPC (Sampling)
                     const N = parseInt(document.getElementById('mpc_N').value);
@@ -516,38 +546,54 @@
 
                         if (cost < bestCost) {
                             bestCost = cost;
-                            steer = s;
+                            steerTarget = s;
                         }
                         if (i % 3 === 0) debug.push({ path: trace, cost: cost });
                     }
                 }
 
-                // Clamp
-                steer = Math.max(-0.6, Math.min(0.6, steer));
+                // SCENARIO: Ice (Lag)
+                // Smooth towards target instead of instant snap
+                if (sim.scenario === 'ice') {
+                    const alpha = 0.05; // Very slow response
+                    sim.car.steerActual += (steerTarget - sim.car.steerActual) * alpha;
+                } else {
+                    // Normal car has *some* lag, but mostly responsive
+                    const alpha = 0.5;
+                    sim.car.steerActual += (steerTarget - sim.car.steerActual) * alpha;
+                }
 
-                // Helper: Heading Err
-                let he = pathYaw - sim.car.yaw;
-                while (he > Math.PI) he -= 2 * Math.PI;
-                while (he < -Math.PI) he += 2 * Math.PI;
+                // Clamp
+                sim.car.steerActual = Math.max(-0.6, Math.min(0.6, sim.car.steerActual));
+
+                // SCENARIO: Wind (Drift)
+                // Add lateral force
+                if (sim.scenario === 'wind') {
+                    // Constant push in Y + random gusts
+                    const windForce = 0.2 + (Math.random() * 0.1);
+                    sim.car.y += windForce; // Direct position drift (simplified physics)
+                    // Or yaw drift?
+                    sim.car.yaw += 0.02 * dt;
+                }
 
                 // Physics
                 sim.car.x += sim.car.v * Math.cos(sim.car.yaw) * dt;
                 sim.car.y += sim.car.v * Math.sin(sim.car.yaw) * dt;
-                sim.car.yaw += (sim.car.v / sim.car.L) * Math.tan(steer) * dt;
+                sim.car.yaw += (sim.car.v / sim.car.L) * Math.tan(sim.car.steerActual) * dt;
 
                 // UI Pushes
                 document.getElementById('cte').innerText = cte.toFixed(2) + " m";
                 document.getElementById('he').innerText = he.toFixed(2) + " rad";
-                sim.updateCharts(cte, steer);
+                sim.updateCharts(cte, sim.car.steerActual);
 
                 // Reset Check
                 if (sim.car.x > sim.track.points[sim.track.points.length - 1].x) sim.reset();
 
                 // Draw
-                sim.draw(debug, steer);
+                sim.draw(debug, sim.car.steerActual);
             },
 
-            draw: (debug, steer) => {
+            draw: (debug, steerActual) => {
                 const cvs = document.getElementById('simCanvas');
                 const ctx = cvs.getContext('2d');
                 cvs.width = cvs.clientWidth;
