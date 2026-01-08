@@ -225,6 +225,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 pt: 'Controle Adaptativo por Modelo de Referência',
                 de: 'Modellreferenz-Adaptive Regelung',
                 uk: 'Адаптивне керування з еталонною моделлю'
+            },
+            'System Identification': {
+                en: 'System Identification',
+                pl: 'Identyfikacja Systemów',
+                fr: 'Identification de Système',
+                es: 'Identificación de Sistemas',
+                pt: 'Identificação de Sistemas',
+                de: 'Systemidentifikation',
+                uk: 'Ідентифікація Систем'
+            },
+            'Lead-Lag Compensator': {
+                en: 'Lead-Lag Compensator',
+                pl: 'Kompensator Lead-Lag',
+                fr: 'Compensateur Avance-Retard',
+                es: 'Compensador Adelanto-Atraso',
+                pt: 'Compensador Avanço-Atraso',
+                de: 'Lead-Lag-Kompensator',
+                uk: 'Компенсатор Lead-Lag'
+            },
+            'Ball & Beam': {
+                en: 'Ball & Beam',
+                pl: 'Kulka i Belka',
+                fr: 'Balle et Poutre',
+                es: 'Bola y Viga',
+                pt: 'Bola e Viga',
+                de: 'Ball & Balken',
+                uk: 'Кулька та Балка'
             }
         }
     };
@@ -547,7 +574,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.MathJax.typesetPromise([body]);
             }
         } catch (err) {
-            body.innerHTML = `<div style="color: var(--error); padding: 20px;">Error loading docs: ${err.message}</div>`;
+            console.error(err);
+            if (window.location.protocol === 'file:') {
+                body.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--text);">
+                        <p style="margin-bottom: 15px;">⚠️ Documentation cannot be embedded in static mode (file://) due to browser security.</p>
+                        <a href="${url}" target="_blank" class="pill primary" style="text-decoration: none; display: inline-block;">Open Guide in New Tab</a>
+                        <p style="font-size: 0.8em; margin-top: 15px; opacity: 0.7;">To view inside the app, please use a local web server.</p>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = `<div style="color: var(--error); padding: 20px;">Error loading docs: ${err.message}</div>`;
+            }
         }
     };
 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Identification (RLS) | Control Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                p10_title: 'System Identification (RLS)',
+                p10_subtitle: 'Estimate unknown system parameters in real-time using Recursive Least Squares.',
+                readGuide: '📖 Read Guide',
+                config: 'Configuration',
+                reset: 'Reset Simulation',
+                viz: 'Live Identification'
+            },
+            pl: {
+                p10_title: 'Identyfikacja Systemów (RLS)',
+                p10_subtitle: 'Estymacja nieznanych parametrów systemu w czasie rzeczywistym (RLS).',
+                readGuide: '📖 Przeczytaj Poradnik',
+                config: 'Konfiguracja',
+                reset: 'Reset Symulacji',
+                viz: 'Identyfikacja na Żywo'
+            },
+            fr: {
+                p10_title: 'Identification de Système (RLS)',
+                p10_subtitle: 'Estimation de paramètres inconnus en temps réel via Moindres Carrés Récursifs.',
+                readGuide: '📖 Lire le Guide',
+                config: 'Configuration',
+                reset: 'Réinitialiser Simulation',
+                viz: 'Identification en Direct'
+            },
+            es: {
+                p10_title: 'Identificación de Sistemas (RLS)',
+                p10_subtitle: 'Estima parámetros desconocidos en tiempo real usando Mínimos Cuadrados Recursivos.',
+                readGuide: '📖 Leer Guía',
+                config: 'Configuración',
+                reset: 'Reiniciar Simulación',
+                viz: 'Identificación en Vivo'
+            },
+            pt: {
+                p10_title: 'Identificação de Sistemas (RLS)',
+                p10_subtitle: 'Estime parâmetros desconhecidos em tempo real usando Mínimos Quadrados Recursivos.',
+                readGuide: '📖 Ler Guia',
+                config: 'Configuração',
+                reset: 'Reiniciar Simulação',
+                viz: 'Identificação ao Vivo'
+            },
+            de: {
+                p10_title: 'Systemidentifikation (RLS)',
+                p10_subtitle: 'Unbekannte Systemparameter in Echtzeit mit rekursiven kleinsten Quadraten schätzen.',
+                readGuide: '📖 Anleitung lesen',
+                config: 'Konfiguration',
+                reset: 'Simulation zurücksetzen',
+                viz: 'Live-Identifikation'
+            },
+            uk: {
+                p10_title: 'Ідентифікація Систем (RLS)',
+                p10_subtitle: 'Оцінка невідомих параметрів системи в реальному часі за допомогою RLS.',
+                readGuide: '📖 Читати Посібник',
+                config: 'Конфігурація',
+                reset: 'Скинути Симуляцію',
+                viz: 'Жива Ідентифікація'
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="../assets/site.css">
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .param-display {
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body data-page-name="System Identification" data-guide="SysId-Guide.md" data-home="../index.html"
+    data-tags="RLS, Identification, Modeling">
+
+    <div class="lab-shell">
+        <header class="hero lab-card soft">
+            <div>
+                <h1 data-i18n="p10_title">System Identification (RLS)</h1>
+                <p data-i18n="p10_subtitle">Estimate unknown system parameters in real-time using Recursive Least
+                    Squares.</p>
+                <div style="margin-top: 12px;">
+                    <a class="pill ghost" href="SysId-Guide.md" data-i18n="readGuide">📖 Read Guide</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="lab-grid" style="grid-template-columns: 350px 1fr;">
+            <!-- Configuration -->
+            <div class="lab-card">
+                <h3 data-i18n="config">Configuration</h3>
+
+                <!-- True Plant Parameters -->
+                <h4 style="margin: 16px 0 8px 0; color:var(--text-main); font-size:0.95rem;">True Process</h4>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Pole (a)</span>
+                        <span id="valA"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">0.8</span>
+                    </label>
+                    <input type="range" id="sliderA" min="0.1" max="0.99" step="0.01" value="0.8" style="width:100%">
+                    <small style="color:var(--text-light);">System dynamics (y[k] = -a*y[k-1]...)</small>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Gain (b)</span>
+                        <span id="valB"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">1.5</span>
+                    </label>
+                    <input type="range" id="sliderB" min="0.5" max="3.0" step="0.1" value="1.5" style="width:100%">
+                </div>
+
+                <!-- Estimation Parameters -->
+                <h4 style="margin: 16px 0 8px 0; color:var(--text-main); font-size:0.95rem;">Estimator (RLS)</h4>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Forgetting Factor (λ)</span>
+                        <span id="valLambda"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">0.98</span>
+                    </label>
+                    <input type="range" id="sliderLambda" min="0.8" max="1.0" step="0.005" value="0.98"
+                        style="width:100%">
+                    <small style="color:var(--text-light);">Lower = faster adaptation, less smooth.</small>
+                </div>
+
+                <!-- Simulation Settings -->
+                <h4 style="margin: 16px 0 8px 0; color:var(--text-main); font-size:0.95rem;">Simulation</h4>
+                <div style="margin-bottom: 16px;">
+                    <label style="display:block; margin-bottom:8px;">Input Signal</label>
+                    <select id="selectInput" class="select-full">
+                        <option value="prbs">PRBS (Best for Id)</option>
+                        <option value="square">Square Wave</option>
+                        <option value="step">Step</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Noise Level</span>
+                        <span id="valNoise"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">0.05</span>
+                    </label>
+                    <input type="range" id="sliderNoise" min="0.0" max="0.5" step="0.01" value="0.05"
+                        style="width:100%">
+                </div>
+
+                <div
+                    style="margin-top: 24px; padding: 16px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="margin:0 0 12px 0;">Estimated Params</h4>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>â (Est):</span>
+                        <span id="dispA" class="param-display">0.00</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>b̂ (Est):</span>
+                        <span id="dispB" class="param-display">0.00</span>
+                    </div>
+                </div>
+
+                <button class="btn" id="btnReset" style="margin-top: 20px; width:100%;" data-i18n="reset">Reset
+                    Simulation</button>
+            </div>
+
+            <!-- Visualization -->
+            <div class="lab-card">
+                <h3 data-i18n="viz">Live Identification</h3>
+
+                <h4 style="margin-bottom:5px;">Output & Prediction</h4>
+                <div class="chart-container">
+                    <canvas id="timeChart"></canvas>
+                </div>
+
+                <h4 style="margin: 20px 0 5px 0;">Parameter Convergence</h4>
+                <div class="chart-container">
+                    <canvas id="paramChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/glossary.js"></script>
+    <script src="../assets/site.js"></script>
+    <script src="./sysid.js"></script>
+</body>
+
+</html>

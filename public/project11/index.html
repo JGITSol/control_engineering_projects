@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead-Lag Compensator | Control Engineering</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.PAGE_TRANSLATIONS = {
+            en: {
+                p11_title: 'Lead-Lag Compensator Design',
+                p11_subtitle: 'Shape frequency response using lead/lag compensators to meet Phase Margin requirements.',
+                readGuide: '📖 Read Guide',
+                config: 'Design Parameters',
+                viz: 'Frequency & Time Response'
+            },
+            pl: {
+                p11_title: 'Projektowanie Kompensatora Lead-Lag',
+                p11_subtitle: 'Kształtowanie odpowiedzi częstotliwościowej w celu spełnienia wymogów zapasu fazy.',
+                readGuide: '📖 Przeczytaj Poradnik',
+                config: 'Parametry Projektu',
+                viz: 'Odpowiedź Częstotliwościowa i Czasowa'
+            },
+            fr: {
+                p11_title: 'Conception de Compensateur Avance-Retard',
+                p11_subtitle: 'Façonner la réponse fréquentielle pour satisfaire les exigences de marge de phase.',
+                readGuide: '📖 Lire le Guide',
+                config: 'Paramètres de Conception',
+                viz: 'Réponse Fréquentielle et Temporelle'
+            },
+            es: {
+                p11_title: 'Diseño de Compensador Adelanto-Atraso',
+                p11_subtitle: 'Modela la respuesta en frecuencia para cumplir requisitos de Margen de Fase.',
+                readGuide: '📖 Leer Guía',
+                config: 'Parámetros de Diseño',
+                viz: 'Respuesta en Frecuencia y Tiempo'
+            },
+            pt: {
+                p11_title: 'Projeto de Compensador Avanço-Atraso',
+                p11_subtitle: 'Modelar resposta em frequência para atender requisitos de Margem de Fase.',
+                readGuide: '📖 Ler Guia',
+                config: 'Parâmetros de Projeto',
+                viz: 'Resposta em Frequência e Tempo'
+            },
+            de: {
+                p11_title: 'Lead-Lag-Kompensator Entwurf',
+                p11_subtitle: 'Frequenzgang formen, um Phasenrand-Anforderungen zu erfüllen.',
+                readGuide: '📖 Anleitung lesen',
+                config: 'Entwurfsparameter',
+                viz: 'Frequenz- & Zeitantwort'
+            },
+            uk: {
+                p11_title: 'Проєктування Компенсатора Lead-Lag',
+                p11_subtitle: 'Формування частотної характеристики для виконання вимог запасу фази.',
+                readGuide: '📖 Читати Посібник',
+                config: 'Параметри Проєкту',
+                viz: 'Частотна та Часова Характеристика'
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="../assets/site.css">
+</head>
+
+<body data-page-name="Lead-Lag Compensator" data-guide="LeadLag-Guide.md" data-home="../index.html"
+    data-tags="Bode, Frequency Design, Compensation">
+
+    <div class="lab-shell">
+        <header class="hero lab-card soft">
+            <div>
+                <h1 data-i18n="p11_title">Lead-Lag Compensator Design</h1>
+                <p data-i18n="p11_subtitle">Shape frequency response using lead/lag compensators to meet Phase Margin
+                    requirements.</p>
+                <div style="margin-top: 12px;">
+                    <a class="pill ghost" href="LeadLag-Guide.md" data-i18n="readGuide">📖 Read Guide</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="lab-grid" style="grid-template-columns: 350px 1fr;">
+            <!-- Configuration -->
+            <div class="lab-card">
+                <h3 data-i18n="config">Design Parameters</h3>
+
+                <!-- Plant -->
+                <h4 style="margin: 16px 0 8px 0; color:var(--text-main); font-size:0.95rem;">Plant G(s) = Kp / s(s+2)
+                </h4>
+
+                <!-- Compensator -->
+                <h4 style="margin: 16px 0 8px 0; color:var(--text-main); font-size:0.95rem;">Controller C(s) = K
+                    (s+z)/(s+p)</h4>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Controller Gain (K)</span>
+                        <span id="valK"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">10.0</span>
+                    </label>
+                    <input type="range" id="sliderK" min="1" max="50" step="1" value="10" style="width:100%">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Zero Location (z)</span>
+                        <span id="valZ"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">2.0</span>
+                    </label>
+                    <input type="range" id="sliderZ" min="0.1" max="10" step="0.1" value="2.0" style="width:100%">
+                    <small id="typeHint" style="color:var(--text-light);">Neutral (z=p)</small>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; margin-bottom:8px;">
+                        <span>Pole Location (p)</span>
+                        <span id="valP"
+                            style="float:right; font-family:monospace; color:var(--primary-light);">10.0</span>
+                    </label>
+                    <input type="range" id="sliderP" min="0.1" max="20" step="0.1" value="10.0" style="width:100%">
+                </div>
+
+                <div
+                    style="margin-top: 24px; padding: 16px; background: var(--surface); border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="margin:0 0 12px 0;">Performance Metrics</h4>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Phase Margin (PM):</span>
+                        <span id="metricPM"
+                            style="font-family:monospace; font-weight:bold; color:var(--accent);">--°</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                        <span>Crossover Freq (ωgc):</span>
+                        <span id="metricWgc" style="font-family:monospace;">-- rad/s</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Overshoot (%):</span>
+                        <span id="metricOS" style="font-family:monospace;">--%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization -->
+            <div class="lab-card">
+                <h3 data-i18n="viz">Frequency & Time Response</h3>
+
+                <h4 style="margin-bottom:5px;">Bode Plot (Open Loop L(s) = C(s)G(s))</h4>
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="bodeChart"></canvas>
+                </div>
+
+                <h4 style="margin: 20px 0 5px 0;">Step Response (Closed Loop T(s))</h4>
+                <div style="height: 250px; width: 100%;">
+                    <canvas id="stepChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/glossary.js"></script>
+    <script src="../assets/site.js"></script>
+    <script src="./leadlag.js"></script>
+</body>
+
+</html>
